@@ -20,6 +20,7 @@ buildNumber.properties
 *.ear
 
 # ===== Spring Boot =====
+application.yml
 application-local.yml
 application-local.properties
 
