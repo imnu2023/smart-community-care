@@ -33,10 +33,9 @@
 
 | role | 含义 |
 |------|------|
-| 1 | 管理员 |
-| 2 | 老人（旧版） |
-| 3 | 老人 |
-| 4 | 家属 |
+| 1 | 管理员 (admin) |
+| 2 | 老人 (elder) |
+| 3 | 家属 (family) |
 
 ---
 
@@ -817,7 +816,7 @@ POST /api/fix/all
 | gender | String | 性别 |
 | address | String | 地址 |
 | avatar | String | 头像 URL |
-| role | Integer | 1-管理 2-老人(旧) 3-老人 4-家属 |
+| role | Integer | 1-管理员 2-老人 3-家属 |
 | healthStatus | Integer | 健康状态 |
 | emergencyContact | String | 紧急联系人 |
 | emergencyPhone | String | 紧急联系电话 |
