@@ -67,8 +67,7 @@ const routes = [
   },
   {
     path: '/elder-messages',
-    name: 'ElderMessages',
-    component: () => import('../views/ElderMessages.vue')
+    redirect: '/messages'
   },
   {
     path: '/family-pay',

@@ -348,7 +348,7 @@ public class DatabaseInitializer implements CommandLineRunner {
         String[] startTimes = {"2026-06-20 09:00:00", "2026-06-18 07:00:00", "2026-06-22 14:00:00", "2026-06-28 14:30:00", "2026-06-25 10:00:00"};
         String[] endTimes = {"2026-06-20 11:30:00", "2026-06-18 09:00:00", "2026-06-22 16:00:00", "2026-06-28 16:30:00", "2026-06-25 12:00:00"};
         int[] maxParticipants = {20, 50, 30, 80, 40};
-        int[] currentParticipants = {15, 42, 28, 66, 31};
+        int[] currentParticipants = {0, 0, 0, 0, 0};
         String[] organizers = {"书画社", "健身管理办公室", "社区志愿者", "社区服务中心", "社区管理办公室"};
         
         try (PreparedStatement pstmt = connection.prepareStatement(

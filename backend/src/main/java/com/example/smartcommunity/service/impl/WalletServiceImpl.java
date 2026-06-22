@@ -5,8 +5,9 @@ import com.example.smartcommunity.entity.Wallet;
 import com.example.smartcommunity.entity.WalletTransactionLog;
 import com.example.smartcommunity.mapper.WalletMapper;
 import com.example.smartcommunity.mapper.WalletTransactionLogMapper;
+import com.example.smartcommunity.service.NotificationHelper;
 import com.example.smartcommunity.service.WalletService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +17,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class WalletServiceImpl implements WalletService {
 
-    @Autowired
-    private WalletMapper walletMapper;
+    private final WalletMapper walletMapper;
 
-    @Autowired
-    private WalletTransactionLogMapper transactionLogMapper;
+    private final WalletTransactionLogMapper transactionLogMapper;
+
+    private final NotificationHelper notificationHelper;
 
     /**
      * 交易类型常量
@@ -73,6 +75,9 @@ public class WalletServiceImpl implements WalletService {
         writeTransactionLog(userId, TX_TYPE_RECHARGE, amount, wallet.getBalance(),
                 null, "账户充值");
 
+        notificationHelper.send(userId, NotificationHelper.TYPE_PAYMENT,
+                "充值成功 +" + amount + "元，当前余额 " + wallet.getBalance() + "元");
+
         return wallet;
     }
 
@@ -98,7 +103,9 @@ public class WalletServiceImpl implements WalletService {
 
         Wallet wallet = getWallet(userId);
         if (wallet.getBalance().compareTo(amount) < 0) {
-            return false; // 余额不足
+            notificationHelper.send(userId, NotificationHelper.TYPE_PAYMENT,
+                    "余额不足：需支付 " + amount + "元，当前余额 " + wallet.getBalance() + "元");
+            return false;
         }
 
         wallet.setBalance(wallet.getBalance().subtract(amount));
@@ -113,6 +120,9 @@ public class WalletServiceImpl implements WalletService {
         // 写入交易流水
         writeTransactionLog(userId, TX_TYPE_CONSUME, amount, wallet.getBalance(),
                 orderNo, remark);
+
+        notificationHelper.send(userId, NotificationHelper.TYPE_PAYMENT,
+                "消费 " + amount + "元，当前余额 " + wallet.getBalance() + "元");
 
         return true;
     }
