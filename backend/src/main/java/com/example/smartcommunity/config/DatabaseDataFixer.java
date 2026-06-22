@@ -84,14 +84,15 @@ public class DatabaseDataFixer implements CommandLineRunner {
     }
 
     private void fixEmergencyCallTable(Connection connection) throws Exception {
+        // 使用英文规范枚举（与 Java 代码 EmergencyServiceImpl 保持一致）
         String[][] updates = {
-            {"医疗", "已完成", "突发心脏病，需要紧急救治", "29"},
-            {"安全", "处理中", "家中漏水，需要帮助", "30"},
-            {"医疗", "已解决", "紧急呼叫测试", "31"},
-            {"医疗", "已解决", "紧急呼叫测试", "32"},
-            {"火灾", "已取消", "火灾报警测试", "33"}
+            {"医疗", "resolved",   "突发心脏病，需要紧急救治", "29"},
+            {"安全", "responding", "家中漏水，需要帮助",       "30"},
+            {"医疗", "resolved",   "紧急呼叫测试",             "31"},
+            {"医疗", "resolved",   "紧急呼叫测试",             "32"},
+            {"火灾", "cancelled",  "火灾报警测试",             "33"}
         };
-        
+
         try (PreparedStatement pstmt = connection.prepareStatement(
             "UPDATE emergency_call SET call_type = ?, status = ?, description = ? WHERE id = ?")) {
             for (String[] update : updates) {
@@ -108,8 +109,8 @@ public class DatabaseDataFixer implements CommandLineRunner {
 
     private void fixServiceOrderTable(Connection connection) throws Exception {
         String[][] updates = {
-            {"已完成", "幸福社区1号楼101室", "ORD20260606001"},
-            {"待服务", "幸福社区1号楼101室", "ORD20260610002"}
+            {"completed", "幸福社区1号楼101室", "ORD20260606001"},
+            {"pending",   "幸福社区1号楼101室", "ORD20260610002"}
         };
         
         try (PreparedStatement pstmt = connection.prepareStatement(
@@ -165,11 +166,11 @@ public class DatabaseDataFixer implements CommandLineRunner {
             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM device_control");
             if (rs.next() && rs.getInt(1) == 0) {
                 String[][] inserts = {
-                    {"6", "light", "on", "active"},
-                    {"7", "aircon", "26", "active"},
-                    {"8", "curtain", "open", "active"},
-                    {"11", "light", "on", "active"},
-                    {"15", "aircon", "24", "active"}
+                    {"6", "light", "on", "executed"},
+                    {"7", "aircon", "26", "executed"},
+                    {"8", "curtain", "open", "executed"},
+                    {"11", "light", "on", "executed"},
+                    {"15", "aircon", "24", "executed"}
                 };
                 
                 try (PreparedStatement pstmt = connection.prepareStatement(

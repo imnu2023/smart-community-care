@@ -44,8 +44,8 @@ public class PaymentController {
             return ApiResponse.error("订单状态不允许支付");
         }
         
-        BigDecimal amount = BigDecimal.valueOf(order.getAmount());
-        boolean success = walletService.pay(payerId, amount);
+        BigDecimal amount = order.getAmount();
+        boolean success = walletService.pay(payerId, amount, order.getOrderNo());
         
         Map<String, Object> result = new HashMap<>();
         if (success) {
@@ -88,8 +88,8 @@ public class PaymentController {
             return ApiResponse.error("您不是该老人的家属，无法代付");
         }
         
-        BigDecimal amount = BigDecimal.valueOf(order.getAmount());
-        boolean success = walletService.pay(familyId, amount);
+        BigDecimal amount = order.getAmount();
+        boolean success = walletService.pay(familyId, amount, order.getOrderNo());
         
         Map<String, Object> result = new HashMap<>();
         if (success) {

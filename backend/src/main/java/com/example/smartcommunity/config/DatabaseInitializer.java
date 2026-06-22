@@ -105,12 +105,13 @@ public class DatabaseInitializer implements CommandLineRunner {
     }
     
     private void fixEmergencyCallTable(Connection connection) throws Exception {
+        // 使用英文规范枚举（与 Java 代码 EmergencyServiceImpl 保持一致）
         String[][] updates = {
-            {"医疗", "已完成", "突发心脏病，需要紧急救治", "29"},
-            {"安全", "处理中", "家中漏水，需要帮助", "30"},
-            {"医疗", "已解决", "紧急呼叫测试", "31"},
-            {"医疗", "已解决", "紧急呼叫测试", "32"},
-            {"火灾", "已取消", "火灾报警测试", "33"}
+            {"医疗", "resolved",   "突发心脏病，需要紧急救治", "29"},
+            {"安全", "responding", "家中漏水，需要帮助",       "30"},
+            {"医疗", "resolved",   "紧急呼叫测试",             "31"},
+            {"医疗", "resolved",   "紧急呼叫测试",             "32"},
+            {"火灾", "cancelled",  "火灾报警测试",             "33"}
         };
         
         try (PreparedStatement pstmt = connection.prepareStatement(
@@ -128,8 +129,8 @@ public class DatabaseInitializer implements CommandLineRunner {
     
     private void fixServiceOrderTable(Connection connection) throws Exception {
         String[][] updates = {
-            {"已完成", "幸福社区1号楼101室", "ORD20260606001"},
-            {"待服务", "幸福社区1号楼101室", "ORD20260610002"}
+            {"completed", "幸福社区1号楼101室", "ORD20260606001"},
+            {"pending",   "幸福社区1号楼101室", "ORD20260610002"}
         };
         
         try (PreparedStatement pstmt = connection.prepareStatement(
@@ -214,7 +215,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                         pstmt.setLong(1, deviceId);
                         pstmt.setString(2, deviceType);
                         pstmt.setString(3, controlValue);
-                        pstmt.setString(4, "active");
+                        pstmt.setString(4, "executed");
                         pstmt.executeUpdate();
                     }
                 }
@@ -235,7 +236,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 };
                 
                 try (PreparedStatement pstmt = connection.prepareStatement(
-                    "INSERT INTO wallet (user_id, balance, created_at, updated_at) VALUES (?, ?, NOW(), NOW())")) {
+                    "INSERT INTO wallet (user_id, balance, version, created_at, updated_at) VALUES (?, ?, 0, NOW(), NOW())")) {
                     for (String[] insert : inserts) {
                         pstmt.setString(1, insert[0]);
                         pstmt.setString(2, insert[1]);
@@ -312,7 +313,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             "为社区居民提供美容服务"
         };
         String[] providers = {"阳光家政服务中心", "社区医院", "社区服务中心", "社区食堂", "社区美容院"};
-        double[] prices = {80.0, 150.0, 20.0, 30.0, 50.0};
+        java.math.BigDecimal[] prices = {new java.math.BigDecimal("80.00"), new java.math.BigDecimal("150.00"), new java.math.BigDecimal("20.00"), new java.math.BigDecimal("30.00"), new java.math.BigDecimal("50.00")};
         String[] phones = {"13812345678", "13887654321", "13811112222", "13833334444", "13855556666"};
         
         try (PreparedStatement pstmt = connection.prepareStatement(
@@ -323,7 +324,7 @@ public class DatabaseInitializer implements CommandLineRunner {
                 pstmt.setString(1, serviceNames[i]);
                 pstmt.setString(2, serviceTypes[i]);
                 pstmt.setString(3, descriptions[i]);
-                pstmt.setDouble(4, prices[i]);
+                pstmt.setBigDecimal(4, prices[i]);
                 pstmt.setString(5, providers[i]);
                 pstmt.setString(6, phones[i]);
                 pstmt.setInt(7, i + 1);

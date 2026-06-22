@@ -16,9 +16,9 @@ INSERT INTO health_data (user_id, heart_rate, blood_pressure_high, blood_pressur
 
 INSERT INTO health_data (user_id, heart_rate, blood_pressure_high, blood_pressure_low, blood_sugar, body_temperature, measured_at, created_at) VALUES (2, 70, 122, 82, 5.9, 36.4, '2026-06-09 09:30:00', NOW());
 
-INSERT INTO emergency_call (user_id, call_type, status, description, call_time, created_at) VALUES (1, 'medical', 'completed', '突发心脏病，需要急救', '2026-06-05 14:25:00', '2026-06-05 14:25:00');
+INSERT INTO emergency_call (user_id, call_type, status, description, call_time, created_at) VALUES (1, 'medical', 'resolved', '突发心脏病，需要急救', '2026-06-05 14:25:00', '2026-06-05 14:25:00');
 
-INSERT INTO emergency_call (user_id, call_type, status, description, call_time, created_at) VALUES (2, 'security', 'processing', '家中漏水，需要帮助', '2026-06-10 10:00:00', '2026-06-10 10:00:00');
+INSERT INTO emergency_call (user_id, call_type, status, description, call_time, created_at) VALUES (2, 'security', 'responding', '家中漏水，需要帮助', '2026-06-10 10:00:00', '2026-06-10 10:00:00');
 
 INSERT INTO service_order (order_no, user_id, service_id, status, service_time, address, amount, created_at, updated_at) VALUES ('ORD20260606001', 1, 1, 'completed', '2026-06-07 09:00:00', '幸福社区1号楼101室', 80, '2026-06-06 14:00:00', '2026-06-06 14:00:00');
 

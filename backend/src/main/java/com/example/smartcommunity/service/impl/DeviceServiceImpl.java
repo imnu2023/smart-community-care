@@ -84,7 +84,7 @@ public class DeviceServiceImpl implements DeviceService {
         if (device == null) {
             throw new BusinessException("设备不存在");
         }
-        device.setStatus(action.equals("on") ? "active" : "inactive");
+        device.setStatus(action.equals("on") ? "online" : "offline");
         device.setUpdatedAt(LocalDateTime.now());
         deviceMapper.updateById(device);
     }
