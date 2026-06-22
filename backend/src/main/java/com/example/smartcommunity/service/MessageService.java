@@ -6,23 +6,21 @@ import java.util.List;
 
 public interface MessageService {
 
-    Message sendMessage(Long senderId, Long receiverId, String content, String type);
-
+    /** 获取用户收到的所有通知 */
     List<Message> getMessagesByReceiver(Long receiverId);
 
+    /** 获取未读通知 */
     List<Message> getUnreadMessages(Long receiverId);
 
+    /** 未读通知计数 */
     int countUnread(Long receiverId);
 
+    /** 标记单条已读 */
     void markAsRead(Long messageId);
 
+    /** 批量标记全部已读 */
     void markAllAsRead(Long receiverId);
 
-    List<Message> getConversation(Long userId, Long otherId);
-    
-    List<Message> getMessagesForElder(Long elderId);
-    
-    List<Message> getMessagesForFamily(Long familyMemberId);
-    
-    void clearAll();
+    /** 删除单条通知 */
+    void deleteMessage(Long messageId);
 }

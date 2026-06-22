@@ -95,13 +95,12 @@ export const orderAPI = {
 }
 
 export const messageAPI = {
-  send: (senderId, receiverId, content, type) => instance.post('/messages', { senderId, receiverId, content, type }),
-  getByReceiver: (receiverId) => instance.get(`/messages/receiver/${receiverId}`),
-  getUnread: (receiverId) => instance.get(`/messages/unread/${receiverId}`),
-  countUnread: (receiverId) => instance.get(`/messages/unread/count/${receiverId}`),
+  getList: (userId) => instance.get(`/messages/${userId}`),
+  getUnread: (userId) => instance.get(`/messages/unread/${userId}`),
+  countUnread: (userId) => instance.get(`/messages/unread/count/${userId}`),
   markAsRead: (messageId) => instance.put(`/messages/${messageId}/read`),
-  markAllAsRead: (receiverId) => instance.put(`/messages/receiver/${receiverId}/read`),
-  getConversation: (userId, otherId) => instance.get(`/messages/conversation?userId=${userId}&otherId=${otherId}`)
+  markAllAsRead: (userId) => instance.put(`/messages/read-all/${userId}`),
+  delete: (messageId) => instance.delete(`/messages/${messageId}`)
 }
 
 export const activityAPI = {

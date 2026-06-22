@@ -1,345 +1,175 @@
 <template>
-  <div class="messages-page">
+  <div class="notification-center">
     <div class="page-header">
-      <div class="header-content">
-        <button class="back-btn" @click="goBack">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M19 12H5m0 0l7-7m-7 7l7 7"/>
-          </svg>
-          <span>返回</span>
-        </button>
-        <div class="header-text">
-          <h1>消息中心</h1>
-          <p>与家人和社区保持联系</p>
+      <button class="back-btn" @click="goBack">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5m0 0l7-7m-7 7l7 7"/>
+        </svg>
+        <span>返回</span>
+      </button>
+      <h1>消息中心</h1>
+      <button class="mark-all-read" @click="markAllRead" v-if="unreadCount > 0">
+        全部已读 ({{ unreadCount }})
+      </button>
+    </div>
+
+    <div class="notification-list" v-if="notifications.length > 0">
+      <div
+        v-for="msg in notifications"
+        :key="msg.id"
+        :class="['notification-card', { unread: !msg.isRead }]"
+        @click="readMessage(msg)"
+      >
+        <div class="card-icon" :class="typeClass(msg.type)">
+          {{ typeIcon(msg.type) }}
         </div>
-        <button class="mark-all-read" @click="markAllRead" v-if="unreadCount > 0">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-            <circle cx="12" cy="12" r="3"/>
+        <div class="card-body">
+          <div class="card-title">
+            <span class="card-type">{{ typeLabel(msg.type) }}</span>
+            <span class="card-time">{{ formatTime(msg.createdAt) }}</span>
+          </div>
+          <div class="card-content">{{ msg.content }}</div>
+        </div>
+        <button class="card-delete" @click.stop="deleteMessage(msg.id)" title="删除">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
-          <span>全部标为已读 ({{ unreadCount }})</span>
         </button>
       </div>
     </div>
 
-    <div class="messages-container">
-      <div class="contacts-list">
-        <div 
-          v-for="contact in contacts" 
-          :key="contact.id"
-          :class="['contact-item', { active: activeContact?.id === contact.id }]"
-          @click="selectContact(contact)"
-        >
-          <div class="contact-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-          </div>
-          <div class="contact-info">
-            <div class="contact-name">{{ contact.name }}</div>
-            <div class="contact-last-message">{{ contact.lastMessage }}</div>
-          </div>
-          <div class="contact-meta">
-            <div class="contact-time">{{ contact.time }}</div>
-            <div v-if="contact.unread > 0" class="unread-badge">{{ contact.unread }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="chat-area" v-if="activeContact">
-        <div class="chat-header">
-          <div class="chat-title">
-            <div class="chat-avatar">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-            <div>
-              <div class="chat-name">{{ activeContact.name }}</div>
-              <div class="chat-relation">{{ activeContact.relation }}</div>
-            </div>
-          </div>
-          <div class="online-status">
-            <span class="status-dot online"></span>
-            <span>在线</span>
-          </div>
-        </div>
-
-        <div class="chat-messages" ref="chatMessages">
-          <div 
-            v-for="message in conversation" 
-            :key="message.id"
-            :class="['message-item', { sent: message.senderId === currentUserId, received: message.senderId !== currentUserId }]"
-          >
-            <div class="message-avatar" v-if="message.senderId !== currentUserId">👤</div>
-            <div class="message-content">
-              <p>{{ message.content }}</p>
-              <div class="message-time">{{ message.time }}</div>
-            </div>
-            <div class="message-avatar" v-if="message.senderId === currentUserId">👤</div>
-          </div>
-        </div>
-
-        <div class="chat-input">
-          <input 
-            type="text" 
-            v-model="newMessage"
-            placeholder="输入消息..."
-            @keyup.enter="sendMessage"
-            class="message-input"
-          />
-          <button class="send-btn" @click="sendMessage">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="22" y1="2" x2="11" y2="13"/>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div class="empty-chat" v-else>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <p>选择一个联系人开始聊天</p>
-      </div>
+    <div class="empty-state" v-else>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <p>暂无通知消息</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { messageAPI, relationAPI } from '../api'
+import { messageAPI } from '../api'
 
 const router = useRouter()
 
-const goBack = () => {
-  router.push('/dashboard')
+const goBack = () => router.push('/dashboard')
+
+const notifications = ref([])
+let pollTimer = null
+
+const currentUserId = computed(() => parseInt(localStorage.getItem('userId')) || 0)
+
+const unreadCount = computed(() => notifications.value.filter(m => !m.isRead).length)
+
+const typeConfig = {
+  activity:  { label: '活动通知', icon: '📅', cls: 'type-activity' },
+  payment:   { label: '支付通知', icon: '💰', cls: 'type-payment' },
+  health:    { label: '健康提醒', icon: '❤️', cls: 'type-health' },
+  order:     { label: '订单通知', icon: '📋', cls: 'type-order' },
+  emergency: { label: '紧急通知', icon: '🚨', cls: 'type-emergency' }
 }
 
-const contacts = ref([])
-const activeContact = ref(null)
-const conversation = ref([])
-const newMessage = ref('')
-const chatMessages = ref(null)
-
-const unreadCount = computed(() => {
-  return contacts.value.reduce((sum, c) => sum + (c.unread || 0), 0)
-})
+const typeLabel = (type) => typeConfig[type]?.label || '系统通知'
+const typeIcon = (type) => typeConfig[type]?.icon || '🔔'
+const typeClass = (type) => typeConfig[type]?.cls || ''
 
 const formatTime = (dateStr) => {
-  if (!dateStr) return '刚刚'
-  
-  let date = null
-  
-  if (typeof dateStr === 'string') {
-    date = new Date(dateStr.replace('T', ' '))
-  } else if (dateStr instanceof Date) {
-    date = dateStr
+  if (!dateStr) return ''
+  // Java LocalDateTime 在 JSON 中序列化为数组 [2026,6,17,15,11,3]
+  let date
+  if (Array.isArray(dateStr)) {
+    date = new Date(dateStr[0], dateStr[1] - 1, dateStr[2], dateStr[3] || 0, dateStr[4] || 0, dateStr[5] || 0)
+  } else if (typeof dateStr === 'string') {
+    date = new Date(dateStr.replace('T', ' ').replace('Z', ''))
+  } else {
+    return ''
   }
-  
-  if (!date || isNaN(date.getTime())) {
-    date = new Date()
-  }
-  
-  return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+  if (isNaN(date.getTime())) return ''
+  const now = new Date()
+  const diff = now - date
+  if (diff < 60000) return '刚刚'
+  if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前'
+  if (diff < 86400000) return Math.floor(diff / 86400000) + '小时前'
+  if (diff < 604800000) return Math.floor(diff / 86400000) + '天前'
+  return date.toLocaleDateString('zh-CN')
 }
 
-const loadContacts = async () => {
-  const userId = parseInt(localStorage.getItem('userId')) || 3
-  const role = parseInt(localStorage.getItem('role')) || 3
-  const isElder = role === 3
-  
-  const adminContact = { id: 1, name: '社区管理员', relation: '', lastMessage: '点击开始聊天', time: '今天', unread: 0 }
-  const newContacts = [adminContact]
-  
+const loadNotifications = async () => {
+  if (!currentUserId.value) return
   try {
-    let relations = []
-    
-    if (isElder) {
-      const response = await relationAPI.getByElder(userId)
-      if (response && response.data) {
-        relations = response.data
-      }
-    } else {
-      const response = await relationAPI.getByFamilyMember(userId)
-      if (response && response.data) {
-        relations = response.data
-      }
-    }
-    
-    for (const relation of relations) {
-      if (isElder) {
-        newContacts.push({
-          id: relation.familyMemberId,
-          name: relation.familyMemberName || '家属',
-          relation: getRelationLabel(relation.relationType),
-          lastMessage: '点击开始聊天',
-          time: '今天',
-          unread: 0
-        })
-      } else {
-        newContacts.push({
-          id: relation.elderId,
-          name: relation.elderName || '老人',
-          relation: getRelationLabel(relation.relationType),
-          lastMessage: '点击开始聊天',
-          time: '今天',
-          unread: 0
-        })
-      }
-    }
-  } catch (error) {
-    console.error('获取联系人失败:', error)
+    const res = await messageAPI.getList(currentUserId.value)
+    if (res?.data) notifications.value = res.data
+  } catch (e) {
+    console.error('加载通知失败:', e)
   }
-  
-  contacts.value = newContacts
 }
 
-const getRelationLabel = (type) => {
-  const labels = {
-    'child': '子女',
-    'parent': '父母',
-    'spouse': '配偶',
-    'sibling': '兄弟姐妹',
-    'other': '其他'
+const readMessage = async (msg) => {
+  if (!msg.isRead) {
+    try {
+      await messageAPI.markAsRead(msg.id)
+      msg.isRead = true
+    } catch (e) { console.error(e) }
   }
-  return labels[type] || ''
 }
 
-const currentUserId = parseInt(localStorage.getItem('userId')) || 3
-
-const selectContact = async (contact) => {
-  activeContact.value = contact
-  contact.unread = 0
-  
+const deleteMessage = async (id) => {
   try {
-    const response = await messageAPI.getConversation(currentUserId, contact.id)
-    
-    if (response && response.data) {
-      const messages = response.data.map(msg => ({
-        id: msg.id,
-        senderId: msg.senderId,
-        content: msg.content,
-        time: formatTime(msg.createdAt),
-        createdAt: msg.createdAt
-      }))
-      messages.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-      conversation.value = messages
-    }
-  } catch (error) {
-    console.error('获取消息失败:', error)
-    conversation.value = []
-  }
-  
-  nextTick(() => {
-    if (chatMessages.value) {
-      chatMessages.value.scrollTop = chatMessages.value.scrollHeight
-    }
-  })
+    await messageAPI.delete(id)
+    notifications.value = notifications.value.filter(m => m.id !== id)
+  } catch (e) { console.error(e) }
 }
 
-const sendMessage = async () => {
-  if (!newMessage.value.trim() || !activeContact.value) return
-  
-  const content = newMessage.value.trim()
-  const receiverId = activeContact.value.id
-  
+const markAllRead = async () => {
   try {
-    const response = await messageAPI.send(currentUserId, receiverId, content, 'text')
-    
-    if (response && response.data) {
-      conversation.value.push({
-        id: response.data.id,
-        senderId: currentUserId,
-        content: content,
-        time: formatTime(response.data.createdAt || new Date()),
-        createdAt: response.data.createdAt || new Date().toISOString()
-      })
-      
-      newMessage.value = ''
-      
-      nextTick(() => {
-        if (chatMessages.value) {
-          chatMessages.value.scrollTop = chatMessages.value.scrollHeight
-        }
-      })
-      
-      ElMessage.success('消息已发送')
-    }
-  } catch (error) {
-    console.error('发送消息失败:', error)
-    ElMessage.error('发送消息失败')
-  }
+    await messageAPI.markAllAsRead(currentUserId.value)
+    notifications.value.forEach(m => { m.isRead = true })
+  } catch (e) { console.error(e) }
 }
 
-const markAllRead = () => {
-  contacts.value.forEach(c => c.unread = 0)
-  ElMessage.success('已全部标为已读')
+const poll = async () => {
+  if (!currentUserId.value) return
+  try {
+    const res = await messageAPI.countUnread(currentUserId.value)
+    const count = res?.data?.count || 0
+    if (count !== unreadCount.value) await loadNotifications()
+  } catch (e) { /* silent */ }
 }
-
-let lastMessageHash = ''
-
-const checkNewMessages = () => {
-  const stored = localStorage.getItem('elder-family-chat')
-  const currentHash = stored ? stored.length.toString() : ''
-  if (currentHash !== lastMessageHash) {
-    lastMessageHash = currentHash
-    if (activeContact.value) {
-      selectContact(activeContact.value)
-    }
-  }
-}
-
-const handleStorageChange = (event) => {
-  if (event.key === 'elder-family-chat' && activeContact.value) {
-    selectContact(activeContact.value)
-  }
-}
-
-let pollInterval = null
 
 onMounted(() => {
-  loadContacts()
-  window.addEventListener('storage', handleStorageChange)
-  pollInterval = setInterval(checkNewMessages, 1000)
+  loadNotifications()
+  pollTimer = setInterval(poll, 5000)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('storage', handleStorageChange)
-  if (pollInterval) {
-    clearInterval(pollInterval)
-  }
+  if (pollTimer) clearInterval(pollTimer)
 })
 </script>
 
 <style scoped>
-.messages-page {
+.notification-center {
   padding: 24px;
   min-height: 100vh;
   background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  max-width: 720px;
+  margin: 0 auto;
 }
 
 .page-header {
-  margin-bottom: 20px;
-}
-
-.header-content {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .back-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: white;
   border: 2px solid #e2e8f0;
   border-radius: 10px;
@@ -351,368 +181,146 @@ onUnmounted(() => {
 }
 
 .back-btn:hover {
-  background: #f8fafc;
   border-color: #667eea;
   color: #667eea;
 }
 
-.back-btn svg {
-  width: 18px;
-  height: 18px;
-}
+.back-btn svg { width: 18px; height: 18px; }
 
-.header-text h1 {
+.page-header h1 {
+  flex: 1;
   margin: 0;
-  font-size: 28px;
+  font-size: 24px;
   color: #1e293b;
   font-weight: 700;
 }
 
-.header-text p {
-  margin: 8px 0 0 0;
-  color: #64748b;
-}
-
 .mark-all-read {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
+  padding: 8px 18px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 20px;
   color: white;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   transition: all 0.3s;
-}
-
-.mark-all-read svg {
-  width: 16px;
-  height: 16px;
+  white-space: nowrap;
 }
 
 .mark-all-read:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102,126,234,0.4);
 }
 
-.messages-container {
-  display: flex;
-  gap: 20px;
-  height: calc(100vh - 180px);
-}
-
-.contacts-list {
-  width: 320px;
-  background: white;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-  overflow-y: auto;
-}
-
-.contact-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.3s;
-  margin-bottom: 8px;
-}
-
-.contact-item:hover {
-  background: #f8fafc;
-}
-
-.contact-item.active {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
-}
-
-.contact-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.contact-avatar svg {
-  width: 22px;
-  height: 22px;
-}
-
-.contact-info {
-  flex: 1;
-}
-
-.contact-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 4px;
-}
-
-.contact-last-message {
-  font-size: 13px;
-  color: #64748b;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.contact-meta {
-  text-align: right;
-}
-
-.contact-time {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-bottom: 4px;
-}
-
-.unread-badge {
-  background: #ef4444;
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 2px 10px;
-  border-radius: 12px;
-}
-
-.chat-area {
-  flex: 1;
+.notification-list {
   display: flex;
   flex-direction: column;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-}
-
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e2e8f0;
-  background: #fafafa;
-}
-
-.chat-title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.chat-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.chat-avatar svg {
-  width: 20px;
-  height: 20px;
-}
-
-.chat-name {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.chat-relation {
-  font-size: 13px;
-  color: #64748b;
-}
-
-.online-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #22c55e;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #94a3b8;
-}
-
-.status-dot.online {
-  background: #22c55e;
-}
-
-.chat-messages {
-  flex: 1;
-  padding: 20px 24px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.message-item {
-  max-width: 70%;
-  display: flex;
   gap: 10px;
 }
 
-.message-item.sent {
-  align-self: flex-end;
-  flex-direction: row-reverse;
+.notification-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
 }
 
-.message-item.received {
-  align-self: flex-start;
+.notification-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+.notification-card.unread {
+  background: linear-gradient(135deg, rgba(102,126,234,0.04) 0%, rgba(118,75,162,0.04) 100%);
+  border-left: 3px solid #667eea;
+  padding-left: 13px;
 }
 
-.message-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  font-size: 18px;
+  font-size: 22px;
   flex-shrink: 0;
-}
-
-.message-content {
   background: #f1f5f9;
-  border-radius: 16px;
-  padding: 14px 18px;
 }
 
-.sent .message-content {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 16px 16px 6px 16px;
+.type-activity  { background: #e0f2fe; }
+.type-payment   { background: #fef3c7; }
+.type-health    { background: #fce7f3; }
+.type-order     { background: #e0e7ff; }
+.type-emergency { background: #fee2e2; }
+
+.card-body { flex: 1; min-width: 0; }
+
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
 }
 
-.received .message-content {
-  background: #f1f5f9;
-  color: #1e293b;
-  border-radius: 16px 16px 16px 6px;
+.card-type {
+  font-size: 13px;
+  font-weight: 600;
+  color: #667eea;
 }
 
-.message-content p {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.message-time {
+.card-time {
   font-size: 12px;
   color: #94a3b8;
-  margin-top: 8px;
-  text-align: right;
+  flex-shrink: 0;
+  margin-left: 12px;
 }
 
-.sent .message-time {
-  color: rgba(255, 255, 255, 0.7);
+.card-content {
+  font-size: 15px;
+  color: #334155;
+  line-height: 1.5;
+  word-break: break-all;
 }
 
-.chat-input {
-  display: flex;
-  gap: 12px;
-  padding: 16px 24px;
-  border-top: 1px solid #e2e8f0;
-  background: #fafafa;
-}
-
-.message-input {
-  flex: 1;
-  padding: 14px 20px;
-  border: 2px solid #e2e8f0;
-  border-radius: 25px;
-  font-size: 16px;
-  outline: none;
-  transition: all 0.3s;
-  background: white;
-}
-
-.message-input:focus {
-  border-color: #667eea;
-}
-
-.message-input::placeholder {
-  color: #94a3b8;
-}
-
-.send-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.card-delete {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
   border: none;
+  background: none;
+  color: #94a3b8;
   cursor: pointer;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  transition: all 0.3s;
+  opacity: 0;
+  transition: all 0.2s;
 }
 
-.send-btn:hover {
-  transform: scale(1.05);
-}
+.notification-card:hover .card-delete { opacity: 1; }
+.card-delete:hover { color: #ef4444; background: #fef2f2; }
 
-.send-btn svg {
-  width: 20px;
-  height: 20px;
-}
-
-.empty-chat {
-  flex: 1;
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+  padding: 80px 20px;
   color: #94a3b8;
 }
 
-.empty-chat svg {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 16px;
-}
-
-.empty-chat p {
-  font-size: 16px;
-}
+.empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; }
+.empty-state p { font-size: 16px; }
 
 @media (max-width: 768px) {
-  .messages-container {
-    flex-direction: column;
-    height: auto;
-  }
-  
-  .contacts-list {
-    width: 100%;
-    max-height: 160px;
-  }
-  
-  .chat-area {
-    height: 400px;
-  }
+  .notification-center { padding: 16px; }
+  .page-header h1 { font-size: 20px; }
 }
 </style>

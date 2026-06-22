@@ -5,6 +5,7 @@ import com.example.smartcommunity.entity.ServiceOrder;
 import com.example.smartcommunity.exception.BusinessException;
 import com.example.smartcommunity.mapper.CommunityServiceMapper;
 import com.example.smartcommunity.mapper.ServiceOrderMapper;
+import com.example.smartcommunity.service.NotificationHelper;
 import com.example.smartcommunity.service.ServiceOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
 
     private final ServiceOrderMapper serviceOrderMapper;
     private final CommunityServiceMapper communityServiceMapper;
+    private final NotificationHelper notificationHelper;
 
     @Override
     public ServiceOrder createOrder(Long userId, Long serviceId, String serviceTime, String address, String remark) {
@@ -43,6 +45,11 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         order.setUpdatedAt(LocalDateTime.now());
 
         serviceOrderMapper.insert(order);
+
+        notificationHelper.send(userId, NotificationHelper.TYPE_ORDER,
+                "服务订单 " + order.getOrderNo() + " 已创建，" + service.getServiceName() + " 预计 "
+                + serviceTime.replace("T", " "));
+
         return order;
     }
 
@@ -72,6 +79,8 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
             if (rows == 0) {
                 throw new BusinessException("订单状态并发冲突，请重试");
             }
+            notificationHelper.send(order.getUserId(), NotificationHelper.TYPE_ORDER,
+                    "订单 " + order.getOrderNo() + " 状态更新为：" + statusLabel(status));
         }
     }
 
@@ -86,6 +95,8 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
             if (rows == 0) {
                 throw new BusinessException("取消订单并发冲突，请重试");
             }
+            notificationHelper.send(order.getUserId(), NotificationHelper.TYPE_ORDER,
+                    "订单 " + order.getOrderNo() + " 已取消");
         }
     }
 
@@ -108,6 +119,16 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 order.setUpdatedAt(LocalDateTime.now());
                 serviceOrderMapper.updateById(order);
             }
+        }
+    }
+
+    private String statusLabel(String status) {
+        switch (status) {
+            case "pending":   return "待服务";
+            case "confirmed": return "已确认";
+            case "completed": return "已完成";
+            case "cancelled": return "已取消";
+            default:          return status;
         }
     }
 }

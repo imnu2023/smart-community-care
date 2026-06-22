@@ -3,6 +3,7 @@ package com.example.smartcommunity.service.impl;
 import com.example.smartcommunity.entity.HealthData;
 import com.example.smartcommunity.mapper.HealthDataMapper;
 import com.example.smartcommunity.service.HealthDataService;
+import com.example.smartcommunity.service.NotificationHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +14,34 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class HealthDataServiceImpl implements HealthDataService {
-    
+
     private final HealthDataMapper healthDataMapper;
-    
+
+    private final NotificationHelper notificationHelper;
+
     @Override
     public HealthData saveHealthData(HealthData healthData) {
         healthData.setCreatedAt(LocalDateTime.now());
-        healthData.setWarningLevel(analyzeWarningLevel(healthData));
+        int warningLevel = analyzeWarningLevel(healthData);
+        healthData.setWarningLevel(warningLevel);
         healthDataMapper.insert(healthData);
+
+        if (warningLevel > 0) {
+            StringBuilder alert = new StringBuilder("健康数据异常提醒：");
+            if (healthData.getHeartRate() != null && (healthData.getHeartRate() > 100 || healthData.getHeartRate() < 60))
+                alert.append("心率").append(healthData.getHeartRate()).append("次/分 ");
+            if (healthData.getBloodPressureHigh() != null && healthData.getBloodPressureHigh() > 140)
+                alert.append("收缩压").append(String.format("%.0f", healthData.getBloodPressureHigh())).append(" ");
+            if (healthData.getBloodPressureLow() != null && healthData.getBloodPressureLow() > 90)
+                alert.append("舒张压").append(String.format("%.0f", healthData.getBloodPressureLow())).append(" ");
+            if (healthData.getBloodSugar() != null && healthData.getBloodSugar().compareTo(BLOOD_SUGAR_THRESHOLD) > 0)
+                alert.append("血糖").append(healthData.getBloodSugar()).append(" ");
+            if (healthData.getBodyTemperature() != null && healthData.getBodyTemperature().compareTo(BODY_TEMP_THRESHOLD) > 0)
+                alert.append("体温").append(healthData.getBodyTemperature()).append("℃ ");
+            alert.append("，建议就医检查");
+            notificationHelper.send(healthData.getUserId(), NotificationHelper.TYPE_HEALTH, alert.toString());
+        }
+
         return healthData;
     }
     
