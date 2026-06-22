@@ -13,6 +13,6 @@ public interface EmergencyCallMapper extends BaseMapper<EmergencyCall> {
     @Select("SELECT * FROM emergency_call WHERE user_id = #{userId} ORDER BY call_time DESC")
     List<EmergencyCall> findByUserId(Long userId);
 
-    @Select("SELECT * FROM emergency_call WHERE status != 'resolved' ORDER BY call_time DESC")
+    @Select("SELECT * FROM emergency_call WHERE status IN ('pending', 'responding') ORDER BY call_time DESC")
     List<EmergencyCall> findUnresolvedCalls();
 }

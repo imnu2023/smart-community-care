@@ -6,6 +6,7 @@ import com.example.smartcommunity.service.HealthDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -58,6 +59,9 @@ public class HealthDataServiceImpl implements HealthDataService {
         }
     }
     
+    private static final BigDecimal BLOOD_SUGAR_THRESHOLD = new BigDecimal("7.0");
+    private static final BigDecimal BODY_TEMP_THRESHOLD = new BigDecimal("37.5");
+
     private Integer analyzeWarningLevel(HealthData data) {
         int level = 0;
         if (data.getHeartRate() != null) {
@@ -65,8 +69,8 @@ public class HealthDataServiceImpl implements HealthDataService {
         }
         if (data.getBloodPressureHigh() != null && data.getBloodPressureHigh() > 140) level++;
         if (data.getBloodPressureLow() != null && data.getBloodPressureLow() > 90) level++;
-        if (data.getBloodSugar() != null && data.getBloodSugar() > 7.0) level++;
-        if (data.getBodyTemperature() != null && data.getBodyTemperature() > 37.5) level++;
+        if (data.getBloodSugar() != null && data.getBloodSugar().compareTo(BLOOD_SUGAR_THRESHOLD) > 0) level++;
+        if (data.getBodyTemperature() != null && data.getBodyTemperature().compareTo(BODY_TEMP_THRESHOLD) > 0) level++;
         if (data.getSleepHours() != null && data.getSleepHours() < 6) level++;
         return level;
     }
@@ -91,7 +95,7 @@ public class HealthDataServiceImpl implements HealthDataService {
         report.append("平均睡眠时长：").append(String.format("%.1f", avgSleep)).append(" 小时\n");
         
         double avgBloodSugar = data.stream().filter(d -> d.getBloodSugar() != null)
-                .mapToDouble(HealthData::getBloodSugar).average().orElse(0);
+                .mapToDouble(d -> d.getBloodSugar().doubleValue()).average().orElse(0);
         report.append("平均血糖：").append(String.format("%.1f", avgBloodSugar)).append(" mmol/L\n\n");
         
         report.append("【健康建议】\n");

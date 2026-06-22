@@ -132,11 +132,11 @@ public class CommunityServiceImpl implements CommunityServiceInterface {
     }
     
     private void fixGarbledUsers() {
-        jdbcTemplate.update("UPDATE user SET name = '管理员', username = 'admin', phone = '13800138000', address = '社区管理办公室' WHERE id = 1");
-        jdbcTemplate.update("UPDATE user SET name = '张大爷', username = 'elder1', phone = '13900139000', address = '幸福小区3号楼201室' WHERE id = 2");
-        jdbcTemplate.update("UPDATE user SET name = '张小红', username = 'family1', phone = '13700137000', address = '幸福小区5号楼302室' WHERE id = 3");
-        jdbcTemplate.update("UPDATE user SET name = '王阿姨', username = 'elder2', phone = '13600136000', address = '阳光小区2号楼101室' WHERE id = 4");
-        jdbcTemplate.update("UPDATE user SET name = '李阿姨', username = 'elder3', phone = '13500135000', address = '和谐小区1号楼402室' WHERE id = 5");
+        jdbcTemplate.update("UPDATE sys_user SET name = '管理员', username = 'admin', phone = '13800138000', address = '社区管理办公室' WHERE id = 1");
+        jdbcTemplate.update("UPDATE sys_user SET name = '张大爷', username = 'elder1', phone = '13900139000', address = '幸福小区3号楼201室' WHERE id = 2");
+        jdbcTemplate.update("UPDATE sys_user SET name = '张小红', username = 'family1', phone = '13700137000', address = '幸福小区5号楼302室' WHERE id = 3");
+        jdbcTemplate.update("UPDATE sys_user SET name = '王阿姨', username = 'elder2', phone = '13600136000', address = '阳光小区2号楼101室' WHERE id = 4");
+        jdbcTemplate.update("UPDATE sys_user SET name = '李阿姨', username = 'elder3', phone = '13500135000', address = '和谐小区1号楼402室' WHERE id = 5");
     }
     
     private void fixGarbledRelations() {

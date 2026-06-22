@@ -6,7 +6,7 @@ import com.example.smartcommunity.entity.WalletTransactionLog;
 import com.example.smartcommunity.mapper.WalletMapper;
 import com.example.smartcommunity.mapper.WalletTransactionLogMapper;
 import com.example.smartcommunity.service.WalletService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +16,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class WalletServiceImpl implements WalletService {
 
-    @Autowired
-    private WalletMapper walletMapper;
+    private final WalletMapper walletMapper;
 
-    @Autowired
-    private WalletTransactionLogMapper transactionLogMapper;
+    private final WalletTransactionLogMapper transactionLogMapper;
 
     /**
      * 交易类型常量

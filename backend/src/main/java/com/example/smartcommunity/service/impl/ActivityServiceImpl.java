@@ -2,6 +2,7 @@ package com.example.smartcommunity.service.impl;
 
 import com.example.smartcommunity.entity.Activity;
 import com.example.smartcommunity.entity.ActivityParticipant;
+import com.example.smartcommunity.exception.BusinessException;
 import com.example.smartcommunity.mapper.ActivityMapper;
 import com.example.smartcommunity.mapper.ActivityParticipantMapper;
 import com.example.smartcommunity.service.ActivityService;
@@ -111,7 +112,10 @@ public class ActivityServiceImpl implements ActivityService {
         participantMapper.insert(participant);
 
         activity.setCurrentParticipants(activity.getCurrentParticipants() + 1);
-        activityMapper.updateById(activity);
+        int rows = activityMapper.updateById(activity);
+        if (rows == 0) {
+            throw new BusinessException("报名并发冲突，请重试");
+        }
 
         return participant;
     }
@@ -128,27 +132,26 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    @Transactional
     public boolean unregisterActivity(Long activityId, Long userId) {
-        try {
-            Activity activity = activityMapper.selectById(activityId);
-            if (activity == null) {
-                return false;
-            }
-
-            ActivityParticipant participant = participantMapper.findByActivityAndUser(activityId, userId);
-            if (participant == null || !"confirmed".equals(participant.getStatus())) {
-                return false;
-            }
-
-            participantMapper.deleteById(participant.getId());
-
-            activity.setCurrentParticipants(Math.max(0, activity.getCurrentParticipants() - 1));
-            activityMapper.updateById(activity);
-
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
+        Activity activity = activityMapper.selectById(activityId);
+        if (activity == null) {
             return false;
         }
+
+        ActivityParticipant participant = participantMapper.findByActivityAndUser(activityId, userId);
+        if (participant == null || !"confirmed".equals(participant.getStatus())) {
+            return false;
+        }
+
+        participantMapper.deleteById(participant.getId());
+
+        activity.setCurrentParticipants(Math.max(0, activity.getCurrentParticipants() - 1));
+        int rows = activityMapper.updateById(activity);
+        if (rows == 0) {
+            throw new BusinessException("取消报名并发冲突，请重试");
+        }
+
+        return true;
     }
 }

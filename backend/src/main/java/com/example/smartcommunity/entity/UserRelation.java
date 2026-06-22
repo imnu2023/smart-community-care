@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "user_relation", autoResultMap = true)
+@TableName("user_relation")
 public class UserRelation {
 
     @TableId(type = IdType.AUTO)
