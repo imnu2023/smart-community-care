@@ -3,7 +3,7 @@
 > 基础地址: `http://localhost:8081`  
 > 统一响应格式: `ApiResponse<T>`  
 > Content-Type: `application/json`  
-> 最后更新: 2026-06-22
+> 最后更新: 2026-06-23
 
 ---
 
@@ -41,7 +41,24 @@
 
 ## 1. 认证 /api/auth
 
-### 1.1 密码哈希（调试用）
+> **验证码流程**: 登录前必须先调用 `/api/auth/captcha` 获取验证码，将返回的 `uuid` 和用户输入的验证码随登录请求一起提交。
+
+### 1.1 获取图形验证码
+```
+GET /api/auth/captcha
+```
+**响应**:
+```json
+{
+  "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "captchaImg": "data:image/png;base64,iVBORw0KGgo..."
+}
+```
+> 验证码 4 位字符，宽130高48，Redis 缓存有效期 2 分钟，阅后即焚（校验一次后销毁）。
+
+---
+
+### 1.2 密码哈希（调试用）
 ```
 GET /api/auth/hash/{password}
 ```
@@ -50,7 +67,7 @@ GET /api/auth/hash/{password}
 
 ---
 
-### 1.2 登录
+### 1.3 登录
 ```
 POST /api/auth/login
 ```
@@ -58,9 +75,13 @@ POST /api/auth/login
 ```json
 {
   "username": "admin",
-  "password": "123456"
+  "password": "123456",
+  "captchaCode": "a3b2",
+  "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 }
 ```
+> `captchaCode` 和 `uuid` 来自 1.1 获取图形验证码接口。验证码校验采用阅后即焚，每次登录需重新获取。
+
 **响应** `LoginResponse`:
 ```json
 {
@@ -75,7 +96,7 @@ POST /api/auth/login
 
 ---
 
-### 1.3 注册
+### 1.4 注册
 ```
 POST /api/auth/register
 ```
@@ -918,6 +939,7 @@ POST /api/fix/all
 
 | 模块 | 方法 | 路径 | 说明 |
 |------|------|------|------|
+| Auth | GET | /api/auth/captcha | 获取验证码 |
 | Auth | GET | /api/auth/hash/{password} | 密码哈希(调试) |
 | Auth | POST | /api/auth/login | 登录 |
 | Auth | POST | /api/auth/register | 注册 |

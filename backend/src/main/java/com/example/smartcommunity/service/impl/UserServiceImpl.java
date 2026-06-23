@@ -7,6 +7,7 @@ import com.example.smartcommunity.dto.response.LoginResponse;
 import com.example.smartcommunity.entity.User;
 import com.example.smartcommunity.exception.BusinessException;
 import com.example.smartcommunity.mapper.UserMapper;
+import com.example.smartcommunity.service.CaptchaService;
 import com.example.smartcommunity.service.UserService;
 import com.example.smartcommunity.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +28,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final CaptchaService captchaService;
     
     @Override
     public LoginResponse login(LoginRequest request) {
+        // 1. 校验图形验证码
+        captchaService.validate(request.getUuid(), request.getCaptchaCode());
+
+        // 2. 校验用户名密码
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", request.getUsername());
         User user = userMapper.selectOne(queryWrapper);

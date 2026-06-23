@@ -60,6 +60,45 @@
               />
             </div>
             
+            <div class="captcha-group">
+              <div class="input-group captcha-input-group">
+                <div class="input-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="9" y1="9" x2="15" y2="9"/>
+                    <line x1="9" y1="13" x2="15" y2="13"/>
+                    <line x1="9" y1="17" x2="12" y2="17"/>
+                  </svg>
+                </div>
+                <el-input
+                  v-model="form.captchaCode"
+                  placeholder="请输入验证码"
+                  class="custom-input"
+                  maxlength="4"
+                  :prefix-icon="null"
+                />
+              </div>
+              <div class="captcha-img-wrapper" @click="fetchCaptcha" title="点击刷新验证码">
+                <img
+                  v-if="captchaImg"
+                  :src="captchaImg"
+                  alt="验证码"
+                  class="captcha-img"
+                />
+                <div v-else class="captcha-placeholder">
+                  <span v-if="captchaLoading">加载中...</span>
+                  <span v-else>点击获取</span>
+                </div>
+                <div class="captcha-mask">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                  </svg>
+                  <span>刷新</span>
+                </div>
+              </div>
+            </div>
+
             <div class="form-options">
               <label class="checkbox-label">
                 <input type="checkbox" v-model="rememberMe" />
@@ -92,31 +131,66 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { authAPI } from '../api'
+import { ref, reactive, onMounted } from 'vue'
+import { captchaAPI, authAPI } from '../api'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const formRef = ref(null)
 const rememberMe = ref(false)
+const captchaImg = ref('')
+const captchaUuid = ref('')
+const captchaLoading = ref(false)
+
 const form = reactive({
   username: '',
-  password: ''
+  password: '',
+  captchaCode: ''
+})
+
+const fetchCaptcha = async () => {
+  captchaLoading.value = true
+  try {
+    const response = await captchaAPI.get()
+    if (response.code === 200) {
+      captchaImg.value = response.data.captchaImg
+      captchaUuid.value = response.data.uuid
+    } else {
+      ElMessage.error(response.message || '获取验证码失败')
+    }
+  } catch (error) {
+    ElMessage.error('网络异常，获取验证码失败')
+  } finally {
+    captchaLoading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchCaptcha()
 })
 
 const handleLogin = async () => {
+  if (!form.captchaCode) {
+    ElMessage.warning('请输入验证码')
+    return
+  }
   try {
-    const response = await authAPI.login(form)
+    const response = await authAPI.login({
+      username: form.username,
+      password: form.password,
+      captchaCode: form.captchaCode,
+      uuid: captchaUuid.value
+    })
     if (response.code === 200) {
       localStorage.setItem('token', response.data.token)
       localStorage.setItem('userId', response.data.userId)
       localStorage.setItem('username', response.data.username)
       localStorage.setItem('name', response.data.name)
       localStorage.setItem('role', response.data.role)
-      
+
       ElMessage.success('登录成功')
-      
+
       setTimeout(() => {
         if (response.data.role === 1) {
           window.location.href = '/admin/users'
@@ -125,9 +199,14 @@ const handleLogin = async () => {
         }
       }, 500)
     } else {
-      ElMessage.error(response.message)
+      // 验证码错误时刷新验证码
+      fetchCaptcha()
+      form.captchaCode = ''
+      ElMessage.error(response.message || '登录失败')
     }
   } catch (error) {
+    fetchCaptcha()
+    form.captchaCode = ''
     ElMessage.error('登录失败，请检查用户名和密码')
   }
 }
@@ -312,6 +391,83 @@ const handleLogin = async () => {
 
 .custom-input::placeholder {
   color: #94a3b8;
+}
+
+.captcha-group {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.captcha-input-group {
+  flex: 1;
+}
+
+.captcha-input-group .custom-input {
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.captcha-img-wrapper {
+  width: 120px;
+  height: 48px;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid #e2e8f0;
+  background: #f8fafc;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.captcha-img-wrapper:hover {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.captcha-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.captcha-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.captcha-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(102, 126, 234, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.captcha-mask svg {
+  width: 16px;
+  height: 16px;
+}
+
+.captcha-img-wrapper:hover .captcha-mask {
+  opacity: 1;
 }
 
 .form-options {

@@ -34,6 +34,10 @@ instance.interceptors.response.use(
   }
 )
 
+export const captchaAPI = {
+  get: () => instance.get('/auth/captcha')
+}
+
 export const authAPI = {
   login: (data) => instance.post('/auth/login', data),
   register: (data) => instance.post('/auth/register', data)
