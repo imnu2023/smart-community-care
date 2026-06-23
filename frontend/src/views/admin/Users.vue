@@ -268,13 +268,15 @@ const handleRecharge = async () => {
 const getRoleType = (role) => {
   if (role === 1) return 'danger'
   if (role === 2) return 'success'
+  if (role === 3) return 'warning'
   return 'info'
 }
 
 const getRoleText = (role) => {
   if (role === 1) return '管理员'
-  if (role === 2) return '老人用户'
-  return '家属用户'
+  if (role === 2) return '老人'
+  if (role === 3) return '家属'
+  return '未知'
 }
 
 const getHealthStatusType = (status) => {

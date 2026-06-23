@@ -373,8 +373,9 @@ const loadHealthStats = async () => {
   }
 }
 
-const userName = ref(localStorage.getItem('userName') || '用户')
-const userRole = ref(localStorage.getItem('userRole') || '用户')
+const roleLabel = { 1: '管理员', 2: '老人', 3: '家属' }
+const userName = ref(localStorage.getItem('name') || '用户')
+const userRole = ref(roleLabel[localStorage.getItem('role')] || '用户')
 
 const recentActivities = ref([
   { id: 1, title: '健康养生讲座', time: '06-28 14:30', type: 'health', status: '已报名' },
@@ -437,9 +438,11 @@ const generateReport = async () => {
 }
 
 const handleLogout = () => {
+  localStorage.removeItem('token')
   localStorage.removeItem('userId')
-  localStorage.removeItem('userRole')
-  localStorage.removeItem('userName')
+  localStorage.removeItem('username')
+  localStorage.removeItem('name')
+  localStorage.removeItem('role')
   ElMessage.success('退出登录成功')
   setTimeout(() => {
     window.location.href = '/login'

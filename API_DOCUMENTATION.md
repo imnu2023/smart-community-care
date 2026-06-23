@@ -33,10 +33,9 @@
 
 | role | 含义 |
 |------|------|
-| 1 | 管理员 |
-| 2 | 老人（旧版） |
-| 3 | 老人 |
-| 4 | 家属 |
+| 1 | 管理员 (admin) |
+| 2 | 老人 (elder) |
+| 3 | 家属 (family) |
 
 ---
 
@@ -91,7 +90,7 @@ POST /api/auth/register
   "age": 65,
   "gender": "male",
   "address": "幸福社区1号楼",
-  "role": 3,
+  "role": 2,
   "emergencyContact": "张四",
   "emergencyPhone": "13800002222"
 }
@@ -150,6 +149,7 @@ POST /api/relations/bind
   "relationType": "child"
 }
 ```
+> relationType: `child` / `parent` / `spouse` / `sibling`
 
 ### 3.2 解绑
 ```
@@ -198,6 +198,7 @@ GET /api/wallet/{userId}
   "updatedAt": "2026-06-17T10:55:26"
 }
 ```
+> 若钱包不存在则自动创建，并发安全（唯一约束 + 重试）
 
 ### 4.2 查询余额
 ```
@@ -220,6 +221,7 @@ POST /api/wallet/recharge
 ```json
 { "success": true, "balance": 10060.00 }
 ```
+> 金额须 >0；乐观锁冲突抛异常并回滚；自动写入 `wallet_transaction_log` 流水；发送支付通知
 
 ### 4.4 扣款（无订单关联）
 ```
@@ -236,7 +238,7 @@ POST /api/wallet/pay
 // 余额不足
 { "success": false, "message": "余额不足" }
 ```
-> 金额校验: 必须 > 0，否则抛异常；乐观锁冲突时抛异常并回滚事务。
+> 余额不足时自动发送通知提醒
 
 ---
 
@@ -260,7 +262,7 @@ POST /api/payments/pay
 // 失败
 { "success": false, "message": "余额不足" }
 ```
-> 自动写入 `wallet_transaction_log` 流水，关联订单号
+> 写入流水并关联订单号；乐观锁保护订单并发
 
 ### 5.2 家属代付
 ```
@@ -273,13 +275,13 @@ POST /api/payments/family-pay
   "familyId": 15
 }
 ```
-> 前提：familyId 与订单所属老人存在亲属关系
+> 前提：familyId 与订单所属老人存在亲属关系；乐观锁保护
 
 ### 5.3 确认支付完成
 ```
 POST /api/payments/confirm/{orderId}
 ```
-> 将订单状态从 `pending` 改为 `completed`
+> 将订单状态 `pending` → `completed`；须 `paymentStatus=paid`；乐观锁保护
 
 ### 5.4 查询待确认订单
 ```
@@ -291,7 +293,7 @@ GET /api/payments/orders/need-confirm
 ```
 GET /api/payments/elder-orders/{familyId}
 ```
-> 返回值仅包含第一个关联老人的订单（已知限制）
+> 返回该家属关联的**所有**老人的全部订单（已修复旧版仅取第一个的问题）
 
 ---
 
@@ -301,7 +303,7 @@ GET /api/payments/elder-orders/{familyId}
 ```
 GET /api/services
 ```
-**响应**: `List<CommunityService>`
+**响应**: `List<CommunityService>`（仅 `status=active`）
 
 ### 6.2 获取服务详情
 ```
@@ -312,7 +314,7 @@ GET /api/services/{id}
 ```
 GET /api/services/type/{type}
 ```
-> type: `housekeeping` / `medical` / `life` / `food` / `beauty` 等
+> type: `housekeeping` / `medical` / `life` / `food` / `beauty` / `health` / `shopping` / `companion`
 
 ### 6.4 新增服务
 ```
@@ -386,6 +388,7 @@ POST /api/orders
   "remark": "需要下午服务"
 }
 ```
+> 创建成功后自动发送订单通知
 
 ### 7.3 获取订单详情
 ```
@@ -411,11 +414,13 @@ PUT /api/orders/{orderId}/status
 ```json
 { "status": "confirmed" }
 ```
+> 乐观锁保护；状态变更后自动发送订单通知
 
 ### 7.7 取消订单
 ```
 PUT /api/orders/{orderId}/cancel
 ```
+> 仅 `pending` 状态可取消；乐观锁保护；发送取消通知
 
 ### 7.8 修复地址乱码
 ```
@@ -489,12 +494,13 @@ DELETE /api/activities/{id}
 ```
 POST /api/activities/{activityId}/register?userId=14
 ```
-> 乐观锁防超卖 + 唯一约束防重复报名
+> 乐观锁防超卖 + 唯一约束防重复报名；报名成功后发送活动通知
 
 ### 8.11 取消报名
 ```
 DELETE /api/activities/{activityId}/register?userId=14
 ```
+> 乐观锁保护，减少 `currentParticipants`
 
 ### 8.12 获取活动参与者列表
 ```
@@ -533,6 +539,7 @@ POST /api/emergency/call
   "description": "老人摔倒，需要帮助"
 }
 ```
+> 呼叫发出后自动发送紧急通知
 
 ### 9.2 获取呼叫详情
 ```
@@ -548,19 +555,19 @@ GET /api/emergency/user/{userId}
 ```
 GET /api/emergency/unresolved
 ```
-> SQL: `WHERE status != 'resolved'`
+> 仅返回 `pending` 和 `responding` 状态（已取消的呼叫不包含在内）
 
 ### 9.5 响应呼叫
 ```
 PUT /api/emergency/{callId}/respond?handler=admin
 ```
-> 状态 → `responding`，记录 `handler` 和 `responseTime`
+> 状态 → `responding`，记录 `handler` 和 `responseTime`；发送响应通知
 
 ### 9.6 解决呼叫
 ```
 PUT /api/emergency/{callId}/resolve
 ```
-> 状态 → `resolved`，记录 `resolvedTime`
+> 状态 → `resolved`，记录 `resolvedTime`；发送完成通知
 
 ### 9.7 取消呼叫
 ```
@@ -589,13 +596,14 @@ POST /api/health
   "heartRate": 75,
   "bloodPressureHigh": 130,
   "bloodPressureLow": 85,
-  "bloodSugar": 5.8,
-  "bodyTemperature": 36.5,
+  "bloodSugar": 5.80,
+  "bodyTemperature": 36.50,
   "sleepHours": 7,
   "steps": 3500,
   "measuredAt": "2026-06-22T08:00:00"
 }
 ```
+> 自动计算 `warningLevel`；warningLevel > 0 时发送健康异常通知
 
 ### 10.3 获取近7天数据
 ```
@@ -627,58 +635,63 @@ POST /api/health/report/{userId}
 
 ---
 
-## 11. 消息 /api/messages
+## 11. 消息通知 /api/messages
 
-### 11.1 发送消息
+> **V3 重构**: 由即时聊天改为系统通知中心。消息由各业务模块自动触发，前端只读。
+
+### 通知类型枚举
+| type | 含义 | 触发场景 |
+|------|------|---------|
+| activity | 活动通知 | 活动报名成功 |
+| payment | 支付通知 | 充值/消费/余额不足 |
+| health | 健康提醒 | 健康数据异常（warningLevel > 0） |
+| order | 订单通知 | 订单创建/状态变更/取消 |
+| emergency | 紧急通知 | 紧急呼叫发出/响应/完成 |
+
+### 11.1 获取用户所有通知
 ```
-POST /api/messages
+GET /api/messages/{userId}
 ```
-**请求体**:
+**响应**: `List<Message>`
 ```json
-{
-  "senderId": 14,
-  "receiverId": 15,
-  "content": "吃药了吗",
-  "type": "text"
-}
-```
-> type 可选: `text`（默认）
-
-### 11.2 获取接收消息
-```
-GET /api/messages/receiver/{receiverId}
-```
-
-### 11.3 获取未读消息
-```
-GET /api/messages/unread/{receiverId}
+[
+  {
+    "id": 300,
+    "senderId": 1,
+    "receiverId": 14,
+    "content": "「书法艺术交流」报名成功，活动时间 6月20日 09:00",
+    "type": "activity",
+    "isRead": false,
+    "createdAt": [2026,6,19,14,30,0]
+  }
+]
 ```
 
-### 11.4 未读消息数
+### 11.2 获取未读通知
 ```
-GET /api/messages/unread/count/{receiverId}
+GET /api/messages/unread/{userId}
+```
+
+### 11.3 未读通知计数
+```
+GET /api/messages/unread/count/{userId}
 ```
 **响应**: `{ "count": 3 }`
 
-### 11.5 标记单条已读
+### 11.4 标记单条已读
 ```
 PUT /api/messages/{messageId}/read
 ```
 
-### 11.6 全部标记已读
+### 11.5 批量标记全部已读
 ```
-PUT /api/messages/receiver/{receiverId}/read
+PUT /api/messages/read-all/{userId}
 ```
+> 单条 SQL 批量更新，无 N+1 问题
 
-### 11.7 获取对话记录
+### 11.6 删除单条通知
 ```
-GET /api/messages/conversation?userId=14&otherId=15
-```
-> 返回两人之间的所有消息（双向）
-
-### 11.8 清空消息表
-```
-DELETE /api/messages/clear
+DELETE /api/messages/{messageId}
 ```
 
 ---
@@ -725,7 +738,7 @@ GET /api/devices/user/{userId}
 GET /api/devices/{id}
 ```
 
-### 12.7 控制设备（开关等）
+### 12.7 控制设备
 ```
 POST /api/devices/{deviceId}/control
 ```
@@ -733,8 +746,7 @@ POST /api/devices/{deviceId}/control
 ```json
 { "action": "on" }
 ```
-> action: `"on"` / `"off"`  
-> 设备状态: `"online"` / `"offline"`
+> action: `"on"` / `"off"`；更新 `lastOnlineTime`
 
 ---
 
@@ -776,13 +788,11 @@ Content-Type: multipart/form-data
 ```
 POST /api/fix/orders
 ```
-> 将包含 `?`、`Community`、`1` 的地址替换为中文
 
 ### 14.2 修复设备乱码
 ```
 POST /api/fix/devices
 ```
-> 将包含 `?` 的设备名/位置替换为中文
 
 ### 14.3 修复全部
 ```
@@ -806,7 +816,7 @@ POST /api/fix/all
 | gender | String | 性别 |
 | address | String | 地址 |
 | avatar | String | 头像 URL |
-| role | Integer | 1-管理 2-老人(旧) 3-老人 4-家属 |
+| role | Integer | 1-管理员 2-老人 3-家属 |
 | healthStatus | Integer | 健康状态 |
 | emergencyContact | String | 紧急联系人 |
 | emergencyPhone | String | 紧急联系电话 |
@@ -820,6 +830,17 @@ POST /api/fix/all
 | balance | BigDecimal | 余额 DECIMAL(10,2) |
 | version | Integer | 乐观锁版本号 |
 
+### WalletTransactionLog（wallet_transaction_log）
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | Long | 主键 |
+| userId | Long | 用户ID |
+| transactionType | Integer | 1-充值 2-消费 3-退款 |
+| amount | BigDecimal | 变动金额 |
+| balanceAfter | BigDecimal | 变动后余额快照 |
+| relatedOrderNo | String | 关联订单号 |
+| remark | String | 备注 |
+
 ### ServiceOrder（service_order）
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -831,7 +852,7 @@ POST /api/fix/all
 | serviceTime | LocalDateTime | 预约时间 |
 | address | String | 服务地址 |
 | remark | String | 备注 |
-| amount | BigDecimal | 金额 |
+| amount | BigDecimal | 金额 DECIMAL(10,2) |
 | paymentStatus | String | unpaid/paid |
 | version | Integer | 乐观锁 |
 | isDeleted | Integer | 逻辑删除 |
@@ -839,18 +860,57 @@ POST /api/fix/all
 ### Activity（activity）
 | 字段 | 类型 | 说明 |
 |------|------|------|
+| id | Long | 主键 |
+| title | String | 标题 |
+| type | String | culture/sports/study/health/social |
 | maxParticipants | Integer | 最大人数 |
 | currentParticipants | Integer | 当前报名人数 |
 | version | Integer | 乐观锁（防超卖） |
 | isDeleted | Integer | 逻辑删除 |
 
+### HealthData（health_data）
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | Long | 主键 |
+| userId | Long | 用户ID |
+| heartRate | Integer | 心率 |
+| bloodPressureHigh | Double | 收缩压 |
+| bloodPressureLow | Double | 舒张压 |
+| bloodSugar | BigDecimal | 血糖 DECIMAL(5,2) |
+| bodyTemperature | BigDecimal | 体温 DECIMAL(4,2) |
+| sleepHours | Integer | 睡眠时长 |
+| sleepQuality | Integer | 睡眠质量 |
+| steps | Integer | 步数 |
+| calories | BigDecimal | 卡路里 DECIMAL(8,2) |
+| healthReport | String | 健康报告文本 |
+| warningLevel | Integer | 告警等级 0~5 |
+| measuredAt | LocalDateTime | 测量时间 |
+
 ### EmergencyCall（emergency_call）
 | 字段 | 类型 | 说明 |
 |------|------|------|
+| id | Long | 主键 |
+| userId | Long | 用户ID |
+| callType | String | 呼叫类型（医疗/安全/火灾等） |
 | status | String | pending/responding/resolved/cancelled |
-| callType | String | 呼叫类型 |
+| latitude | Double | 纬度 |
+| longitude | Double | 经度 |
+| description | String | 描述 |
 | handler | String | 处理人 |
-| latitude/longitude | Double | 位置 |
+| callTime | LocalDateTime | 呼叫时间 |
+| responseTime | LocalDateTime | 响应时间 |
+| resolvedTime | LocalDateTime | 解决时间 |
+
+### Message（message）
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| id | Long | 主键 |
+| senderId | Long | 发送者（系统通知 = 1） |
+| receiverId | Long | 接收用户ID |
+| content | String | 通知文案 |
+| type | String | activity/payment/health/order/emergency |
+| isRead | Boolean | 是否已读 |
+| createdAt | LocalDateTime | 时间 |
 
 ---
 
@@ -858,14 +918,17 @@ POST /api/fix/all
 
 | 模块 | 方法 | 路径 | 说明 |
 |------|------|------|------|
+| Auth | GET | /api/auth/hash/{password} | 密码哈希(调试) |
 | Auth | POST | /api/auth/login | 登录 |
 | Auth | POST | /api/auth/register | 注册 |
 | User | GET | /api/users | 用户列表 |
 | User | GET/PUT/DELETE | /api/users/{id} | 用户CRUD |
 | Relation | POST | /api/relations/bind | 绑定亲属 |
+| Relation | DELETE | /api/relations/{id} | 解绑 |
 | Relation | GET | /api/relations/elder/{id} | 老人→家属 |
 | Relation | GET | /api/relations/family/{id} | 家属→老人 |
 | Relation | GET | /api/relations/exists | 判断关系 |
+| Relation | DELETE | /api/relations/clean-duplicates | 清理重复 |
 | Wallet | GET | /api/wallet/{userId} | 获取钱包 |
 | Wallet | GET | /api/wallet/balance/{userId} | 查询余额 |
 | Wallet | POST | /api/wallet/recharge | 充值 |
@@ -874,32 +937,58 @@ POST /api/fix/all
 | Payment | POST | /api/payments/family-pay | 家属代付 |
 | Payment | POST | /api/payments/confirm/{id} | 确认支付 |
 | Payment | GET | /api/payments/orders/need-confirm | 待确认订单 |
+| Payment | GET | /api/payments/elder-orders/{familyId} | 家属关联老人订单 |
 | Service | GET/POST | /api/services | 服务列表/新增 |
-| Service | PUT/DELETE | /api/services/{id} | 服务修改/删除 |
+| Service | GET/PUT/DELETE | /api/services/{id} | 服务详情/修改/删除 |
 | Service | GET | /api/services/type/{type} | 按类型筛选 |
+| Service | DELETE | /api/services/clean | 清理重复 |
+| Service | POST | /api/services/fix-garbled | 修复乱码 |
+| Service | DELETE | /api/services/clean-all | 清理全部 |
+| Service | POST | /api/services/fix-all-garbled | 修复全部乱码 |
 | Order | GET/POST | /api/orders | 订单列表/创建 |
+| Order | GET | /api/orders/{id} | 订单详情 |
 | Order | GET | /api/orders/user/{userId} | 用户订单 |
 | Order | GET | /api/orders/status/{status} | 按状态筛选 |
 | Order | PUT | /api/orders/{id}/status | 更新状态 |
 | Order | PUT | /api/orders/{id}/cancel | 取消订单 |
+| Order | POST | /api/orders/fix-address | 修复地址 |
 | Activity | GET/POST | /api/activities | 活动列表/创建 |
+| Activity | GET/PUT/DELETE | /api/activities/{id} | 活动详情/修改/删除 |
 | Activity | GET | /api/activities/active | 进行中活动 |
 | Activity | GET | /api/activities/upcoming | 即将开始 |
+| Activity | GET | /api/activities/type/{type} | 按类型筛选 |
+| Activity | GET | /api/activities/participant/{userId} | 用户报名的活动 |
 | Activity | POST | /api/activities/{id}/register | 报名 |
 | Activity | DELETE | /api/activities/{id}/register | 取消报名 |
+| Activity | GET | /api/activities/{id}/participants | 参与者列表 |
+| Activity | GET | /api/activities/{id}/participant/{userId} | 判断已报名 |
 | Emergency | POST | /api/emergency/call | 发起呼叫 |
+| Emergency | GET | /api/emergency/{id} | 呼叫详情 |
+| Emergency | GET | /api/emergency/user/{userId} | 用户呼叫记录 |
 | Emergency | GET | /api/emergency/unresolved | 未解决呼叫 |
 | Emergency | PUT | /api/emergency/{id}/respond | 响应 |
 | Emergency | PUT | /api/emergency/{id}/resolve | 解决 |
+| Emergency | PUT | /api/emergency/{id}/cancel | 取消 |
+| Health | GET | /api/health | 健康检查 |
 | Health | POST | /api/health | 保存数据 |
-| Health | GET | /api/health/weekly/{userId} | 周报 |
+| Health | GET | /api/health/weekly/{userId} | 近7天数据 |
+| Health | GET | /api/health/warning/{userId} | 告警数据 |
 | Health | GET | /api/health/latest/{userId} | 最新数据 |
 | Health | GET | /api/health/analyze/{userId} | 分析报告 |
-| Message | POST | /api/messages | 发送消息 |
-| Message | GET | /api/messages/receiver/{id} | 接收消息 |
-| Message | GET | /api/messages/unread/{id} | 未读消息 |
-| Message | GET | /api/messages/conversation | 对话记录 |
-| Device | GET | /api/devices | 设备列表 |
+| Health | POST | /api/health/report/{userId} | 生成报告 |
+| Message | GET | /api/messages/{userId} | 用户所有通知 |
+| Message | GET | /api/messages/unread/{userId} | 未读通知 |
+| Message | GET | /api/messages/unread/count/{userId} | 未读计数 |
+| Message | PUT | /api/messages/{id}/read | 标为已读 |
+| Message | PUT | /api/messages/read-all/{userId} | 全部已读 |
+| Message | DELETE | /api/messages/{id} | 删除通知 |
+| Device | GET/POST | /api/devices | 设备列表/添加 |
+| Device | GET/PUT/DELETE | /api/devices/{id} | 设备详情/修改/删除 |
+| Device | GET | /api/devices/user/{userId} | 用户设备 |
 | Device | POST | /api/devices/{id}/control | 控制设备 |
 | Upload | POST | /api/upload/avatar | 上传头像 |
 | Upload | POST | /api/upload/health-report | 上传报告 |
+| Upload | POST | /api/upload/health-reports | 批量上传报告 |
+| Fix | POST | /api/fix/orders | 修复订单乱码 |
+| Fix | POST | /api/fix/devices | 修复设备乱码 |
+| Fix | POST | /api/fix/all | 修复全部 |

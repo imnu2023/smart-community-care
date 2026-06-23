@@ -529,8 +529,9 @@ const handleRecharge = async () => {
 
 const getRoleText = (role) => {
   if (role === 1) return '管理员'
-  if (role === 2) return '老人用户'
-  return '家属用户'
+  if (role === 2) return '老人'
+  if (role === 3) return '家属'
+  return '未知'
 }
 
 const saveProfile = async () => {

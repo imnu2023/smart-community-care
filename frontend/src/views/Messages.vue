@@ -293,19 +293,23 @@ onUnmounted(() => {
   width: 28px;
   height: 28px;
   border: none;
-  background: none;
+  background: #f1f5f9;
   color: #94a3b8;
   cursor: pointer;
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
+  opacity: 0.6;
   transition: all 0.2s;
 }
 
-.notification-card:hover .card-delete { opacity: 1; }
-.card-delete:hover { color: #ef4444; background: #fef2f2; }
+.notification-card:hover .card-delete { opacity: 1; background: #fee2e2; color: #ef4444; }
+.card-delete:active { transform: scale(0.9); }
+
+@media (max-width: 768px) {
+  .card-delete { opacity: 0.8; }
+}
 
 .empty-state {
   display: flex;
