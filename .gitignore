@@ -19,6 +19,20 @@ target/
 # ===== Logs =====
 *.log
 
+# ===== Backup files =====
+*.bak
+*.backup
+*.orig
+
+# ===== Env =====
+.env
+.env.*
+
+# ===== Coverage =====
+coverage/
+.nyc_output/
+
 # ===== Misc =====
 *.db
 *.tmp
+*.pid
