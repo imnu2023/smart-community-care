@@ -1,147 +1,162 @@
 <template>
-  <div class="login-container">
-    <div class="bg-animation">
-      <div class="circle circle-1"></div>
-      <div class="circle circle-2"></div>
-      <div class="circle circle-3"></div>
-    </div>
-    
-    <div class="login-wrapper">
-      <div class="login-box">
-        <div class="logo-section">
-          <div class="logo-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-              <path d="M2 17l10 5 10-5"/>
-              <path d="M2 12l10 5 10-5"/>
-            </svg>
-          </div>
-          <div class="logo-text">
-            <h1>智慧社区养老平台</h1>
-            <p>AI驱动 · 智慧养老</p>
-          </div>
+  <div class="login-page">
+    <!-- 背景装饰：柔和径向光晕 -->
+    <div class="login-bg-glow login-bg-glow--1"></div>
+    <div class="login-bg-glow login-bg-glow--2"></div>
+    <div class="login-bg-glow login-bg-glow--3"></div>
+
+    <main id="main-content" class="login-card">
+      <!-- Logo -->
+      <div class="login-logo">
+        <div class="login-logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg>
         </div>
-        
-        <div class="form-container">
-          <div class="form-header">
-            <h2>欢迎登录</h2>
-            <p>请输入您的账号信息</p>
-          </div>
-          
-          <el-form ref="formRef" :model="form" class="login-form">
-            <div class="input-group">
-              <div class="input-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
-              <el-input 
-                v-model="form.username" 
-                placeholder="请输入用户名" 
-                class="custom-input"
-                :prefix-icon="null"
-              />
-            </div>
-            
-            <div class="input-group">
-              <div class="input-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-              </div>
-              <el-input 
-                type="password" 
-                v-model="form.password" 
-                placeholder="请输入密码" 
-                class="custom-input"
-                :prefix-icon="null"
-              />
-            </div>
-            
-            <div class="captcha-group">
-              <div class="input-group captcha-input-group">
-                <div class="input-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="9" y1="9" x2="15" y2="9"/>
-                    <line x1="9" y1="13" x2="15" y2="13"/>
-                    <line x1="9" y1="17" x2="12" y2="17"/>
+        <div class="login-logo-text">
+          <h1>智慧社区养老</h1>
+          <p>温暖可信 · 服务每一位老人</p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="login-form-wrap">
+        <div class="login-form-header">
+          <h2>欢迎登录</h2>
+          <p>请输入您的账号信息</p>
+        </div>
+
+        <el-form ref="formRef" :model="form" class="login-form" @keyup.enter="handleLogin">
+          <!-- Username -->
+          <div class="login-input-group">
+            <label class="login-input-label" for="username">用户名</label>
+            <el-input
+              id="username"
+              v-model="form.username"
+              placeholder="请输入用户名"
+              size="large"
+            >
+              <template #prefix>
+                <span class="login-input-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
                   </svg>
-                </div>
-                <el-input
-                  v-model="form.captchaCode"
-                  placeholder="请输入验证码"
-                  class="custom-input"
-                  maxlength="4"
-                  :prefix-icon="null"
-                />
-              </div>
-              <div class="captcha-img-wrapper" @click="fetchCaptcha" title="点击刷新验证码">
+                </span>
+              </template>
+            </el-input>
+          </div>
+
+          <!-- Password -->
+          <div class="login-input-group">
+            <label class="login-input-label" for="password">密码</label>
+            <el-input
+              id="password"
+              v-model="form.password"
+              type="password"
+              placeholder="请输入密码"
+              size="large"
+              show-password
+            >
+              <template #prefix>
+                <span class="login-input-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </span>
+              </template>
+            </el-input>
+          </div>
+
+          <!-- Captcha -->
+          <div class="login-input-group">
+            <label class="login-input-label" for="captcha">验证码</label>
+            <div class="captcha-row">
+              <el-input
+                id="captcha"
+                v-model="form.captchaCode"
+                placeholder="验证码"
+                maxlength="4"
+                size="large"
+                class="captcha-input"
+              >
+                <template #prefix>
+                  <span class="login-input-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <line x1="9" y1="9" x2="15" y2="9" />
+                      <line x1="9" y1="13" x2="15" y2="13" />
+                      <line x1="9" y1="17" x2="12" y2="17" />
+                    </svg>
+                  </span>
+                </template>
+              </el-input>
+              <div class="captcha-img-box" @click="fetchCaptcha" title="点击刷新验证码">
                 <img
                   v-if="captchaImg"
                   :src="captchaImg"
-                  alt="验证码"
+                  alt="验证码图片"
                   class="captcha-img"
                 />
-                <div v-else class="captcha-placeholder">
-                  <span v-if="captchaLoading">加载中...</span>
-                  <span v-else>点击获取</span>
-                </div>
-                <div class="captcha-mask">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="23 4 23 10 17 10"/>
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-                  </svg>
+                <span v-else class="captcha-img-placeholder">点击获取</span>
+                <div class="captcha-img-hint">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.15-9.37L23 10"/></svg>
                   <span>刷新</span>
                 </div>
               </div>
             </div>
-
-            <div class="form-options">
-              <label class="checkbox-label">
-                <input type="checkbox" v-model="rememberMe" />
-                <span class="checkmark"></span>
-                <span>记住我</span>
-              </label>
-              <a href="#" class="forgot-link">忘记密码?</a>
-            </div>
-            
-            <el-button type="primary" class="login-btn" @click="handleLogin">
-              <span class="btn-text">登 录</span>
-              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </el-button>
-          </el-form>
-          
-          <div class="register-section">
-            <span>还没有账号？</span>
-            <a href="/register" class="register-link">立即注册</a>
           </div>
-        </div>
-        
-        <div class="login-footer">
-          <p>© 2026 智慧社区养老平台 · 用心服务每一位老人</p>
+
+          <!-- Remember me + Forgot -->
+          <div class="login-options">
+            <label class="login-checkbox">
+              <input type="checkbox" v-model="rememberMe" />
+              <span class="login-checkbox-mark"></span>
+              <span>记住我</span>
+            </label>
+            <a class="login-forgot" @click.prevent="handleForgotPassword">忘记密码？</a>
+          </div>
+
+          <!-- Submit -->
+          <el-button
+            type="primary"
+            size="large"
+            class="login-submit-btn"
+            @click="handleLogin"
+            :loading="loading"
+          >
+            登 录
+          </el-button>
+        </el-form>
+
+        <!-- Register link -->
+        <div class="login-register">
+          <span>还没有账号？</span>
+          <router-link to="/register">立即注册</router-link>
         </div>
       </div>
-    </div>
+
+      <!-- Footer -->
+      <div class="login-footer">
+        <p>© 2026 智慧社区养老平台 · <router-link to="/register">隐私政策</router-link></p>
+      </div>
+    </main>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { captchaAPI, authAPI } from '../api'
-import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
-const router = useRouter()
 const formRef = ref(null)
 const rememberMe = ref(false)
 const captchaImg = ref('')
 const captchaUuid = ref('')
-const captchaLoading = ref(false)
+const loading = ref(false)
 
 const form = reactive({
   username: '',
@@ -150,7 +165,6 @@ const form = reactive({
 })
 
 const fetchCaptcha = async () => {
-  captchaLoading.value = true
   try {
     const response = await captchaAPI.get()
     if (response.code === 200) {
@@ -161,8 +175,6 @@ const fetchCaptcha = async () => {
     }
   } catch (error) {
     ElMessage.error('网络异常，获取验证码失败')
-  } finally {
-    captchaLoading.value = false
   }
 }
 
@@ -170,11 +182,16 @@ onMounted(() => {
   fetchCaptcha()
 })
 
+const handleForgotPassword = () => {
+  ElMessage.info('请联系社区管理员重置密码')
+}
+
 const handleLogin = async () => {
   if (!form.captchaCode) {
     ElMessage.warning('请输入验证码')
     return
   }
+  loading.value = true
   try {
     const response = await authAPI.login({
       username: form.username,
@@ -190,16 +207,16 @@ const handleLogin = async () => {
       localStorage.setItem('role', response.data.role)
 
       ElMessage.success('登录成功')
-
       setTimeout(() => {
         if (response.data.role === 1) {
           window.location.href = '/admin/users'
+        } else if (response.data.role === 3) {
+          window.location.href = '/family'
         } else {
           window.location.href = '/dashboard'
         }
       }, 500)
     } else {
-      // 验证码错误时刷新验证码
       fetchCaptcha()
       form.captchaCode = ''
       ElMessage.error(response.message || '登录失败')
@@ -208,396 +225,379 @@ const handleLogin = async () => {
     fetchCaptcha()
     form.captchaCode = ''
     ElMessage.error('登录失败，请检查用户名和密码')
+  } finally {
+    loading.value = false
   }
 }
 </script>
 
 <style scoped>
-.login-container {
+/* ============================================================
+   Login Page — 温暖、深度、信任感
+   ============================================================ */
+
+/* ---- Page: 柔和渐变背景 + 径向光晕装饰 ---- */
+.login-page {
   min-height: 100vh;
   display: flex;
-  justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  justify-content: center;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, rgba(0, 80, 203, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 70%, rgba(0, 104, 37, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 50% 100%, rgba(165, 59, 24, 0.02) 0%, transparent 50%),
+    var(--color-surface);
+  padding: var(--space-lg);
   position: relative;
   overflow: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.bg-animation {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.circle {
+/* 大型径向光晕装饰 */
+.login-bg-glow {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.3;
-  animation: float 15s infinite ease-in-out;
+  filter: blur(80px);
+  pointer-events: none;
+  animation: login-glow-drift 20s ease-in-out infinite;
 }
-
-.circle-1 {
-  width: 400px;
-  height: 400px;
-  background: rgba(255, 255, 255, 0.3);
-  top: -100px;
-  left: -100px;
+.login-bg-glow--1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(0, 80, 203, 0.08) 0%, transparent 70%);
+  top: -15%; left: -10%;
   animation-delay: 0s;
 }
-
-.circle-2 {
-  width: 300px;
-  height: 300px;
-  background: rgba(102, 126, 234, 0.4);
-  bottom: -150px;
-  right: -100px;
-  animation-delay: -5s;
+.login-bg-glow--2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0, 104, 37, 0.06) 0%, transparent 70%);
+  bottom: -10%; right: -8%;
+  animation-delay: -7s;
 }
-
-.circle-3 {
-  width: 200px;
-  height: 200px;
-  background: rgba(118, 75, 162, 0.3);
-  top: 50%;
-  right: 10%;
-  animation-delay: -10s;
+.login-bg-glow--3 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(165, 59, 24, 0.04) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -14s;
 }
-
-@keyframes float {
+@keyframes login-glow-drift {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(50px, -50px) scale(1.1); }
-  50% { transform: translate(-30px, 30px) scale(0.9); }
-  75% { transform: translate(20px, 20px) scale(1.05); }
+  33% { transform: translate(30px, -20px) scale(1.08); }
+  66% { transform: translate(-20px, 15px) scale(0.95); }
 }
 
-.login-wrapper {
+/* ---- Card: 柔和层次，微玻璃质感 ---- */
+.login-card {
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-2xl);
+  box-shadow:
+    0 4px 32px rgba(0, 47, 112, 0.07),
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  width: 440px;
+  max-width: 100%;
+  padding: var(--space-2xl) var(--space-xl) var(--space-xl);
   position: relative;
-  z-index: 10;
+  z-index: 1;
+  animation: login-card-in 0.6s var(--ease-out) both;
+}
+@keyframes login-card-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.login-box {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  padding: 48px;
-  border-radius: 24px;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  width: 420px;
-  overflow: hidden;
-}
-
-.logo-section {
+/* ---- Logo ---- */
+.login-logo {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  animation: login-fade-up 0.5s var(--ease-out) 0.1s both;
 }
 
-.logo-icon {
-  width: 52px;
-  height: 52px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
+.login-logo-mark {
+  width: 52px; height: 52px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  color: var(--color-on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 80, 203, 0.18);
 }
 
-.logo-icon svg {
-  width: 26px;
-  height: 26px;
+.login-logo-mark svg {
+  width: 26px; height: 26px;
 }
 
-.logo-text h1 {
-  color: #1e293b;
-  font-size: 20px;
-  font-weight: 700;
+.login-logo-text h1 {
+  font-size: var(--text-headline-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-on-surface);
+  line-height: var(--leading-headline-md);
   margin: 0;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.01em;
 }
 
-.logo-text p {
-  color: #94a3b8;
-  font-size: 12px;
-  margin: 4px 0 0 0;
+.login-logo-text p {
+  font-size: var(--text-label-sm);
+  color: var(--color-on-surface-variant);
+  margin: var(--space-xxs) 0 0 0;
 }
 
-.form-container {
-  margin-bottom: 24px;
-}
-
-.form-header {
+/* ---- Form ---- */
+.login-form-header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: var(--space-xl);
+  animation: login-fade-up 0.5s var(--ease-out) 0.15s both;
 }
 
-.form-header h2 {
-  color: #1e293b;
-  font-size: 24px;
-  font-weight: 600;
+.login-form-header h2 {
+  font-size: var(--text-headline-lg);
+  font-weight: var(--weight-semibold);
+  color: var(--color-on-surface);
   margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.form-header p {
-  color: #64748b;
-  font-size: 14px;
-  margin: 6px 0 0 0;
+.login-form-header p {
+  font-size: var(--text-body-md);
+  color: var(--color-on-surface-variant);
+  margin: var(--space-xxs) 0 0 0;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-md);
 }
 
-.input-group {
-  position: relative;
-}
-
-.input-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #94a3b8;
-  z-index: 1;
-}
-
-.input-icon svg {
-  width: 18px;
-  height: 18px;
-}
-
-.custom-input {
-  width: 100%;
-  height: 48px;
-  padding-left: 48px !important;
-  padding-right: 16px !important;
-  border: 2px solid #e2e8f0;
-  border-radius: 14px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  background: #f8fafc;
-}
-
-.custom-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  background: #fff;
-}
-
-.custom-input::placeholder {
-  color: #94a3b8;
-}
-
-.captcha-group {
+/* 表单项逐个淡入 */
+.login-input-group {
   display: flex;
-  gap: 12px;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+.login-input-group:nth-child(1) { animation: login-fade-up 0.45s var(--ease-out) 0.2s both; }
+.login-input-group:nth-child(2) { animation: login-fade-up 0.45s var(--ease-out) 0.25s both; }
+.login-input-group:nth-child(3) { animation: login-fade-up 0.45s var(--ease-out) 0.3s both; }
+
+.login-input-label {
+  font-size: var(--text-body-md);
+  font-weight: var(--weight-medium);
+  color: var(--color-on-surface);
+}
+
+.login-input-icon {
+  display: flex;
   align-items: center;
+  color: var(--color-on-surface-variant);
 }
 
-.captcha-input-group {
-  flex: 1;
+.login-input-icon svg {
+  width: 20px; height: 20px;
 }
 
-.captcha-input-group .custom-input {
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  font-weight: 600;
-  font-size: 16px;
+/* ---- Captcha ---- */
+.captcha-row {
+  display: flex;
+  gap: var(--space-sm);
 }
 
-.captcha-img-wrapper {
-  width: 120px;
-  height: 48px;
-  border-radius: 12px;
+.captcha-input { flex: 1; }
+
+.captcha-img-box {
+  width: 120px; height: 56px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   cursor: pointer;
   position: relative;
-  border: 2px solid #e2e8f0;
-  background: #f8fafc;
+  border: 2px solid var(--color-outline-variant);
+  background: var(--color-surface-container);
   flex-shrink: 0;
-  transition: all 0.3s ease;
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
 }
 
-.captcha-img-wrapper:hover {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+.captcha-img-box:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 80, 203, 0.08);
 }
 
 .captcha-img {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.captcha-placeholder {
-  width: 100%;
-  height: 100%;
+.captcha-img-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  color: #94a3b8;
+  height: 100%;
+  font-size: var(--text-label-sm);
+  color: var(--color-on-surface-variant);
 }
 
-.captcha-mask {
+.captcha-img-hint {
   position: absolute;
   inset: 0;
-  background: rgba(102, 126, 234, 0.85);
+  background: rgba(0, 80, 203, 0.88);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  gap: 4px;
   color: #fff;
-  font-size: 11px;
-  font-weight: 500;
+  font-size: var(--text-label-sm);
+  font-weight: var(--weight-medium);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
 }
 
-.captcha-mask svg {
-  width: 16px;
-  height: 16px;
-}
+.captcha-img-box:hover .captcha-img-hint { opacity: 1; }
 
-.captcha-img-wrapper:hover .captcha-mask {
-  opacity: 1;
-}
-
-.form-options {
+/* ---- Options ---- */
+.login-options {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 4px;
+  animation: login-fade-up 0.45s var(--ease-out) 0.35s both;
 }
 
-.checkbox-label {
+.login-checkbox {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-xs);
   cursor: pointer;
-  font-size: 13px;
-  color: #64748b;
+  font-size: var(--text-label-md);
+  color: var(--color-on-surface-variant);
+  user-select: none;
 }
 
-.checkbox-label input[type="checkbox"] {
-  display: none;
-}
-
-.checkmark {
-  width: 18px;
-  height: 18px;
-  border: 2px solid #cbd5e1;
-  border-radius: 5px;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.checkbox-label input[type="checkbox"]:checked + .checkmark {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-color: #667eea;
-}
-
-.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
-  content: '';
+.login-checkbox input[type='checkbox'] {
   position: absolute;
-  left: 6px;
-  top: 2px;
-  width: 5px;
-  height: 10px;
-  border: solid #fff;
+  opacity: 0;
+  width: 0; height: 0;
+}
+
+.login-checkbox-mark {
+  width: 20px; height: 20px;
+  border: 2px solid var(--color-outline-variant);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration-fast) var(--ease-out);
+  flex-shrink: 0;
+}
+
+.login-checkbox input:checked + .login-checkbox-mark {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.login-checkbox input:checked + .login-checkbox-mark::after {
+  content: '';
+  width: 6px; height: 10px;
+  border: solid var(--color-on-primary);
   border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  transform: rotate(45deg) translateY(-1px);
 }
 
-.forgot-link {
-  color: #667eea;
-  font-size: 13px;
+.login-forgot {
+  font-size: var(--text-label-md);
+  color: var(--color-primary);
   text-decoration: none;
-  transition: color 0.3s ease;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  transition: color var(--duration-fast) var(--ease-out);
 }
 
-.forgot-link:hover {
-  color: #764ba2;
-}
+.login-forgot:hover { color: var(--color-primary-hover); }
 
-.login-btn {
+/* ---- Submit button ---- */
+.login-submit-btn {
   width: 100%;
   height: 52px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  border: none !important;
-  border-radius: 14px !important;
-  font-size: 16px !important;
-  font-weight: 600 !important;
-  color: #fff !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 10px !important;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  font-size: var(--text-body-md);
+  font-weight: var(--weight-semibold);
+  margin-top: var(--space-xs);
+  letter-spacing: 0.05em;
+  animation: login-fade-up 0.45s var(--ease-out) 0.4s both;
+  transition: transform 0.15s var(--ease-out), box-shadow 0.15s var(--ease-out);
+}
+.login-submit-btn:not(:disabled):active {
+  transform: scale(0.98);
 }
 
-.login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-}
-
-.login-btn:active {
-  transform: translateY(0);
-}
-
-.btn-icon {
-  width: 18px;
-  height: 18px;
-  transition: transform 0.3s ease;
-}
-
-.login-btn:hover .btn-icon {
-  transform: translateX(5px);
-}
-
-.register-section {
+/* ---- Register link ---- */
+.login-register {
   text-align: center;
-  padding-top: 20px;
-  border-top: 1px solid #e2e8f0;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-outline-variant);
+  font-size: var(--text-body-md);
+  color: var(--color-on-surface-variant);
+  animation: login-fade-up 0.5s var(--ease-out) 0.45s both;
 }
 
-.register-section span {
-  color: #64748b;
-  font-size: 14px;
+.login-register a {
+  font-weight: var(--weight-semibold);
+  margin-left: var(--space-xs);
 }
 
-.register-link {
-  color: #667eea;
-  font-size: 14px;
-  font-weight: 500;
-  margin-left: 8px;
-  text-decoration: none;
-  transition: color 0.3s ease;
-}
-
-.register-link:hover {
-  color: #764ba2;
-}
-
+/* ---- Footer ---- */
 .login-footer {
   text-align: center;
-  padding-top: 16px;
-  margin-top: 16px;
-  border-top: 1px solid #f1f5f9;
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-outline-variant);
 }
 
 .login-footer p {
-  color: #94a3b8;
-  font-size: 12px;
+  font-size: var(--text-label-sm);
+  color: var(--color-on-surface-variant);
   margin: 0;
+}
+
+.login-footer a {
+  font-size: var(--text-label-sm);
+  color: var(--color-on-surface-variant);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.login-footer a:hover { color: var(--color-primary); }
+
+/* 通用淡入动画 */
+@keyframes login-fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 767px) {
+  .login-page {
+    padding: var(--space-md);
+    align-items: flex-start;
+    padding-top: var(--space-2xl);
+  }
+
+  .login-card {
+    padding: var(--space-xl) var(--space-lg);
+    border-radius: var(--radius-xl);
+  }
+
+  .login-logo {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .login-form-header h2 {
+    font-size: var(--text-headline-md);
+  }
 }
 </style>

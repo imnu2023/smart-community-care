@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>智伴预警与沟通中心 - Smart Community Alerts & Communication</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#ededf8",
+                        "success": "#006825",
+                        "surface-whisper": "#F0F2F6",
+                        "text-charcoal": "#191C1E",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#c5c6c9",
+                        "secondary-fixed": "#e1e2e5",
+                        "accent-hover": "#003FA4",
+                        "on-secondary-fixed-variant": "#44474a",
+                        "primary-container": "#0050cb",
+                        "surface-container-highest": "#e1e2ec",
+                        "on-primary-fixed": "#001849",
+                        "surface-variant": "#e1e2ec",
+                        "tertiary-fixed": "#ffdbd0",
+                        "outline-variant": "#c3c6d6",
+                        "border-zinc": "#C2C6D8",
+                        "critical": "#BA1A1A",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191b23",
+                        "surface-container-low": "#f3f3fd",
+                        "primary": "#003b9a",
+                        "tertiary-container": "#a23302",
+                        "on-tertiary-fixed": "#390c00",
+                        "on-primary-container": "#c1cfff",
+                        "on-tertiary-container": "#ffc3b0",
+                        "on-background": "#191b23",
+                        "tertiary": "#7b2400",
+                        "on-tertiary-fixed-variant": "#832700",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "on-tertiary": "#ffffff",
+                        "accent-container": "#DAE1FF",
+                        "text-stone": "#727687",
+                        "critical-container": "#FFDAD6",
+                        "text-steel": "#424656",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "secondary-container": "#dee0e3",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "border-cloud": "#DEE0E4",
+                        "on-secondary-container": "#606365",
+                        "surface-dim": "#d9d9e4",
+                        "primary-fixed": "#dae1ff",
+                        "background": "#faf8ff",
+                        "surface-bright": "#faf8ff",
+                        "warning": "#A53B18",
+                        "surface": "#faf8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "success-container": "#E6FFE1",
+                        "surface-tint": "#1155d0",
+                        "error-container": "#ffdad6",
+                        "warning-container": "#FFDBD0",
+                        "secondary": "#5c5f61",
+                        "on-secondary-fixed": "#191c1e",
+                        "on-surface-variant": "#434654",
+                        "surface-still": "#EAECF0",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f0fb",
+                        "inverse-surface": "#2e3038",
+                        "surface-pure": "#FDFDFC",
+                        "surface-container-high": "#e7e7f2",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#b3c5ff",
+                        "outline": "#737685"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "gutter": "16px",
+                        "max-width": "1280px",
+                        "margin-desktop": "32px",
+                        "margin-mobile": "16px",
+                        "padding-card": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Geist"],
+                        "display": ["Geist"],
+                        "body-md": ["Geist"],
+                        "mono-data": ["jetbrainsMono"],
+                        "headline-md": ["Geist"],
+                        "label-md": ["Geist"],
+                        "caption": ["Geist"],
+                        "body-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["clamp(24px, 3.5vw, 32px)", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display": ["clamp(28px, 5vw, 48px)", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+                        "body-md": ["clamp(16px, 1.5vw, 18px)", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "mono-data": ["14px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400" }],
+                        "headline-md": ["clamp(20px, 2.5vw, 24px)", { "lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["clamp(14px, 1.2vw, 16px)", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "caption": ["14px", { "lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["clamp(18px, 2vw, 20px)", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .bento-shadow {
+            box-shadow: 0 2px 12px rgba(0, 47, 112, 0.04);
+        }
+        .pulse-critical {
+            animation: pulse-op 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-op {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased">
+<!-- TopNavBar (Rendered exactly per JSON specs & brand anchors) -->
+<header class="bg-surface/80 backdrop-blur-md shadow-sm ring-1 ring-border-zinc/30 docked full-width top-0 sticky z-50 transition-all duration-300">
+<div class="h-[72px] flex justify-between items-center px-margin-desktop w-full max-w-max-width mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">spa</span>
+                智伴 Smart Community
+            </div>
+<!-- Navigation Shell (Desktop) -->
+<nav class="hidden md:flex gap-margin-desktop items-center h-full">
+<a class="h-full flex items-center text-primary font-semibold border-b-2 border-primary translate-y-[1px] transition-transform" href="#">Dashboard</a>
+<a class="h-full flex items-center text-secondary hover:text-primary transition-colors duration-200" href="#">Health</a>
+<a class="h-full flex items-center text-secondary hover:text-primary transition-colors duration-200" href="#">Services</a>
+<a class="h-full flex items-center text-secondary hover:text-primary transition-colors duration-200" href="#">Timeline</a>
+</nav>
+<div class="flex items-center gap-gutter">
+<button class="text-secondary hover:bg-surface-whisper hover:text-primary transition-all duration-300 p-2 rounded-full flex items-center justify-center relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full ring-2 ring-surface"></span>
+</button>
+<button class="text-secondary hover:bg-surface-whisper hover:text-primary transition-all duration-300 p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<img alt="Family member profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-surface-whisper hover:ring-primary-fixed-dim transition-all cursor-pointer" data-alt="A close-up, high-quality photograph of a warm, smiling elderly person with gentle wrinkles, illuminated by soft natural light. The mood is reassuring and serene, fitting a trusted family healthcare portal profile image. The color palette features natural skin tones against a soft, bright, out-of-focus background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuWGTRQYEj18Y0E4LBtjAvxi_UmgwO04WkZODNW90s4QHN3I-JlgytF603b-ix7wZkhiNXx2gmgBYXpXqh_BHOQOwyDMpHImN8E3oVLMWxLqS8SdYWmfIT32zUJZ0zD4aZB3Xa0brq2uAACvJhiJS3WxxtINtwzKrR5xihqzITAMQF_vNbX8IEcRo4GzeTmlPYNkbuIw1oCfAt3DPsedVm-W1DCI_SARbREGAzNKGThldwUSNjSh_xnvOHY81fO-VHuXq3QLn0MEtH"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-max-width mx-auto px-margin-desktop py-gutter flex flex-col gap-gutter">
+<!-- Active Alerts (Top) -->
+<section class="w-full bg-error-container rounded-xl p-padding-card ring-1 ring-error/20 bento-shadow flex flex-col md:flex-row items-start md:items-center gap-gutter animate-[fadeIn_0.3s_ease-out]">
+<div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center shrink-0 pulse-critical">
+<span class="material-symbols-outlined text-error text-[28px]" style="font-variation-settings: 'FILL' 1;">vital_signs</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<h2 class="font-headline-md text-headline-md text-on-error-container font-semibold">心率偏高预警</h2>
+<span class="bg-error text-on-error font-caption text-caption px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-on-error animate-ping"></span> 紧急级别
+                    </span>
+</div>
+<p class="font-body-md text-body-md text-on-error-container/80">设备检测到张爷爷过去30分钟内心率持续高于 110 bpm，请立即确认长辈状态或联系医护人员。</p>
+</div>
+<div class="flex items-center gap-base mt-4 md:mt-0 w-full md:w-auto">
+<button class="flex-1 md:flex-none bg-surface-pure border border-error text-error px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-error/5 transition-all flex items-center justify-center gap-1 active:translate-y-[1px]">
+<span class="material-symbols-outlined text-[20px]">call</span>
+                    呼叫长辈
+                </button>
+<button class="flex-1 md:flex-none bg-error text-on-error px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-error/90 transition-all flex items-center justify-center gap-1 bento-shadow active:translate-y-[1px]">
+<span class="material-symbols-outlined text-[20px]">health_metrics</span>
+                    查看健康档案
+                </button>
+</div>
+</section>
+<!-- Bento Layout: Communication Hub -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter h-[calc(100vh-220px)] min-h-[600px]">
+<!-- Message List (Left Sidebar) -->
+<aside class="lg:col-span-3 bg-surface-pure rounded-xl ring-1 ring-border-zinc/30 bento-shadow flex flex-col overflow-hidden relative">
+<!-- Decorative Top Accent -->
+<div class="absolute top-0 left-0 w-full h-[2px] bg-primary/20"></div>
+<div class="p-4 border-b border-border-cloud/50">
+<h3 class="font-headline-md text-headline-md text-on-surface font-semibold mb-3">消息中心</h3>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full bg-surface-still border-none text-on-surface rounded-lg pl-10 pr-4 py-2.5 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:bg-surface-pure transition-all h-[48px]" placeholder="搜索联系人或消息" type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto overflow-x-hidden p-2 flex flex-col gap-1">
+<!-- Thread 1: Active -->
+<button class="w-full text-left p-3 rounded-lg bg-surface-whisper hover:bg-surface-whisper/80 transition-all flex items-center gap-3 relative group">
+<div class="w-1 shrink-0 h-8 bg-primary rounded-r-full absolute left-0 top-1/2 -translate-y-1/2"></div>
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A portrait photograph of a friendly, middle-aged female community manager wearing a neat, professional blue uniform. She has a warm, welcoming smile. The background is a brightly lit modern community center. The lighting is soft and natural, emphasizing trust and professionalism in a healthcare setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHzXlCWap_sA5OEflyOwDvlXxPbq6LNmbVgX1CKUdQgMxuT0yqepzFVTGjdI-AwAwGgl3COcLrFxY8ulHHwIjwdvl_rzePR3_lkkuSl9NAWUGRuY0kYMWNVRVhJd6qMY5rXL4Yz11Nt_48ktuQ4cVFP6tIsihQn5D8K4fg3NDrzam27UHjvu9QwC6lL7IE5yLLQfB3aDQrVobnEo85plw_ffTr_eEMAQ6_uyOePh3jRwB0-cLng7CxO--qPXeAfmxRJxqPOHkdrLp8"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-success border-2 border-surface-pure rounded-full"></span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-0.5">
+<h4 class="font-label-md text-label-md text-on-surface font-semibold truncate">社区管家-王阿姨</h4>
+<span class="font-caption text-caption text-secondary shrink-0">10:42</span>
+</div>
+<p class="font-body-md text-body-md text-secondary truncate text-[14px]">好的，我现在就过去看看张爷爷的情况。</p>
+</div>
+</button>
+<!-- Thread 2 -->
+<button class="w-full text-left p-3 rounded-lg hover:bg-surface-whisper/50 transition-all flex items-center gap-3 group">
+<div class="relative shrink-0">
+<div class="w-12 h-12 rounded-full bg-accent-container text-on-primary-fixed-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">smart_toy</span>
+</div>
+<span class="absolute -top-1 -right-1 bg-error text-on-error font-caption text-[10px] px-1.5 py-0.5 rounded-full">3</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-0.5">
+<h4 class="font-label-md text-label-md text-on-surface font-semibold truncate">系统提醒</h4>
+<span class="font-caption text-caption text-secondary shrink-0">09:15</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-medium truncate text-[14px]">用药提醒：该吃降压药了</p>
+</div>
+</button>
+<!-- Thread 3 -->
+<button class="w-full text-left p-3 rounded-lg hover:bg-surface-whisper/50 transition-all flex items-center gap-3 group">
+<div class="relative shrink-0">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A professional headshot of a male doctor in his 40s wearing a clean white clinical coat and a stethoscope around his neck. He looks directly at the camera with a confident, reassuring expression. The background is a soft, out-of-focus light gray clinic room. The lighting is bright and clean." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5BVc1Bx0g7qsknHmlmszmkp1zHaFvYbi7SsqbtLXG5U2ehU_2j-KEx4WyclrMHpoKMRhCMlXYUOtTiXOuXJRMc2koAhzmfwN61f8X8PdWbVpkC1K7Wq-cJXuGX1UL3GOBgGScvkvAN31I4Ex9Ub-fkhtxHYAxnZQs1EO-U27s8vc3Jr1-YmdSFRQWL0quhqI9F5lgDTzCs3kwvAMbzqdKfQ3WLgPSGQ_Hi_mcVLAIYoOdeNCPFucp1PchOOGUU-XCtWdUjt9R-wE5"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex justify-between items-baseline mb-0.5">
+<h4 class="font-label-md text-label-md text-on-surface font-semibold truncate">健康医生-李大夫</h4>
+<span class="font-caption text-caption text-secondary shrink-0">昨天</span>
+</div>
+<p class="font-body-md text-body-md text-secondary truncate text-[14px]">上周的体检报告出来了，总体指标平稳。</p>
+</div>
+</button>
+</div>
+</aside>
+<!-- Chat Window (Main) -->
+<section class="lg:col-span-6 bg-surface-pure rounded-xl ring-1 ring-border-zinc/30 bento-shadow flex flex-col relative overflow-hidden">
+<!-- Chat Header -->
+<div class="p-4 border-b border-border-cloud/50 flex justify-between items-center bg-surface-pure z-10">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A portrait photograph of a friendly, middle-aged female community manager wearing a neat, professional blue uniform. She has a warm, welcoming smile. The background is a brightly lit modern community center. The lighting is soft and natural, emphasizing trust and professionalism in a healthcare setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnjK1Y4LXbbvl_5N-jrBJFcY6Nz7Is_bMrqXdqwDu2bNP0Z2x_T_Y-qeKPtheWEuEX5ELL7P7kizrgqthV7HDDD91Q5szC5M-y5ZiV8_j26Zl62DYcl4CMVZncv_I-XLj1ojYMro_hlmj6tTerXb29fnIP2OfCWSzPlLdlTK9nktBQrdi3EvO3M-L-c6EP85XKSBUZ1SHEecvkhwgmu_b-LS-oQfvp9aLBzKeZ6FrkJQpHzosTkAffSwBnnGmHvGPj1RPyD5rG4HJN"/>
+<div>
+<h2 class="font-label-md text-label-md text-on-surface font-semibold">社区管家-王阿姨</h2>
+<p class="font-caption text-caption text-success flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-success"></span> 当前在线</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 text-secondary hover:bg-surface-whisper hover:text-primary rounded-full transition-colors">
+<span class="material-symbols-outlined">call</span>
+</button>
+<button class="p-2 text-secondary hover:bg-surface-whisper hover:text-primary rounded-full transition-colors">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+</div>
+</div>
+<!-- Chat Canvas -->
+<div class="flex-1 overflow-y-auto p-padding-card flex flex-col gap-6 bg-background/30" style="background-image: radial-gradient(#DEE0E4 1px, transparent 1px); background-size: 24px 24px;">
+<!-- Timestamp -->
+<div class="flex justify-center">
+<span class="font-caption text-caption text-secondary bg-surface-pure px-3 py-1 rounded-full shadow-sm ring-1 ring-border-cloud/30">今天 10:30</span>
+</div>
+<!-- Alert Embed in Chat -->
+<div class="flex justify-center w-full">
+<div class="bg-error-container/50 border border-error/20 rounded-lg p-3 max-w-sm w-full text-center shadow-sm">
+<span class="material-symbols-outlined text-error text-[20px] mb-1">vital_signs</span>
+<p class="font-label-md text-label-md text-on-error-container">系统转发：心率偏高预警</p>
+</div>
+</div>
+<!-- Outgoing Message -->
+<div class="flex justify-end items-end gap-2">
+<div class="max-w-[75%] bg-primary text-on-primary rounded-2xl rounded-br-sm p-3 shadow-sm transform transition-all hover:-translate-y-0.5">
+<p class="font-body-md text-body-md">王阿姨，系统刚刚提示张爷爷心率偏高，他现在在家吗？长辈今天状态好吗？</p>
+</div>
+</div>
+<!-- Incoming Message -->
+<div class="flex justify-start items-end gap-2">
+<img class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="A portrait photograph of a friendly, middle-aged female community manager wearing a neat, professional blue uniform. She has a warm, welcoming smile. The background is a brightly lit modern community center. The lighting is soft and natural, emphasizing trust and professionalism in a healthcare setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwt8-Wdaz2mmeGRxc6-BDg6ZyxL4Vk0RSbFI3i1DJjrsXzx_CVkno4oygSR8fO58BEy8MHj5t1wvFTYBPSVCRsEP0Yl1Bczu1azQTxz3E3otTf62biTUfD6wL7PM7PK3f66kpZVrNs5wVRsyJo1tRkZB6RXJBBV8sasfUXbXQ1pLNNPA7X3f5jPvl4fKvpDptfWOMQ2QXoDybsbYpjvn1VUyy9cpc2meyG9o5PwhLlqRjZgcNS3YvDjM2hFSRRoi4LpdsMUqvxv5XY"/>
+<div class="max-w-[75%] bg-surface-pure text-on-surface border border-border-cloud/50 rounded-2xl rounded-bl-sm p-3 shadow-sm transform transition-all hover:-translate-y-0.5">
+<p class="font-body-md text-body-md">收到预警了！我刚打内线电话没人接，我现在马上拿备用钥匙过去看一眼，您别着急，有情况我随时拍视频给您。</p>
+</div>
+</div>
+<!-- Typing indicator -->
+<div class="flex justify-start items-end gap-2">
+<img class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="A portrait photograph of a friendly, middle-aged female community manager wearing a neat, professional blue uniform. She has a warm, welcoming smile. The background is a brightly lit modern community center. The lighting is soft and natural, emphasizing trust and professionalism in a healthcare setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDvjZHba3InpWeT-QxK2tn-dgIbLGCHmbjBXYR9m8B4ERwo8dtXtLSIuYlNp1OGccMY2Q89Fplyv4juaAtmZK5bTKOn_Jd9WLyDrBGzpPm63RIYx7rYB1EhmR4Sl3oNS23uB3x6DQh6IS8ebPAkOHXKEVMrcRPLZpDuzHCY_uYWz6odKVV_6E29CnoS_O7SqMtpy9LzoRzZBy65e04e5Ccq81TuZ15awfhZ9XhGox10tWocUNcFrzCRg_jJANVesxiHy-7uALixJb1T"/>
+<div class="bg-surface-pure border border-border-cloud/50 rounded-2xl rounded-bl-sm p-3 px-4 shadow-sm flex gap-1 items-center h-[42px]">
+<span class="w-1.5 h-1.5 bg-secondary rounded-full animate-bounce" style="animation-delay: 0ms"></span>
+<span class="w-1.5 h-1.5 bg-secondary rounded-full animate-bounce" style="animation-delay: 150ms"></span>
+<span class="w-1.5 h-1.5 bg-secondary rounded-full animate-bounce" style="animation-delay: 300ms"></span>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-4 bg-surface-pure border-t border-border-cloud/50 z-10 flex flex-col gap-3">
+<!-- Quick Actions -->
+<div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+<button class="shrink-0 bg-surface-whisper text-on-surface hover:bg-surface-variant px-3 py-1.5 rounded-full font-label-md text-[13px] transition-colors border border-border-cloud/50">
+                            长辈今天状态好吗？
+                        </button>
+<button class="shrink-0 bg-surface-whisper text-on-surface hover:bg-surface-variant px-3 py-1.5 rounded-full font-label-md text-[13px] transition-colors border border-border-cloud/50">
+                            麻烦您去敲个门
+                        </button>
+<button class="shrink-0 bg-surface-whisper text-on-surface hover:bg-surface-variant px-3 py-1.5 rounded-full font-label-md text-[13px] transition-colors border border-border-cloud/50">
+                            什么时候体检？
+                        </button>
+</div>
+<!-- Textbox -->
+<div class="flex items-end gap-2">
+<div class="flex-1 relative bg-surface-still rounded-xl ring-1 ring-border-cloud focus-within:ring-2 focus-within:ring-primary focus-within:bg-surface-pure transition-all">
+<textarea class="w-full bg-transparent border-none text-on-surface rounded-xl px-4 py-3 font-body-md text-body-md resize-none max-h-[120px] focus:ring-0 min-h-[48px]" placeholder="输入消息..." rows="1"></textarea>
+<div class="absolute right-2 bottom-2 flex items-center gap-1">
+<button class="p-1.5 text-outline hover:text-primary rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+</button>
+<button class="p-1.5 text-outline hover:text-primary rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+</div>
+</div>
+<button class="w-12 h-12 bg-primary text-on-primary rounded-xl flex items-center justify-center shrink-0 hover:bg-primary/90 transition-all active:translate-y-[1px] bento-shadow">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Context & Emergency Panel (Right Sidebar) -->
+<aside class="lg:col-span-3 flex flex-col gap-gutter">
+<!-- User Context Card -->
+<div class="bg-surface-pure rounded-xl p-padding-card ring-1 ring-border-zinc/30 bento-shadow relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-[3px] bg-primary opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-4 mb-4">
+<img class="w-14 h-14 rounded-full object-cover ring-2 ring-surface-whisper" data-alt="A portrait photograph of a distinguished elderly Chinese man with silver hair and a gentle smile. He is wearing a comfortable, high-quality casual sweater. The lighting is warm and flattering, set against a cozy, well-furnished living room background. The image conveys dignity, health, and comfort." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0diE9-kpyYrnD2ImAEfIIfYjMezinftPcx33fdErBBcnQ5w86yuaggoDP-lqqkyNJsWBwRPdWUcHErgD8osmF1fxS01WfwkcuPMRpjzII34kqg56NeLqUQvRCDOR3DnX7i97O5-wC0JNTGxQPGInWjXJc_9SVzD32QtD19AM7s0FUgcM2yrauJXPttOfruAs3rV-BsubE8zy_ya9CvOlvuplsgbynZSqiPsmr3x-xNa6R0hRErg60Xd-I9E1-R7yGuo5yckRXwYYf"/>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface font-semibold">张建国</h3>
+<p class="font-body-md text-body-md text-secondary">82岁 | 独居老人</p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mb-4">
+<div class="bg-surface-whisper p-2 rounded-lg text-center">
+<span class="block font-caption text-caption text-secondary">今日心率平均</span>
+<span class="block font-mono-data text-mono-data font-semibold text-error mt-1">102 <span class="text-[10px]">bpm</span></span>
+</div>
+<div class="bg-surface-whisper p-2 rounded-lg text-center">
+<span class="block font-caption text-caption text-secondary">血压监测</span>
+<span class="block font-mono-data text-mono-data font-semibold text-on-surface mt-1">135/85</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-center py-1">
+<span class="font-label-md text-label-md text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> 当前位置</span>
+<span class="font-label-md text-label-md text-on-surface">客厅活动中</span>
+</div>
+<div class="flex justify-between items-center py-1">
+<span class="font-label-md text-label-md text-secondary flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">device_hub</span> 设备状态</span>
+<span class="font-label-md text-label-md text-success">智伴手表在线</span>
+</div>
+</div>
+</div>
+<!-- Emergency Contact Card -->
+<div class="bg-surface-pure rounded-xl p-padding-card ring-1 ring-border-zinc/30 bento-shadow flex-1">
+<h3 class="font-headline-md text-headline-md text-on-surface font-semibold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-warning">emergency</span>
+                        紧急联络人
+                    </h3>
+<div class="flex flex-col gap-3">
+<!-- Contact 1 -->
+<div class="flex items-center justify-between p-3 rounded-lg border border-border-cloud/60 hover:bg-surface-whisper transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-accent-container text-on-primary-fixed-variant flex items-center justify-center">
+<span class="material-symbols-outlined">stethoscope</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">社区卫生站</p>
+<p class="font-caption text-caption text-secondary">5分钟响应距离</p>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-pure ring-1 ring-border-cloud flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all shadow-sm">
+<span class="material-symbols-outlined text-[20px]">call</span>
+</button>
+</div>
+<!-- Contact 2 -->
+<div class="flex items-center justify-between p-3 rounded-lg border border-border-cloud/60 hover:bg-surface-whisper transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">张伟 (儿子)</p>
+<p class="font-caption text-caption text-secondary">第一监护人</p>
+</div>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-pure ring-1 ring-border-cloud flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all shadow-sm">
+<span class="material-symbols-outlined text-[20px]">call</span>
+</button>
+</div>
+</div>
+<button class="w-full mt-6 bg-error-container text-on-error-container py-3 rounded-lg font-label-md text-label-md font-semibold hover:bg-error hover:text-on-error transition-all ring-1 ring-error/20 flex items-center justify-center gap-2 active:translate-y-[1px]">
+<span class="material-symbols-outlined text-[20px]">sos</span>
+                        一键呼叫 120
+                    </button>
+</div>
+</aside>
+</div>
+</main>
+</body></html>

@@ -1,123 +1,130 @@
 <template>
-  <div class="health-input-page">
-    <div class="page-header">
-      <button class="back-btn" @click="goBack">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 12H5m0 0l7-7m-7 7l7 7"/>
-        </svg>
-        <span>返回</span>
-      </button>
-      <div class="header-text">
-        <h1>健康数据录入</h1>
-        <p>记录您的每日健康数据</p>
+  <div class="hi-page">
+    <header class="hi-header">
+      <button class="btn-back" @click="goBack"><AppIcon name="x" size="22" /></button>
+      <div class="hi-header-text">
+        <h1 class="text-headline-lg">健康数据录入</h1>
+        <p class="text-body-md">记录您的每日健康数据</p>
       </div>
-    </div>
+    </header>
 
-    <div class="main-content">
-      <div class="form-section">
-        <div class="section-header">
-          <h2>今日数据</h2>
-          <span class="date-badge">{{ currentDate }}</span>
+    <div class="hi-layout">
+      <!-- Form card -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">今日数据</h3>
+          <span class="badge badge-neutral">{{ currentDate }}</span>
         </div>
-        
-        <form @submit.prevent="submitForm" class="health-form">
-          <div class="form-grid">
-            <div class="form-item" v-for="field in formFields" :key="field.key">
-              <label :for="field.key">{{ field.label }}</label>
-              <div class="input-wrapper">
-                <input
-                  :type="field.type === 'number' ? 'number' : 'text'"
-                  :id="field.key"
-                  v-model="form[field.key]"
-                  :placeholder="field.placeholder"
-                  :min="field.min"
-                  :max="field.max"
-                  :step="field.step"
-                  @input="validateField(field.key)"
-                />
-                <span class="input-unit">{{ field.unit }}</span>
-              </div>
-              <span v-if="errors[field.key]" class="error-message">{{ errors[field.key] }}</span>
-            </div>
-            
-            <div class="form-item">
-              <label for="measuredAt">记录日期</label>
-              <div class="input-wrapper">
-                <input
-                  type="date"
-                  id="measuredAt"
-                  v-model="form.measuredAt"
-                  class="date-input"
-                />
+
+        <form @submit.prevent="submitForm" class="hi-form">
+          <!-- Vital signs group -->
+          <fieldset class="hi-fieldset">
+            <legend class="hi-legend">
+              <span><AppIcon name="pulse" size="20" /></span> 生命体征
+            </legend>
+            <div class="hi-form-grid">
+              <div v-for="field in vitalFields" :key="field.key" class="hi-field">
+                <label :for="field.key" class="hi-label">
+                  {{ field.label }}
+                  <span class="hi-range-hint">{{ field.rangeHint }}</span>
+                </label>
+                <div class="hi-input-wrap">
+                  <input
+                    :type="field.type"
+                    :id="field.key"
+                    v-model="form[field.key]"
+                    :placeholder="field.placeholder"
+                    :min="field.min" :max="field.max" :step="field.step"
+                    class="hi-input"
+                    :class="{ 'hi-input--error': errors[field.key], 'hi-input--ok': form[field.key] && !errors[field.key] }"
+                    @input="validateField(field.key)"
+                  />
+                  <span class="hi-unit">{{ field.unit }}</span>
+                </div>
+                <span v-if="errors[field.key]" class="hi-error">{{ errors[field.key] }}</span>
               </div>
             </div>
+          </fieldset>
+
+          <!-- Lifestyle group -->
+          <fieldset class="hi-fieldset">
+            <legend class="hi-legend">
+              <span><AppIcon name="foot" size="20" /></span> 生活数据
+            </legend>
+            <div class="hi-form-grid">
+              <div v-for="field in lifeFields" :key="field.key" class="hi-field">
+                <label :for="field.key" class="hi-label">
+                  {{ field.label }}
+                  <span class="hi-range-hint">{{ field.rangeHint }}</span>
+                </label>
+                <div class="hi-input-wrap">
+                  <input
+                    :type="field.type"
+                    :id="field.key"
+                    v-model="form[field.key]"
+                    :placeholder="field.placeholder"
+                    :min="field.min" :max="field.max" :step="field.step"
+                    class="hi-input"
+                    :class="{ 'hi-input--ok': form[field.key] && !errors[field.key] }"
+                    @input="validateField(field.key)"
+                  />
+                  <span class="hi-unit">{{ field.unit }}</span>
+                </div>
+                <span v-if="errors[field.key]" class="hi-error">{{ errors[field.key] }}</span>
+              </div>
+              <div class="hi-field">
+                <label for="measuredAt" class="hi-label">记录日期</label>
+                <input type="date" id="measuredAt" v-model="form.measuredAt" class="hi-input hi-date-input" />
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Quick presets -->
+          <div class="hi-presets">
+            <span class="hi-presets-label">快捷填入：</span>
+            <button type="button" class="hi-preset-btn" @click="fillPreset('normal')">正常范围</button>
+            <button type="button" class="hi-preset-btn" @click="fillPreset('clear')">清空</button>
           </div>
-          
-          <div class="form-actions">
-            <button type="button" class="btn-secondary" @click="resetForm">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="23 4 23 10 17 10"/>
-                <polyline points="1 20 1 14 7 14"/>
-                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-              </svg>
-              重置
-            </button>
-            <button type="submit" class="btn-primary" :disabled="hasErrors">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              提交数据
+
+          <div class="hi-actions">
+            <button type="button" class="btn btn-secondary" @click="resetForm">重置</button>
+            <button type="submit" class="btn btn-primary" :disabled="hasErrors || submitting">
+              {{ submitting ? '提交中…' : '提交数据' }}
             </button>
           </div>
         </form>
       </div>
 
-      <div class="history-section">
-        <div class="section-header">
-          <h2>历史记录</h2>
-          <span class="record-count">最近 {{ historyData.length }} 条记录</span>
+      <!-- History -->
+      <div class="card hi-history-card">
+        <div class="card-header">
+          <h3 class="card-title">历史记录</h3>
+          <span class="badge badge-neutral">最近 {{ historyData.length }} 条</span>
         </div>
-        
-        <div v-if="historyData.length === 0" class="empty-state">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 8v4l3 3"/>
-            <circle cx="12" cy="12" r="10"/>
-          </svg>
-          <p>暂无历史记录</p>
+
+        <div v-if="historyLoading" class="hi-history-loading">
+          <div v-for="i in 3" :key="i" class="skeleton" style="height:80px;border-radius:var(--radius-md);margin-bottom:var(--space-sm)"></div>
         </div>
-        
-        <div v-else class="timeline">
-          <div 
-            v-for="(record, index) in historyData" 
-            :key="record.id || index"
-            class="timeline-item"
-          >
-            <div class="timeline-dot"></div>
-            <div class="timeline-card">
-              <div class="timeline-header">
-                <span class="timeline-date">{{ formatDate(record.recordDate) }}</span>
-                <span class="timeline-time">{{ formatTime(record.recordDate) }}</span>
+
+        <div v-else-if="historyData.length === 0" class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>暂无历史记录</h3>
+          <p>提交数据后将在此显示</p>
+        </div>
+
+        <div v-else class="hi-timeline">
+          <div v-for="(record, index) in historyData" :key="record.id || index" class="hi-tl-item">
+            <div class="hi-tl-dot" :class="recordHealthLevel(record)"></div>
+            <div class="hi-tl-card">
+              <div class="hi-tl-top">
+                <span class="hi-tl-date">{{ formatDate(record.recordDate) }}</span>
+                <span class="hi-tl-time">{{ formatTime(record.recordDate) }}</span>
+                <span class="hi-tl-level" :class="recordHealthLevel(record)">{{ recordHealthLabel(record) }}</span>
               </div>
-              <div class="timeline-content">
-                <div class="data-grid">
-                  <div class="data-item">
-                    <span class="data-label">心率</span>
-                    <span class="data-value">{{ record.heartRate }} <span class="data-unit">bpm</span></span>
-                  </div>
-                  <div class="data-item">
-                    <span class="data-label">血压</span>
-                    <span class="data-value">{{ record.bloodPressureHigh }}/{{ record.bloodPressureLow }} <span class="data-unit">mmHg</span></span>
-                  </div>
-                  <div class="data-item">
-                    <span class="data-label">血糖</span>
-                    <span class="data-value">{{ record.bloodSugar }} <span class="data-unit">mmol/L</span></span>
-                  </div>
-                  <div class="data-item">
-                    <span class="data-label">睡眠</span>
-                    <span class="data-value">{{ record.sleepHours }} <span class="data-unit">小时</span></span>
-                  </div>
+              <div class="hi-tl-grid">
+                <div class="hi-tl-data" v-for="item in recordSummary(record)" :key="item.label">
+                  <span class="hi-tl-data-label">{{ item.label }}</span>
+                  <span class="hi-tl-data-value">{{ item.value }} <small>{{ item.unit }}</small></span>
                 </div>
               </div>
             </div>
@@ -133,100 +140,77 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { healthAPI } from '../api'
 import { ElMessage } from 'element-plus'
+import AppIcon from '../components/AppIcon.vue'
 
 const router = useRouter()
+const goBack = () => router.push('/dashboard')
 
-const goBack = () => {
-  router.push('/dashboard')
-}
+const currentDate = new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })
+const submitting = ref(false)
+const historyLoading = ref(true)
 
-const currentDate = new Date().toLocaleDateString('zh-CN', { 
-  year: 'numeric', 
-  month: 'long', 
-  day: 'numeric',
-  weekday: 'long'
-})
+const vitalFields = [
+  { key: 'heartRate', label: '心率', type: 'number', placeholder: '60-100', unit: '次/分钟', min: 40, max: 180, step: 1, rangeHint: '正常 60～100' },
+  { key: 'bloodPressureHigh', label: '收缩压', type: 'number', placeholder: '90-130', unit: 'mmHg', min: 80, max: 200, step: 1, rangeHint: '正常 90～130' },
+  { key: 'bloodPressureLow', label: '舒张压', type: 'number', placeholder: '60-80', unit: 'mmHg', min: 50, max: 120, step: 1, rangeHint: '正常 60～85' },
+  { key: 'bloodSugar', label: '血糖', type: 'number', placeholder: '3.9-6.1', unit: 'mmol/L', min: 2, max: 20, step: 0.1, rangeHint: '空腹 3.9～6.1' },
+  { key: 'bodyTemperature', label: '体温', type: 'number', placeholder: '36.0-37.2', unit: '℃', min: 35, max: 42, step: 0.1, rangeHint: '正常 36.0～37.2' }
+]
 
-const formFields = [
-  { key: 'heartRate', label: '心率', type: 'number', placeholder: '请输入心率', unit: '次/分钟', min: 40, max: 180, step: 1 },
-  { key: 'bloodPressureHigh', label: '血压(高压)', type: 'number', placeholder: '请输入高压', unit: 'mmHg', min: 80, max: 200, step: 1 },
-  { key: 'bloodPressureLow', label: '血压(低压)', type: 'number', placeholder: '请输入低压', unit: 'mmHg', min: 50, max: 120, step: 1 },
-  { key: 'bloodSugar', label: '血糖', type: 'number', placeholder: '请输入血糖', unit: 'mmol/L', min: 2, max: 20, step: 0.1 },
-  { key: 'bodyTemperature', label: '体温', type: 'number', placeholder: '请输入体温', unit: '℃', min: 35, max: 42, step: 0.1 },
-  { key: 'sleepHours', label: '睡眠时长', type: 'number', placeholder: '请输入睡眠时长', unit: '小时', min: 0, max: 24, step: 0.5 },
-  { key: 'steps', label: '步数', type: 'number', placeholder: '请输入步数', unit: '步', min: 0, max: 50000, step: 1 }
+const lifeFields = [
+  { key: 'sleepHours', label: '睡眠时长', type: 'number', placeholder: '7-9', unit: '小时', min: 0, max: 24, step: 0.5, rangeHint: '推荐 7～9 小时' },
+  { key: 'steps', label: '步数', type: 'number', placeholder: '5000-10000', unit: '步', min: 0, max: 50000, step: 1, rangeHint: '推荐 ≥5000 步' }
 ]
 
 const form = reactive({
-  heartRate: '',
-  bloodPressureHigh: '',
-  bloodPressureLow: '',
-  bloodSugar: '',
-  bodyTemperature: '',
-  sleepHours: '',
-  steps: '',
+  heartRate: '', bloodPressureHigh: '', bloodPressureLow: '',
+  bloodSugar: '', bodyTemperature: '', sleepHours: '', steps: '',
   measuredAt: new Date().toISOString().split('T')[0]
 })
 
 const errors = reactive({})
 const historyData = ref([])
 
-const hasErrors = computed(() => {
-  return Object.keys(errors).some(key => errors[key])
-})
+const hasErrors = computed(() => Object.values(errors).some(e => e))
 
-const validateField = (fieldKey) => {
-  const field = formFields.find(f => f.key === fieldKey)
-  const value = form[fieldKey]
-  
-  if (!value) {
-    errors[fieldKey] = ''
-    return
-  }
-  
-  const numValue = parseFloat(value)
-  
-  if (isNaN(numValue)) {
-    errors[fieldKey] = '请输入有效数字'
-  } else if (field.min !== undefined && numValue < field.min) {
-    errors[fieldKey] = `最小值为 ${field.min}`
-  } else if (field.max !== undefined && numValue > field.max) {
-    errors[fieldKey] = `最大值为 ${field.max}`
-  } else {
-    errors[fieldKey] = ''
-  }
+const validateField = (key) => {
+  const allFields = [...vitalFields, ...lifeFields]
+  const field = allFields.find(f => f.key === key)
+  if (!field) return
+  const val = form[key]
+  if (!val) { errors[key] = ''; return }
+  const n = parseFloat(val)
+  if (isNaN(n)) errors[key] = '请输入有效数字'
+  else if (field.min !== undefined && n < field.min) errors[key] = `低于正常范围`
+  else if (field.max !== undefined && n > field.max) errors[key] = `超过正常范围`
+  else errors[key] = ''
+}
+
+const fillPreset = (type) => {
+  if (type === 'clear') { resetForm(); return }
+  const presets = { heartRate: 72, bloodPressureHigh: 120, bloodPressureLow: 75, bloodSugar: 5.2, bodyTemperature: 36.5, sleepHours: 7.5, steps: 6000 }
+  Object.entries(presets).forEach(([k, v]) => { form[k] = v; validateField(k) })
+  ElMessage.success('已填入正常范围参考值')
 }
 
 const loadHistory = async () => {
   const userId = localStorage.getItem('userId')
-  if (!userId) return
-  
+  if (!userId) { historyLoading.value = false; return }
   try {
-    const response = await healthAPI.getWeekly(userId)
-    if (response.code === 200) {
-      historyData.value = response.data || []
-    }
-  } catch (error) {
-    console.error('加载历史数据失败:', error)
-  }
+    const res = await healthAPI.getWeekly(userId)
+    if (res.code === 200) historyData.value = res.data || []
+  } catch (e) { /* silent */ }
+  historyLoading.value = false
 }
 
 const submitForm = async () => {
   const userId = localStorage.getItem('userId')
-  if (!userId) {
-    ElMessage.error('请先登录')
-    return
-  }
-  
-  for (const field of formFields) {
-    validateField(field.key)
-  }
-  
-  if (hasErrors.value) {
-    ElMessage.warning('请检查输入的信息')
-    return
-  }
-  
+  if (!userId) { ElMessage.error('请先登录'); return }
+  const allFields = [...vitalFields, ...lifeFields]
+  for (const f of allFields) validateField(f.key)
+  if (hasErrors.value) { ElMessage.warning('请检查标红的输入项'); return }
+
+  submitting.value = true
   try {
     const data = {
       userId: parseInt(userId),
@@ -239,403 +223,129 @@ const submitForm = async () => {
       steps: form.steps ? parseInt(form.steps) : null,
       measuredAt: form.measuredAt ? form.measuredAt + 'T00:00:00' : new Date().toISOString().slice(0, 19)
     }
-    
-    const response = await healthAPI.save(data)
-    if (response.code === 200) {
-      ElMessage.success('数据提交成功')
+    const res = await healthAPI.save(data)
+    if (res.code === 200) {
+      ElMessage.success('数据提交成功！刷新健康监测页面查看最新评分')
       resetForm()
-      loadHistory()
+      await loadHistory()
     } else {
-      ElMessage.error(response.message || '提交失败')
+      ElMessage.error(res.message || '提交失败')
     }
-  } catch (error) {
-    console.error('提交失败:', error)
-    ElMessage.error('提交失败')
-  }
+  } catch (e) { ElMessage.error('提交失败，请检查网络连接') }
+  submitting.value = false
 }
 
 const resetForm = () => {
-  form.heartRate = ''
-  form.bloodPressureHigh = ''
-  form.bloodPressureLow = ''
-  form.bloodSugar = ''
-  form.bodyTemperature = ''
-  form.sleepHours = ''
-  form.steps = ''
+  const allFields = [...vitalFields, ...lifeFields]
+  for (const k of allFields.map(f => f.key)) form[k] = ''
   form.measuredAt = new Date().toISOString().split('T')[0]
-  
-  for (const key in errors) {
-    errors[key] = ''
-  }
+  for (const k in errors) errors[k] = ''
 }
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
+// History helpers
+const recordHealthLevel = (r) => {
+  let issues = 0
+  if (r.heartRate && (r.heartRate < 55 || r.heartRate > 100)) issues++
+  if (r.bloodPressureHigh && r.bloodPressureLow && (r.bloodPressureHigh >= 140 || r.bloodPressureLow >= 90)) issues++
+  if (r.bloodSugar && (parseFloat(r.bloodSugar) < 3.5 || parseFloat(r.bloodSugar) > 7.0)) issues++
+  if (issues >= 2) return 'hi-level--poor'
+  if (issues === 1) return 'hi-level--fair'
+  return 'hi-level--good'
 }
-
-const formatTime = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+const recordHealthLabel = (r) => {
+  const lvl = recordHealthLevel(r)
+  if (lvl === 'hi-level--good') return '良好'
+  if (lvl === 'hi-level--fair') return '关注'
+  return '异常'
 }
+const recordSummary = (r) => [
+  { label: '心率', value: r.heartRate ?? '--', unit: 'bpm' },
+  { label: '血压', value: r.bloodPressureHigh ? `${r.bloodPressureHigh}/${r.bloodPressureLow}` : '--', unit: 'mmHg' },
+  { label: '血糖', value: r.bloodSugar ?? '--', unit: 'mmol/L' },
+  { label: '睡眠', value: r.sleepHours ?? '--', unit: 'h' }
+]
 
-onMounted(() => {
-  loadHistory()
-})
+const formatDate = (s) => s ? new Date(s).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) : ''
+const formatTime = (s) => s ? new Date(s).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) : ''
+
+onMounted(() => loadHistory())
 </script>
 
 <style scoped>
-.health-input-page {
-  padding: 24px;
-  min-height: 100vh;
-  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-}
+.hi-page { min-height: 100vh; background: var(--color-surface); padding: var(--space-lg); }
+.hi-header { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-xl); }
+.hi-header-text h1 { margin: 0; }
+.hi-header-text p { margin: var(--space-xxs) 0 0; color: var(--color-on-surface-variant); }
 
-.page-header {
-  margin-bottom: 28px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
+/* Layout */
+.hi-layout { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); align-items: start; }
 
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 16px;
-  background: white;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s;
-}
+/* Form */
+.hi-form { margin-top: var(--space-md); background: var(--color-surface-container-lowest); border: 1px solid var(--color-outline-variant); border-radius: var(--radius-xl); padding: var(--space-lg); box-shadow: var(--shadow-card); }
 
-.back-btn:hover {
-  background: #f8fafc;
-  border-color: #667eea;
-  color: #667eea;
-}
+/* Fieldsets */
+.hi-fieldset { border: none; padding: 0; margin: 0 0 var(--space-lg); }
+.hi-legend { font-size: var(--text-label-md); font-weight: var(--weight-semibold); color: var(--color-on-surface); padding: 0 0 var(--space-sm); width: 100%; border-bottom: 1px solid var(--color-outline-variant); margin-bottom: var(--space-md); display: flex; align-items: center; gap: var(--space-xs); }
+.hi-legend span { font-size: 18px; }
 
-.back-btn svg {
-  width: 18px;
-  height: 18px;
-}
+.hi-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
+.hi-field { display: flex; flex-direction: column; gap: var(--space-xxs); }
+.hi-label { font-size: var(--text-label-md); font-weight: var(--weight-medium); color: var(--color-on-surface); display: flex; align-items: baseline; gap: var(--space-xs); }
+.hi-range-hint { font-size: var(--text-label-sm); font-weight: var(--weight-regular); color: var(--color-on-surface-variant); }
 
-.header-text h1 {
-  margin: 0;
-  font-size: 28px;
-  color: #1e293b;
-  font-weight: 700;
-}
+.hi-input-wrap { position: relative; }
+.hi-input { width: 100%; min-height: var(--input-min-height); padding: 14px var(--space-md); border: 1px solid var(--color-outline-variant); border-radius: var(--radius-md); font-size: var(--text-body-md); font-family: var(--font-family); color: var(--color-on-surface); background: var(--color-surface-container-lowest); transition: all var(--duration-fast) var(--ease-out); }
+.hi-input:focus { outline: none; border: 2px solid var(--color-primary); padding: 13px calc(var(--space-md) - 1px); }
+.hi-input::placeholder { color: var(--color-on-surface-variant); font-size: var(--text-label-md); }
+.hi-input--ok { border-color: var(--color-tertiary-fixed-dim); }
+.hi-input--error { border: 2px solid var(--color-error) !important; padding: 13px calc(var(--space-md) - 1px) !important; }
+.hi-unit { position: absolute; right: var(--space-md); top: 50%; transform: translateY(-50%); font-size: var(--text-label-sm); color: var(--color-on-surface-variant); pointer-events: none; }
+.hi-date-input { padding-right: var(--space-md) !important; }
+.hi-error { font-size: var(--text-label-sm); color: var(--color-error); font-weight: var(--weight-medium); }
 
-.header-text p {
-  margin: 8px 0 0 0;
-  color: #64748b;
-  font-size: 14px;
-}
+/* Presets */
+.hi-presets { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-md); }
+.hi-presets-label { font-size: var(--text-label-sm); color: var(--color-on-surface-variant); }
+.hi-preset-btn { padding: var(--space-xxs) var(--space-sm); background: var(--color-surface-container-low); border: 1px solid var(--color-outline-variant); border-radius: var(--radius-sm); font-size: var(--text-label-sm); font-family: var(--font-family); color: var(--color-on-surface-variant); cursor: pointer; transition: all var(--duration-fast) var(--ease-out); }
+.hi-preset-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-primary-fixed); }
 
-.main-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
+.hi-actions { display: flex; gap: var(--space-sm); justify-content: flex-end; padding-top: var(--space-md); border-top: 1px solid var(--color-outline-variant); }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+/* History */
+.hi-history-card { max-height: 680px; overflow-y: auto; }
+.hi-history-loading { padding: var(--space-sm); }
 
-.section-header h2 {
-  margin: 0;
-  font-size: 18px;
-  color: #1e293b;
-  font-weight: 600;
-}
+.hi-timeline { display: flex; flex-direction: column; gap: var(--space-sm); }
+.hi-tl-item { display: flex; gap: var(--space-md); }
+.hi-tl-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: var(--space-md); flex-shrink: 0; border: 2px solid; }
+.hi-tl-dot.hi-level--good { background: var(--color-tertiary-fixed); border-color: var(--color-tertiary); }
+.hi-tl-dot.hi-level--fair { background: var(--color-secondary-fixed); border-color: var(--color-secondary); }
+.hi-tl-dot.hi-level--poor { background: var(--color-error-container); border-color: var(--color-error); }
 
-.date-badge,
-.record-count {
-  padding: 6px 14px;
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-}
+.hi-tl-card { flex: 1; background: var(--color-surface-container-low); border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md); }
+.hi-tl-top { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-sm); }
+.hi-tl-date { font-size: var(--text-label-md); font-weight: var(--weight-semibold); color: var(--color-on-surface); }
+.hi-tl-time { font-size: var(--text-label-sm); color: var(--color-on-surface-variant); }
+.hi-tl-level { margin-left: auto; font-size: var(--text-label-sm); font-weight: var(--weight-semibold); padding: 1px var(--space-xs); border-radius: var(--radius-sm); }
+.hi-tl-level.hi-level--good { color: var(--color-tertiary); background: var(--color-tertiary-fixed); }
+.hi-tl-level.hi-level--fair { color: var(--color-secondary); background: var(--color-secondary-fixed); }
+.hi-tl-level.hi-level--poor { color: var(--color-error); background: var(--color-error-container); }
 
-.form-section {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-}
+.hi-tl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-xs); }
+.hi-tl-data { display: flex; justify-content: space-between; align-items: center; padding: var(--space-xxs) var(--space-xs); background: var(--color-surface-container-lowest); border-radius: var(--radius-sm); }
+.hi-tl-data-label { font-size: var(--text-label-sm); color: var(--color-on-surface-variant); }
+.hi-tl-data-value { font-size: var(--text-label-sm); font-weight: var(--weight-semibold); color: var(--color-on-surface); }
+.hi-tl-data-value small { font-weight: var(--weight-regular); color: var(--color-on-surface-variant); }
 
-.health-form {
-  margin-top: 16px;
+/* Responsive */
+@media (max-width: 1023px) {
+  .hi-layout { grid-template-columns: 1fr; }
+  .hi-form-grid { grid-template-columns: 1fr 1fr; }
 }
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.form-item {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-item label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #334155;
-}
-
-.input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.input-wrapper input {
-  flex: 1;
-  padding: 14px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 12px;
-  font-size: 14px;
-  transition: all 0.3s;
-  background: #f8fafc;
-}
-
-.input-wrapper input:focus {
-  outline: none;
-  border-color: #667eea;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.input-wrapper input::placeholder {
-  color: #94a3b8;
-}
-
-.input-unit {
-  position: absolute;
-  right: 16px;
-  color: #64748b;
-  font-size: 14px;
-  pointer-events: none;
-}
-
-.date-input {
-  padding-right: 16px !important;
-}
-
-.error-message {
-  font-size: 12px;
-  color: #ef4444;
-}
-
-.form-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid #f1f5f9;
-}
-
-.btn-secondary,
-.btn-primary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s;
-  border: none;
-}
-
-.btn-secondary {
-  background: #f1f5f9;
-  color: #64748b;
-}
-
-.btn-secondary:hover {
-  background: #e2e8f0;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-secondary svg,
-.btn-primary svg {
-  width: 16px;
-  height: 16px;
-}
-
-.history-section {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-  max-height: 600px;
-  overflow-y: auto;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: #94a3b8;
-}
-
-.empty-state svg {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 16px;
-}
-
-.empty-state p {
-  margin: 0;
-  font-size: 14px;
-}
-
-.timeline {
-  position: relative;
-  padding-left: 20px;
-}
-
-.timeline::before {
-  content: '';
-  position: absolute;
-  left: 7px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-  border-radius: 1px;
-}
-
-.timeline-item {
-  position: relative;
-  margin-bottom: 20px;
-}
-
-.timeline-item:last-child {
-  margin-bottom: 0;
-}
-
-.timeline-dot {
-  position: absolute;
-  left: -17px;
-  top: 16px;
-  width: 12px;
-  height: 12px;
-  background: white;
-  border: 3px solid #667eea;
-  border-radius: 50%;
-  z-index: 1;
-}
-
-.timeline-card {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 16px;
-  transition: all 0.3s;
-}
-
-.timeline-card:hover {
-  background: #f1f5f9;
-  transform: translateX(4px);
-}
-
-.timeline-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.timeline-date {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.timeline-time {
-  font-size: 12px;
-  color: #94a3b8;
-}
-
-.timeline-content {
-  margin-top: 8px;
-}
-
-.data-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.data-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background: white;
-  border-radius: 8px;
-}
-
-.data-label {
-  font-size: 12px;
-  color: #64748b;
-}
-
-.data-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.data-unit {
-  font-size: 12px;
-  font-weight: 400;
-  color: #94a3b8;
-  margin-left: 4px;
-}
-
-@media (max-width: 1024px) {
-  .main-content {
-    grid-template-columns: 1fr;
-  }
-  
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 767px) {
+  .hi-page { padding: var(--space-md); }
+  .hi-form-grid { grid-template-columns: 1fr; }
+  .hi-tl-grid { grid-template-columns: 1fr; }
+  .hi-history-card { max-height: none; }
 }
 </style>

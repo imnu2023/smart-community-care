@@ -4,7 +4,7 @@ import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import java.io.IOException;
 
-@WebFilter("/*")
+@WebFilter(value = "/*", asyncSupported = true)
 public class CharacterEncodingFilter implements Filter {
 
     @Override
@@ -12,11 +12,14 @@ public class CharacterEncodingFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) 
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json;charset=UTF-8");
+        // 不要覆盖 SSE 等特殊 Content-Type
+        if (response.getContentType() == null) {
+            response.setContentType("application/json;charset=UTF-8");
+        }
         chain.doFilter(request, response);
     }
 

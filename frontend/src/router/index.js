@@ -75,6 +75,42 @@ const routes = [
     component: () => import('../views/FamilyPay.vue')
   },
   {
+    path: '/family',
+    component: () => import('../views/family/FamilyLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'FamilyDashboard',
+        component: () => import('../views/family/FamilyDashboard.vue')
+      },
+      {
+        path: 'elder-health',
+        name: 'ElderHealth',
+        component: () => import('../views/family/ElderHealth.vue')
+      },
+      {
+        path: 'orders',
+        name: 'FamilyOrders',
+        component: () => import('../views/family/FamilyOrders.vue')
+      },
+      {
+        path: 'messages',
+        name: 'FamilyMessages',
+        component: () => import('../views/family/FamilyMessages.vue')
+      },
+      {
+        path: 'activities',
+        name: 'FamilyActivities',
+        component: () => import('../views/family/FamilyActivities.vue')
+      },
+      {
+        path: 'services',
+        name: 'FamilyServices',
+        component: () => import('../views/family/FamilyServices.vue')
+      }
+    ]
+  },
+  {
     path: '/admin',
     name: 'Admin',
     component: () => import('../views/admin/AdminDashboard.vue'),
@@ -103,6 +139,11 @@ const routes = [
         path: 'orders',
         name: 'AdminOrders',
         component: () => import('../views/admin/AdminOrders.vue')
+      },
+      {
+        path: 'relations',
+        name: 'AdminRelations',
+        component: () => import('../views/admin/Relations.vue')
       }
     ]
   }
@@ -117,9 +158,16 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   if (to.path !== '/login' && to.path !== '/register' && !token) {
     next('/login')
-  } else {
-    next()
+    return
   }
+  // Redirect family members to their dedicated portal
+  const role = parseInt(localStorage.getItem('role'))
+  const elderPaths = ['/dashboard', '/health', '/health-input', '/devices', '/emergency', '/services', '/orders', '/activities', '/family-pay']
+  if (role === 3 && elderPaths.includes(to.path)) {
+    next('/family')
+    return
+  }
+  next()
 })
 
 export default router

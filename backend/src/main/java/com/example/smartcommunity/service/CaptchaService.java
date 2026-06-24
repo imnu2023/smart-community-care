@@ -52,14 +52,18 @@ public class CaptchaService {
      */
     public void validate(String uuid, String code) {
         String redisKey = CAPTCHA_KEY_PREFIX + uuid;
-        String storedCode = stringRedisTemplate.opsForValue().getAndDelete(redisKey);
+        String storedCode = stringRedisTemplate.opsForValue().get(redisKey);
 
         if (storedCode == null) {
             throw new BusinessException("验证码已过期，请重新获取");
         }
 
+        // 阅后即焚：先校验，通过后再删除
         if (!storedCode.equalsIgnoreCase(code.trim())) {
+            stringRedisTemplate.delete(redisKey);
             throw new BusinessException("验证码错误");
         }
+
+        stringRedisTemplate.delete(redisKey);
     }
 }

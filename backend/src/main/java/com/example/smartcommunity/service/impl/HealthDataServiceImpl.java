@@ -79,7 +79,60 @@ public class HealthDataServiceImpl implements HealthDataService {
             healthDataMapper.updateById(latest);
         }
     }
-    
+
+    @Override
+    public String buildAiPrompt(List<HealthData> weeklyData) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("以下是老人近7天的健康监测数据，请分析：\n\n");
+
+        // Heart rate
+        sb.append("心率(bpm): [");
+        weeklyData.forEach(d -> sb.append(d.getHeartRate() != null ? d.getHeartRate() : "-").append(","));
+        sb.setLength(sb.length() - 1);
+        sb.append("]\n");
+
+        // Blood pressure
+        sb.append("血压(mmHg): [");
+        weeklyData.forEach(d -> {
+            if (d.getBloodPressureHigh() != null && d.getBloodPressureLow() != null)
+                sb.append(String.format("%.0f/%.0f", d.getBloodPressureHigh(), d.getBloodPressureLow()));
+            else sb.append("-");
+            sb.append(",");
+        });
+        sb.setLength(sb.length() - 1);
+        sb.append("]\n");
+
+        // Blood sugar
+        sb.append("血糖(mmol/L): [");
+        weeklyData.forEach(d -> sb.append(d.getBloodSugar() != null ? d.getBloodSugar() : "-").append(","));
+        sb.setLength(sb.length() - 1);
+        sb.append("]\n");
+
+        // Sleep
+        sb.append("睡眠(小时): [");
+        weeklyData.forEach(d -> sb.append(d.getSleepHours() != null ? d.getSleepHours() : "-").append(","));
+        sb.setLength(sb.length() - 1);
+        sb.append("]\n");
+
+        // Steps
+        sb.append("步数: [");
+        weeklyData.forEach(d -> sb.append(d.getSteps() != null ? d.getSteps() : "-").append(","));
+        sb.setLength(sb.length() - 1);
+        sb.append("]\n");
+
+        // Temperature
+        boolean hasTemp = weeklyData.stream().anyMatch(d -> d.getBodyTemperature() != null);
+        if (hasTemp) {
+            sb.append("体温(℃): [");
+            weeklyData.forEach(d -> sb.append(d.getBodyTemperature() != null ? d.getBodyTemperature() : "-").append(","));
+            sb.setLength(sb.length() - 1);
+            sb.append("]\n");
+        }
+
+        sb.append("\n请给出分析报告。");
+        return sb.toString();
+    }
+
     private static final BigDecimal BLOOD_SUGAR_THRESHOLD = new BigDecimal("7.0");
     private static final BigDecimal BODY_TEMP_THRESHOLD = new BigDecimal("37.5");
 

@@ -1,111 +1,60 @@
 <template>
-  <div class="admin-users">
-    <div class="page-header">
-      <h2>用户管理</h2>
-      <button class="add-btn" @click="showAddModal = true">
-        <span>+</span>
-        <span>添加用户</span>
-      </button>
+  <div class="au-page">
+    <div class="au-header">
+      <h2 class="text-headline-md">用户管理</h2>
+      <button class="btn btn-primary" @click="showAddModal = true">＋ 添加用户</button>
     </div>
-    
-    <div class="user-table">
+
+    <div class="au-table-wrap">
       <el-table :data="userList">
-      <el-table-column prop="id" label="ID" />
-      <el-table-column prop="username" label="用户名" />
-      <el-table-column prop="name" label="姓名" />
-      <el-table-column prop="phone" label="手机号" />
-      <el-table-column prop="age" label="年龄" />
-      <el-table-column prop="role" label="角色">
-        <template #default="scope">
-          <el-tag :type="getRoleType(scope.row.role)">
-            {{ getRoleText(scope.row.role) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="healthStatus" label="健康状态">
-        <template #default="scope">
-          <el-tag :type="getHealthStatusType(scope.row.healthStatus)">
-            {{ getHealthStatusText(scope.row.healthStatus) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createdAt" label="创建时间" />
-      <el-table-column label="操作">
-        <template #default="scope">
-          <div class="action-btn">
-            <el-button type="primary" size="small" @click="editUser(scope.row)">编辑</el-button>
-            <el-button type="warning" size="small" @click="openRechargeModal(scope.row)">充值</el-button>
-            <el-button type="danger" size="small" @click="deleteUser(scope.row.id)">删除</el-button>
-          </div>
-        </template>
-      </el-table-column>
+        <el-table-column prop="id" label="ID" width="60" />
+        <el-table-column prop="username" label="用户名" />
+        <el-table-column prop="name" label="姓名" />
+        <el-table-column prop="phone" label="手机号" />
+        <el-table-column prop="age" label="年龄" width="60" />
+        <el-table-column prop="role" label="角色" width="80">
+          <template #default="scope">
+            <el-tag :type="getRoleType(scope.row.role)">{{ getRoleText(scope.row.role) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="healthStatus" label="健康状态" width="80">
+          <template #default="scope">
+            <el-tag :type="getHealthStatusType(scope.row.healthStatus)">{{ getHealthStatusText(scope.row.healthStatus) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createdAt" label="创建时间" width="160" />
+        <el-table-column label="操作" width="240">
+          <template #default="scope">
+            <div style="display:flex;gap:8px">
+              <el-button type="primary" size="small" @click="editUser(scope.row)">编辑</el-button>
+              <el-button type="success" size="small" @click="openRechargeModal(scope.row)">充值</el-button>
+              <el-button type="danger" size="small" @click="deleteUser(scope.row.id)">删除</el-button>
+            </div>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
-    
-    <el-dialog class="custom-modal" :title="isEditMode ? '编辑用户' : '添加用户'" v-model="showAddModal" @close="handleModalClose">
-      <div class="modal-body">
-        <el-form :model="form" label-width="100px">
-          <el-form-item label="用户名" class="form-item">
-            <el-input v-model="form.username" placeholder="请输入用户名" />
-          </el-form-item>
-          <el-form-item v-if="!isEditMode" label="密码" class="form-item">
-            <el-input type="password" v-model="form.password" placeholder="请输入密码" />
-          </el-form-item>
-          <el-form-item label="姓名" class="form-item">
-            <el-input v-model="form.name" placeholder="请输入姓名" />
-          </el-form-item>
-          <el-form-item label="手机号" class="form-item">
-            <el-input v-model="form.phone" placeholder="请输入手机号" />
-          </el-form-item>
-          <el-form-item label="年龄" class="form-item">
-            <el-input type="number" v-model="form.age" min="1" max="120" placeholder="请输入年龄" />
-          </el-form-item>
-          <el-form-item label="性别" class="form-item">
-            <el-select v-model="form.gender" placeholder="请选择性别">
-              <el-option label="男" value="male" />
-              <el-option label="女" value="female" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="角色" class="form-item">
-            <el-select v-model="form.role" placeholder="请选择角色">
-              <el-option label="管理员" :value="1" />
-              <el-option label="老人" :value="2" />
-              <el-option label="家属" :value="3" />
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </div>
-      <template #footer>
-        <div class="modal-footer">
-          <el-button @click="showAddModal = false">取消</el-button>
-          <el-button type="primary" @click="saveUser">{{ isEditMode ? '保存' : '确定' }}</el-button>
-        </div>
-      </template>
+
+    <el-dialog :title="isEditMode ? '编辑用户' : '添加用户'" v-model="showAddModal" @close="handleModalClose">
+      <el-form :model="form" label-width="80px">
+        <el-form-item label="用户名"><el-input v-model="form.username" placeholder="请输入用户名" /></el-form-item>
+        <el-form-item v-if="!isEditMode" label="密码"><el-input type="password" v-model="form.password" placeholder="请输入密码" /></el-form-item>
+        <el-form-item label="姓名"><el-input v-model="form.name" placeholder="请输入姓名" /></el-form-item>
+        <el-form-item label="手机号"><el-input v-model="form.phone" placeholder="请输入手机号" /></el-form-item>
+        <el-form-item label="年龄"><el-input type="number" v-model="form.age" min="1" max="120" /></el-form-item>
+        <el-form-item label="性别"><el-select v-model="form.gender"><el-option label="男" value="male" /><el-option label="女" value="female" /></el-select></el-form-item>
+        <el-form-item label="角色"><el-select v-model="form.role"><el-option label="管理员" :value="1" /><el-option label="老人" :value="2" /><el-option label="家属" :value="3" /></el-select></el-form-item>
+      </el-form>
+      <template #footer><el-button @click="showAddModal = false">取消</el-button><el-button type="primary" @click="saveUser">{{ isEditMode ? '保存' : '确定' }}</el-button></template>
     </el-dialog>
 
-    <el-dialog class="custom-modal" title="用户充值" v-model="showRechargeModal">
-      <div class="modal-body">
-        <el-form :model="rechargeForm" label-width="100px">
-          <el-form-item label="用户姓名" class="form-item">
-            <el-input :value="rechargeForm.userName" disabled />
-          </el-form-item>
-          <el-form-item label="充值金额" class="form-item">
-            <el-input type="number" v-model="rechargeForm.amount" placeholder="请输入充值金额" />
-          </el-form-item>
-          <div class="quick-amounts">
-            <button type="button" v-for="amount in [10, 50, 100, 200, 500]" :key="amount" 
-                    class="quick-btn" @click="rechargeForm.amount = amount">
-              ¥{{ amount }}
-            </button>
-          </div>
-        </el-form>
-      </div>
-      <template #footer>
-        <div class="modal-footer">
-          <el-button @click="closeRechargeModal">取消</el-button>
-          <el-button type="primary" @click="handleRecharge">确认充值</el-button>
-        </div>
-      </template>
+    <el-dialog title="用户充值" v-model="showRechargeModal">
+      <el-form :model="rechargeForm" label-width="80px">
+        <el-form-item label="用户"><el-input :value="rechargeForm.userName" disabled /></el-form-item>
+        <el-form-item label="金额"><el-input type="number" v-model="rechargeForm.amount" placeholder="请输入充值金额" /></el-form-item>
+        <div style="display:flex;gap:8px;margin-top:12px"><button v-for="amt in [10,50,100,200,500]" :key="amt" type="button" class="btn btn-secondary btn-sm" @click="rechargeForm.amount = amt">¥{{ amt }}</button></div>
+      </el-form>
+      <template #footer><el-button @click="closeRechargeModal">取消</el-button><el-button type="primary" @click="handleRecharge">确认充值</el-button></template>
     </el-dialog>
   </div>
 </template>
@@ -115,476 +64,36 @@ import { ref, reactive, onMounted } from 'vue'
 import { userAPI, authAPI, walletAPI } from '../../api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-const userList = ref([])
-const showAddModal = ref(false)
-const showRechargeModal = ref(false)
-const isEditMode = ref(false)
-const form = reactive({
-  id: '',
-  username: '',
-  password: '',
-  name: '',
-  phone: '',
-  age: '',
-  gender: 'male',
-  role: 2
-})
+const userList = ref([]); const showAddModal = ref(false); const showRechargeModal = ref(false); const isEditMode = ref(false)
+const form = reactive({ id: '', username: '', password: '', name: '', phone: '', age: '', gender: 'male', role: 2 })
+const rechargeForm = reactive({ userId: '', userName: '', amount: '' })
 
-const rechargeForm = reactive({
-  userId: '',
-  userName: '',
-  amount: ''
-})
-
-const loadUsers = async () => {
-  try {
-    const response = await userAPI.getAll()
-    if (response.code === 200) {
-      userList.value = response.data
-    }
-  } catch (error) {
-    ElMessage.error('加载用户列表失败')
-  }
-}
-
-const resetForm = () => {
-  form.id = ''
-  form.username = ''
-  form.password = ''
-  form.name = ''
-  form.phone = ''
-  form.age = ''
-  form.gender = 'male'
-  form.role = 2
-}
-
-const addUser = async () => {
-  if (!form.username || !form.password || !form.name) {
-    ElMessage.error('请填写必填字段')
-    return
-  }
-
-  try {
-    const response = await authAPI.register(form)
-    if (response.code === 200) {
-      ElMessage.success('添加成功')
-      showAddModal.value = false
-      resetForm()
-      loadUsers()
-    }
-  } catch (error) {
-    ElMessage.error('添加失败')
-  }
-}
-
-const editUser = (user) => {
-  isEditMode.value = true
-  Object.assign(form, user)
-  showAddModal.value = true
-}
-
+const loadUsers = async () => { try { const r = await userAPI.getAll(); if (r.code === 200) userList.value = r.data } catch (e) { ElMessage.error('加载失败') } }
+const resetForm = () => { Object.assign(form, { id: '', username: '', password: '', name: '', phone: '', age: '', gender: 'male', role: 2 }) }
+const editUser = (u) => { isEditMode.value = true; Object.assign(form, u); showAddModal.value = true }
 const saveUser = async () => {
-  if (!form.username || !form.name) {
-    ElMessage.error('请填写必填字段')
-    return
-  }
-
   try {
-    if (isEditMode.value) {
-      const response = await userAPI.update(form.id, {
-        username: form.username,
-        name: form.name,
-        phone: form.phone,
-        age: form.age,
-        gender: form.gender,
-        role: form.role
-      })
-      if (response.code === 200) {
-        ElMessage.success('修改成功')
-      }
-    } else {
-      await addUser()
-      return
-    }
-    
-    showAddModal.value = false
-    isEditMode.value = false
-    resetForm()
-    loadUsers()
-  } catch (error) {
-    ElMessage.error(isEditMode.value ? '修改失败' : '添加失败')
-  }
+    if (isEditMode.value) { await userAPI.update(form.id, { username: form.username, name: form.name, phone: form.phone, age: form.age, gender: form.gender, role: form.role }); ElMessage.success('已修改') }
+    else { await authAPI.register(form); ElMessage.success('已添加') }
+    showAddModal.value = false; isEditMode.value = false; resetForm(); loadUsers()
+  } catch (e) { ElMessage.error('操作失败') }
 }
+const handleModalClose = () => { isEditMode.value = false; resetForm() }
+const deleteUser = async (id) => { await ElMessageBox.confirm('确定删除该用户？', '确认删除', { type: 'warning' }); try { await userAPI.delete(id); ElMessage.success('已删除'); loadUsers() } catch (e) {} }
+const openRechargeModal = (u) => { rechargeForm.userId = u.id; rechargeForm.userName = u.name; rechargeForm.amount = ''; showRechargeModal.value = true }
+const closeRechargeModal = () => { showRechargeModal.value = false }
+const handleRecharge = async () => { if (!rechargeForm.amount || parseFloat(rechargeForm.amount) <= 0) { ElMessage.error('请输入金额'); return }; try { await walletAPI.recharge(rechargeForm.userId, parseFloat(rechargeForm.amount)); ElMessage.success('充值成功'); closeRechargeModal() } catch (e) { ElMessage.error('充值失败') } }
+const getRoleType = (r) => ({ 1: 'danger', 2: 'success', 3: 'warning' }[r] || 'info')
+const getRoleText = (r) => ({ 1: '管理员', 2: '老人', 3: '家属' }[r] || '未知')
+const getHealthStatusType = (s) => ({ 1: 'success', 2: 'warning' }[s] || 'info')
+const getHealthStatusText = (s) => ({ 1: '良好', 2: '一般' }[s] || '未知')
 
-const handleModalClose = () => {
-  isEditMode.value = false
-  resetForm()
-}
-
-const deleteUser = async (userId) => {
-  await ElMessageBox.confirm('确定要删除该用户吗？', '确认删除', {
-    type: 'warning'
-  })
-  
-  try {
-    const response = await userAPI.delete(userId)
-    if (response.code === 200) {
-      ElMessage.success('删除成功')
-      loadUsers()
-    }
-  } catch (error) {
-    ElMessage.error('删除失败')
-  }
-}
-
-const openRechargeModal = (user) => {
-  rechargeForm.userId = user.id
-  rechargeForm.userName = user.name
-  rechargeForm.amount = ''
-  showRechargeModal.value = true
-}
-
-const closeRechargeModal = () => {
-  showRechargeModal.value = false
-}
-
-const handleRecharge = async () => {
-  if (!rechargeForm.amount || parseFloat(rechargeForm.amount) <= 0) {
-    ElMessage.error('请输入有效的充值金额')
-    return
-  }
-  
-  try {
-    const response = await walletAPI.recharge(rechargeForm.userId, parseFloat(rechargeForm.amount))
-    if (response.code === 200) {
-      ElMessage.success('充值成功')
-      closeRechargeModal()
-    }
-  } catch (error) {
-    ElMessage.error('充值失败')
-  }
-}
-
-const getRoleType = (role) => {
-  if (role === 1) return 'danger'
-  if (role === 2) return 'success'
-  if (role === 3) return 'warning'
-  return 'info'
-}
-
-const getRoleText = (role) => {
-  if (role === 1) return '管理员'
-  if (role === 2) return '老人'
-  if (role === 3) return '家属'
-  return '未知'
-}
-
-const getHealthStatusType = (status) => {
-  if (status === 1) return 'success'
-  if (status === 2) return 'warning'
-  return 'info'
-}
-
-const getHealthStatusText = (status) => {
-  if (status === 1) return '良好'
-  if (status === 2) return '一般'
-  return '未知'
-}
-
-onMounted(() => {
-  loadUsers()
-})
+onMounted(() => loadUsers())
 </script>
 
 <style scoped>
-.admin-users {
-  padding: 24px;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.page-header h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.add-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.user-table {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
-  overflow-x: auto;
-}
-
-.user-table .el-table {
-  border: none;
-}
-
-.user-table .el-table th {
-  background: #f8fafc;
-  color: #64748b;
-  font-weight: 600;
-  font-size: 13px;
-  padding: 16px;
-  border-bottom: 2px solid #e2e8f0;
-}
-
-.user-table .el-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.user-table .el-table tr:hover {
-  background: #f8fafc;
-}
-
-.role-tag {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.role-tag.admin {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
-}
-
-.role-tag.elder {
-  background: rgba(34, 197, 94, 0.1);
-  color: #16a34a;
-}
-
-.role-tag.family {
-  background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
-}
-
-.status-tag {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.status-tag.good {
-  background: rgba(34, 197, 94, 0.1);
-  color: #16a34a;
-}
-
-.status-tag.normal {
-  background: rgba(251, 191, 36, 0.1);
-  color: #ca8a04;
-}
-
-.status-tag.unknown {
-  background: rgba(148, 163, 184, 0.1);
-  color: #64748b;
-}
-
-.action-btn {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.action-btn .el-button {
-  padding: 6px 12px !important;
-  font-size: 12px !important;
-  border-radius: 6px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  min-width: 60px !important;
-}
-
-.action-btn .el-button--primary {
-  background: #3b82f6 !important;
-  border-color: #3b82f6 !important;
-  color: #fff !important;
-}
-
-.action-btn .el-button--primary:hover {
-  background: #2563eb !important;
-  border-color: #2563eb !important;
-}
-
-.action-btn .el-button--warning {
-  background: #f59e0b !important;
-  border-color: #f59e0b !important;
-  color: #fff !important;
-}
-
-.action-btn .el-button--warning:hover {
-  background: #d97706 !important;
-  border-color: #d97706 !important;
-}
-
-.action-btn .el-button--danger {
-  background: #ef4444 !important;
-  border-color: #ef4444 !important;
-  color: #fff !important;
-}
-
-.action-btn .el-button--danger:hover {
-  background: #dc2626 !important;
-  border-color: #dc2626 !important;
-}
-
-.quick-amounts {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.quick-btn {
-  flex: 1;
-  padding: 10px;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  background: white;
-  color: #334155;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.quick-btn:hover {
-  border-color: #667eea;
-  color: #667eea;
-}
-
-.modal-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px 24px;
-  border-radius: 12px 12px 0 0;
-}
-
-.modal-header .el-dialog__title {
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.modal-body {
-  padding: 24px;
-}
-
-.form-item {
-  margin-bottom: 20px;
-}
-
-.form-item label {
-  font-weight: 500;
-  color: #334155;
-  margin-bottom: 8px;
-}
-
-.form-item .el-input,
-.form-item .el-select {
-  width: 100%;
-}
-
-.form-item .el-input__inner,
-.form-item .el-select__input {
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  padding: 12px 14px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.form-item .el-input__inner:focus,
-.form-item .el-select__input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.modal-footer {
-  padding: 16px 24px;
-  background: #f8fafc;
-  border-radius: 0 0 12px 12px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-
-.modal-footer .el-button {
-  padding: 10px 24px;
-  border-radius: 8px;
-  font-weight: 500;
-}
-
-.modal-footer .el-button--primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-}
-
-.modal-footer .el-button--primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.modal-footer .el-button--default {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
-  color: #64748b;
-}
-
-.modal-footer .el-button--default:hover {
-  background: #e2e8f0;
-}
-
-.custom-modal {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.custom-modal .el-dialog__header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px 24px;
-}
-
-.custom-modal .el-dialog__title {
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.custom-modal .el-dialog__headerbtn .el-dialog__close {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 20px;
-}
-
-.custom-modal .el-dialog__headerbtn .el-dialog__close:hover {
-  color: #fff;
-}
+.au-page { background: transparent; }
+.au-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg); }
+.au-header h2 { margin: 0; }
+.au-table-wrap { background: var(--color-surface-container-lowest); border-radius: var(--radius-xl); border: 1px solid var(--color-outline-variant); overflow: hidden; box-shadow: var(--shadow-card); }
 </style>

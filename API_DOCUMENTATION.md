@@ -3,7 +3,7 @@
 > 基础地址: `http://localhost:8081`  
 > 统一响应格式: `ApiResponse<T>`  
 > Content-Type: `application/json`  
-> 最后更新: 2026-06-23
+> 最后更新: 2026-06-24
 
 ---
 
@@ -604,7 +604,7 @@ PUT /api/emergency/{callId}/cancel
 ```
 GET /api/health
 ```
-**响应**: `"Health service is running"`
+**响应**: `String` — 包含 DeepSeek key 前缀和模型名，如 `"Health service is running. DeepSeek key=sk-edafda..., model=deepseek-chat"`
 
 ### 10.2 保存健康数据
 ```
@@ -642,17 +642,56 @@ GET /api/health/warning/{userId}
 GET /api/health/latest/{userId}
 ```
 
-### 10.6 健康分析
+### 10.6 本地健康分析（规则引擎）
 ```
 GET /api/health/analyze/{userId}
 ```
-**响应**: `String` — 健康分析报告文本
+**响应**: `String` — 基于规则引擎（平均值/阈值）的本地健康报告文本
 
 ### 10.7 生成健康报告
 ```
 POST /api/health/report/{userId}
 ```
 > 生成报告并写入 `health_report` 字段
+
+### 10.8 AI 流式健康分析（DeepSeek，SSE）
+```
+GET /api/health/analyze/stream/{userId}
+Content-Type: text/event-stream
+```
+**功能**: 调用 DeepSeek 大模型对近7天健康数据进行 AI 分析，通过 SSE 流式推送结果。
+
+**SSE 事件格式**:
+```
+data: 完整的AI分析报告文本（250字以内）
+
+data: [DONE]
+```
+
+**错误事件格式**:
+```
+data: [ERROR] 具体错误原因
+
+data: [DONE]
+```
+
+**无数据时**:
+```
+data: 暂无足够的健康数据进行分析
+
+data: [DONE]
+```
+
+**技术实现**:
+- 控制器 `HealthDataController.analyzeHealthStream()` 返回 `SseEmitter`
+- 需 `@WebFilter(asyncSupported = true)` 支持 Servlet 异步
+- 内部调用 `DeepSeekService.streamChat()` → DeepSeek Chat Completion API (stream=true)
+- 收集完所有 token 后一次性发送，避免中文 token 碎片问题
+- 超时: SSE 60s，DeepSeek HTTP 连接 20s / 读取 120s
+
+**注意事项**:
+- 需要 `deepseek.api-key` 配置项有效且账号有可用额度
+- 若 API key 失效或网络不通，返回 `[ERROR]` 事件，不返回 HTTP 500
 
 ---
 
@@ -996,7 +1035,8 @@ POST /api/fix/all
 | Health | GET | /api/health/weekly/{userId} | 近7天数据 |
 | Health | GET | /api/health/warning/{userId} | 告警数据 |
 | Health | GET | /api/health/latest/{userId} | 最新数据 |
-| Health | GET | /api/health/analyze/{userId} | 分析报告 |
+| Health | GET | /api/health/analyze/{userId} | 本地分析（规则引擎） |
+| Health | GET | /api/health/analyze/stream/{userId} | AI流式分析（DeepSeek SSE） |
 | Health | POST | /api/health/report/{userId} | 生成报告 |
 | Message | GET | /api/messages/{userId} | 用户所有通知 |
 | Message | GET | /api/messages/unread/{userId} | 未读通知 |

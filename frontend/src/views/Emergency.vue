@@ -1,183 +1,122 @@
 <template>
-  <div class="emergency-page">
-    <div class="hero-section">
-      <button class="back-btn" @click="goBack">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M19 12H5m0 0l7-7m-7 7l7 7"/>
-        </svg>
-        <span>返回</span>
-      </button>
-      <div class="hero-content">
-        <div class="hero-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-        </div>
-        <h1>紧急呼叫中心</h1>
-        <p>遇到紧急情况？立即点击下方按钮寻求帮助</p>
-        <div class="location-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-          </svg>
-          <span>智慧社区 A栋 302室</span>
-        </div>
+  <div class="em-page" :class="{ 'em-page--calling': isCalling }">
+    <!-- Close / Back button -->
+    <button class="em-close" @click="goBack" v-if="!isCalling">
+      <AppIcon name="x" size="22" />
+    </button>
+
+    <!-- ================================================================
+         MAIN SOS VIEW (not calling)
+         ================================================================ -->
+    <main v-if="!isCalling" class="em-main">
+      <!-- Header -->
+      <div class="em-hero-text">
+        <h1 class="em-title">紧急救援</h1>
+        <p class="em-subtitle">如果您需要帮助，请点击下方按钮</p>
       </div>
-    </div>
 
-    <div class="call-section">
-      <div class="section-title">
-        <span>紧急求助</span>
-      </div>
-      
-      <div class="call-grid">
-        <div class="call-card medical" @click="showConfirmModal('medical')">
-          <div class="call-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-          </div>
-          <h3>医疗急救</h3>
-          <p>突发疾病、意外受伤等紧急医疗情况</p>
-          <div class="call-btn">
-            <span>立即呼叫</span>
-          </div>
-        </div>
-
-        <div class="call-card fire" @click="showConfirmModal('fire')">
-          <div class="call-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 12c2-2 6-2 8 0s2 6 0 8-6 2-8 0-2-6 0-8"/>
-              <path d="M14 12c2-2 6-2 8 0s2 6 0 8-6 2-8 0-2-6 0-8"/>
-            </svg>
-          </div>
-          <h3>火灾报警</h3>
-          <p>发现火情、烟雾或其他消防安全隐患</p>
-          <div class="call-btn">
-            <span>立即呼叫</span>
-          </div>
-        </div>
-
-        <div class="call-card security" @click="showConfirmModal('security')">
-          <div class="call-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              <path d="M9 12l2 2 4-4"/>
-            </svg>
-          </div>
-          <h3>安全求助</h3>
-          <p>遭遇危险、需要安保人员协助</p>
-          <div class="call-btn">
-            <span>立即呼叫</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="showCallConfirm" class="modal-overlay" @click="showCallConfirm = false">
-      <div class="confirm-modal" @click.stop>
-        <div class="modal-icon" :class="selectedCallType">
-          <svg v-if="selectedCallType === 'medical'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          <svg v-else-if="selectedCallType === 'fire'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 12c2-2 6-2 8 0s2 6 0 8-6 2-8 0-2-6 0-8"/>
-            <path d="M14 12c2-2 6-2 8 0s2 6 0 8-6 2-8 0-2-6 0-8"/>
-          </svg>
-          <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M9 12l2 2 4-4"/>
-          </svg>
-        </div>
-        <h3>确认呼叫</h3>
-        <p>确定要发起{{ getCallTypeName(selectedCallType) }}呼叫吗？</p>
-        <p class="location-info">呼叫将发送至：社区服务中心</p>
-        <div class="modal-actions">
-          <button class="btn-cancel" @click="showCallConfirm = false">取消</button>
-          <button class="btn-confirm" :class="selectedCallType" @click="handleEmergencyCall(selectedCallType)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
-              <path d="M9 5h6M9 12h6M9 19h6"/>
-            </svg>
-            确认呼叫
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div v-if="isCalling" class="calling-overlay">
-      <div class="calling-modal">
-        <div class="calling-ring">
-          <div class="ring-ring"></div>
-          <div class="ring-ring delay-1"></div>
-          <div class="ring-ring delay-2"></div>
-          <div class="calling-icon-inner" :class="currentCallType">
-            <svg v-if="currentCallType === 'medical'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-            <svg v-else-if="currentCallType === 'fire'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 12c2-2 6-2 8 0s2 6 0 8-6 2-8 0-2-6 0-8"/>
-              <path d="M14 12c2-2 6-2 8 0s2 6 0 8-6 2-8 0-2-6 0-8"/>
-            </svg>
-            <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              <path d="M9 12l2 2 4-4"/>
-            </svg>
-          </div>
-        </div>
-        <h3>{{ getCallTypeName(currentCallType) }}呼叫中...</h3>
-        <p>正在连接紧急服务中心</p>
-        <div class="calling-timer">{{ callingTime }}</div>
-        <button class="btn-hangup" @click="cancelCall">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-          取消呼叫
+      <!-- Huge SOS Button with ripple rings -->
+      <div class="em-sos-wrap">
+        <div class="em-sos-ripple em-sos-ripple--1"></div>
+        <div class="em-sos-ripple em-sos-ripple--2"></div>
+        <div class="em-sos-ripple em-sos-ripple--3"></div>
+        <button class="em-sos-btn" @click="showConfirmModal('medical')">
+          <AppIcon name="bell" size="52" class="em-sos-icon" />
+          <span class="em-sos-label">SOS</span>
+          <span class="em-sos-hint">一键呼叫</span>
         </button>
       </div>
-    </div>
 
-    <div class="history-section">
-      <div class="section-header">
-        <h3>呼叫历史</h3>
-        <span class="badge">{{ callHistory.length }} 条记录</span>
+      <!-- Category pills -->
+      <div class="em-categories">
+        <button class="em-cat" @click="showConfirmModal('medical')">
+          <span class="em-cat-icon em-cat-icon--medical">
+            <AppIcon name="heart" size="28" />
+          </span>
+          <span class="em-cat-label">医疗</span>
+        </button>
+        <button class="em-cat" @click="showConfirmModal('fire')">
+          <span class="em-cat-icon em-cat-icon--fire">
+            <AppIcon name="bell" size="28" />
+          </span>
+          <span class="em-cat-label">火灾</span>
+        </button>
+        <button class="em-cat" @click="showConfirmModal('security')">
+          <span class="em-cat-icon em-cat-icon--security">
+            <AppIcon name="lock" size="28" />
+          </span>
+          <span class="em-cat-label">安全</span>
+        </button>
       </div>
 
-      <div v-if="callHistory.length > 0" class="history-timeline">
-        <div v-for="(item, index) in callHistory" :key="item.id" class="timeline-item">
-          <div class="timeline-dot" :class="item.callType"></div>
-          <div class="timeline-content">
-            <div class="timeline-header">
-              <span class="type-tag" :class="item.callType">{{ getCallTypeName(item.callType) }}</span>
-              <span class="status-tag" :class="item.status">{{ getStatusText(item.status) }}</span>
-            </div>
-            <div class="timeline-time">{{ item.callTime }}</div>
-            <div class="timeline-detail">
-              <span v-if="item.handler">处理人: {{ item.handler }}</span>
-              <span v-if="item.resolvedTime">| {{ item.resolvedTime }} 已处理</span>
+      <!-- Call history (collapsed at bottom) -->
+      <section v-if="callHistory.length > 0" class="em-history">
+        <details>
+          <summary class="em-history-toggle">
+            <AppIcon name="clock" size="14" />
+            呼叫记录 ({{ callHistory.length }})
+          </summary>
+          <div class="em-history-list">
+            <div v-for="item in callHistory.slice(0, 10)" :key="item.id" class="em-history-item">
+              <span class="em-history-dot" :class="`em-history-dot--${item.callType}`"></span>
+              <span class="em-history-type">{{ getCallTypeName(item.callType) }}</span>
+              <span class="em-history-status" :class="`em-history-status--${item.status}`">
+                {{ getStatusText(item.status) }}
+              </span>
+              <span class="em-history-time">{{ formatTime(item.callTime) }}</span>
             </div>
           </div>
-          <button v-if="item.status === 'pending'" class="timeline-action" @click="cancelEmergency(item.id)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
+        </details>
+      </section>
+    </main>
 
-      <div v-else class="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-        <p>暂无呼叫记录</p>
-        <p class="hint">遇到紧急情况时，请点击上方按钮进行呼叫</p>
+    <!-- ================================================================
+         CONFIRM MODAL
+         ================================================================ -->
+    <Teleport to="body">
+      <transition name="em-modal">
+        <div v-if="showCallConfirm" class="em-overlay" @click.self="showCallConfirm = false">
+          <div class="em-modal">
+            <div class="em-modal-icon" :class="`em-modal-icon--${selectedCallType}`">
+              <AppIcon name="bell" size="30" />
+            </div>
+            <h3>确认呼叫</h3>
+            <p>确定要发起<strong>{{ getCallTypeName(selectedCallType) }}</strong>呼叫吗？</p>
+            <p class="em-modal-hint">呼叫将立即发送至社区服务中心</p>
+            <div class="em-modal-actions">
+              <button class="btn btn-secondary" @click="showCallConfirm = false">取消</button>
+              <button class="btn btn-danger btn-lg" @click="handleEmergencyCall(selectedCallType)">
+                确认呼叫
+              </button>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </Teleport>
+
+    <!-- ================================================================
+         CALLING OVERLAY
+         ================================================================ -->
+    <div v-if="isCalling" class="em-calling">
+      <div class="em-calling-core">
+        <div class="em-calling-rings">
+          <div class="em-calling-ring em-calling-ring--1"></div>
+          <div class="em-calling-ring em-calling-ring--2"></div>
+          <div class="em-calling-ring em-calling-ring--3"></div>
+          <div class="em-calling-icon">
+            <AppIcon name="bell" size="36" />
+          </div>
+        </div>
+        <h3>{{ getCallTypeName(currentCallType) }}呼叫中…</h3>
+        <p>正在连接紧急服务中心</p>
+        <div class="em-calling-timer tabular-nums">{{ callingTime }}</div>
+        <button class="btn btn-danger" @click="cancelCall">取消呼叫</button>
       </div>
     </div>
+
+    <!-- Background blur orbs -->
+    <div class="em-orb em-orb--left"></div>
+    <div class="em-orb em-orb--right"></div>
   </div>
 </template>
 
@@ -186,12 +125,10 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { emergencyAPI } from '../api'
 import { ElMessage } from 'element-plus'
+import AppIcon from '../components/AppIcon.vue'
 
 const router = useRouter()
-
-const goBack = () => {
-  router.push('/dashboard')
-}
+const goBack = () => router.push('/dashboard')
 
 const callHistory = ref([])
 const showCallConfirm = ref(false)
@@ -200,19 +137,15 @@ const isCalling = ref(false)
 const currentCallType = ref('')
 const callingTime = ref('00:00')
 let timer = null
+let pulseInterval = null
 
 const loadCallHistory = async () => {
   const userId = localStorage.getItem('userId')
   if (!userId) return
-  
   try {
     const response = await emergencyAPI.getByUser(userId)
-    if (response.code === 200) {
-      callHistory.value = response.data || []
-    }
-  } catch (error) {
-    console.error('加载呼叫记录失败:', error)
-  }
+    if (response.code === 200) callHistory.value = (response.data || []).slice(-10).reverse()
+  } catch (error) { /* silent */ }
 }
 
 const showConfirmModal = (type) => {
@@ -222,719 +155,321 @@ const showConfirmModal = (type) => {
 
 const handleEmergencyCall = async (callType) => {
   showCallConfirm.value = false
-  
   const userId = localStorage.getItem('userId')
   if (!userId) return
-  
   try {
+    const callTypeMap = { medical: '医疗', fire: '火灾', security: '安全' }
     const response = await emergencyAPI.create({
       userId: parseInt(userId),
-      callType: callType,
-      description: '紧急呼叫'
+      callType: callTypeMap[callType] || callType,
+      description: `${callTypeMap[callType] || callType}紧急呼叫`
     })
-    
     if (response.code === 200) {
       isCalling.value = true
       currentCallType.value = callType
-      callingTime.value = '00:00'
       startTimer()
-      ElMessage.success('呼叫已发送，工作人员将尽快响应')
+      ElMessage.success('呼叫已发送')
       loadCallHistory()
     }
-  } catch (error) {
-    ElMessage.error('呼叫发送失败')
-  }
+  } catch (error) { ElMessage.error('呼叫发送失败') }
 }
 
 const startTimer = () => {
   let seconds = 0
   timer = setInterval(() => {
     seconds++
-    const mins = Math.floor(seconds / 60).toString().padStart(2, '0')
-    const secs = (seconds % 60).toString().padStart(2, '0')
-    callingTime.value = `${mins}:${secs}`
+    callingTime.value = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`
   }, 1000)
+  // Pulse the calling screen background
+  pulseInterval = setInterval(() => {
+    document.querySelector('.em-page')?.classList.toggle('em-page--pulse')
+  }, 2000)
 }
 
 const cancelCall = () => {
   isCalling.value = false
-  currentCallType.value = ''
-  callingTime.value = '00:00'
-  if (timer) {
-    clearInterval(timer)
-    timer = null
-  }
+  if (timer) { clearInterval(timer); timer = null }
+  if (pulseInterval) { clearInterval(pulseInterval); pulseInterval = null }
+  document.querySelector('.em-page')?.classList.remove('em-page--pulse')
   ElMessage.info('呼叫已取消')
 }
 
-const cancelEmergency = async (emergencyId) => {
-  try {
-    const response = await emergencyAPI.cancel(emergencyId)
-    if (response.code === 200) {
-      ElMessage.success('已取消呼叫')
-      loadCallHistory()
-    }
-  } catch (error) {
-    ElMessage.error('取消失败')
-  }
+const getCallTypeName = (t) => ({ medical: '医疗急救', fire: '火灾报警', security: '安全求助' }[t] || t)
+const getStatusText = (s) => ({ pending: '待响应', responding: '处理中', resolved: '已处理', cancelled: '已取消' }[s] || s)
+const formatTime = (s) => {
+  if (!s) return ''
+  try { return new Date(s).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) } catch (e) { return '' }
 }
 
-const getCallTypeName = (type) => {
-  const types = { medical: '医疗急救', fire: '火灾报警', security: '安全求助' }
-  return types[type] || type
-}
-
-const getStatusText = (status) => {
-  if (status === 'pending') return '待响应'
-  if (status === 'responding') return '处理中'
-  if (status === 'resolved') return '已处理'
-  return '已取消'
-}
-
-onMounted(() => {
-  loadCallHistory()
-})
-
+onMounted(() => loadCallHistory())
 onUnmounted(() => {
   if (timer) clearInterval(timer)
+  if (pulseInterval) clearInterval(pulseInterval)
 })
 </script>
 
 <style scoped>
-.emergency-page {
+/* ============================================================
+   PAGE — fullscreen centered
+   ============================================================ */
+.em-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f5f7fa 0%, #e8eaf0 100%);
-  padding-bottom: 40px;
-}
-
-.hero-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 24px;
-  text-align: center;
-  color: white;
-  position: relative;
-}
-
-.back-btn {
-  position: absolute;
-  left: 24px;
-  top: 24px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 10px;
-  cursor: pointer;
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s;
-}
-
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.back-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.hero-content {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.hero-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 24px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-icon svg {
-  width: 40px;
-  height: 40px;
-}
-
-.hero-content h1 {
-  font-size: 32px;
-  margin: 0 0 12px 0;
-  font-weight: 600;
-}
-
-.hero-content p {
-  font-size: 16px;
-  opacity: 0.9;
-  margin: 0 0 20px 0;
-}
-
-.location-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 25px;
-  font-size: 14px;
-}
-
-.location-badge svg {
-  width: 16px;
-  height: 16px;
-}
-
-.call-section {
-  padding: 32px 24px;
-}
-
-.section-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 24px;
-  text-align: center;
-}
-
-.call-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
-.call-card {
-  background: white;
-  border-radius: 20px;
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-}
-
-.call-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-}
-
-.call-card.medical {
-  border-top: 4px solid #ef4444;
-}
-
-.call-card.fire {
-  border-top: 4px solid #f59e0b;
-}
-
-.call-card.security {
-  border-top: 4px solid #3b82f6;
-}
-
-.call-icon {
-  width: 70px;
-  height: 70px;
-  margin: 0 auto 20px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.call-card.medical .call-icon {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.call-card.fire .call-icon {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.call-card.security .call-icon {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.call-icon svg {
-  width: 32px;
-  height: 32px;
-}
-
-.call-card h3 {
-  font-size: 20px;
-  margin: 0 0 10px 0;
-  color: #1e293b;
-}
-
-.call-card p {
-  color: #64748b;
-  font-size: 14px;
-  margin: 0 0 20px 0;
-  line-height: 1.5;
-}
-
-.call-btn {
-  display: inline-block;
-  padding: 12px 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 30px;
-  font-weight: 600;
-  transition: all 0.3s;
-}
-
-.call-card:hover .call-btn {
-  transform: scale(1.05);
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.2s;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.confirm-modal {
-  background: white;
-  border-radius: 24px;
-  padding: 40px;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  animation: scaleIn 0.3s;
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.modal-icon {
-  width: 70px;
-  height: 70px;
-  margin: 0 auto 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.modal-icon.medical {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.modal-icon.fire {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.modal-icon.security {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.modal-icon svg {
-  width: 32px;
-  height: 32px;
-}
-
-.confirm-modal h3 {
-  font-size: 22px;
-  margin: 0 0 12px 0;
-  color: #1e293b;
-}
-
-.confirm-modal p {
-  margin: 0 0 8px 0;
-  color: #64748b;
-}
-
-.location-info {
-  font-size: 14px !important;
-  color: #94a3b8 !important;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-top: 28px;
-}
-
-.btn-cancel {
-  padding: 12px 32px;
-  background: #f1f5f9;
-  border: none;
-  border-radius: 12px;
-  color: #64748b;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-cancel:hover {
-  background: #e2e8f0;
-}
-
-.btn-confirm {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 32px;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-confirm.medical {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.btn-confirm.fire {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.btn-confirm.security {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.btn-confirm svg {
-  width: 18px;
-  height: 18px;
-}
-
-.calling-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-.calling-modal {
-  text-align: center;
-  color: white;
-}
-
-.calling-ring {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  margin: 0 auto 30px;
-}
-
-.ring-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100%;
-  height: 100%;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  animation: ring 1.5s infinite;
-}
-
-.ring-ring.delay-1 {
-  animation-delay: 0.5s;
-}
-
-.ring-ring.delay-2 {
-  animation-delay: 1s;
-}
-
-@keyframes ring {
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
-}
-
-.calling-icon-inner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.calling-icon-inner.medical {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-.calling-icon-inner.fire {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-}
-
-.calling-icon-inner.security {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-}
-
-.calling-icon-inner svg {
-  width: 32px;
-  height: 32px;
-}
-
-.calling-modal h3 {
-  font-size: 24px;
-  margin: 0 0 12px 0;
-}
-
-.calling-modal p {
-  margin: 0 0 20px 0;
-  opacity: 0.8;
-}
-
-.calling-timer {
-  font-size: 48px;
-  font-weight: bold;
-  font-family: monospace;
-  margin-bottom: 30px;
-}
-
-.btn-hangup {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 40px;
-  background: #ef4444;
-  border: none;
-  border-radius: 50px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  margin: 0 auto;
-}
-
-.btn-hangup:hover {
-  background: #dc2626;
-  transform: scale(1.05);
-}
-
-.btn-hangup svg {
-  width: 20px;
-  height: 20px;
-}
-
-.history-section {
-  padding: 0 24px;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-.section-header h3 {
-  font-size: 18px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: var(--color-surface-container-lowest);
+  position: relative; overflow: hidden;
+  transition: background-color 1s;
+  padding: var(--space-lg);
+}
+.em-page--pulse { background: var(--color-error-container); }
+
+/* Background orbs */
+.em-orb {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(80px); opacity: 0.15;
+}
+.em-orb--left {
+  top: -20%; left: -10%; width: 50vw; height: 50vw;
+  background: var(--color-error);
+}
+.em-orb--right {
+  bottom: -10%; right: -10%; width: 40vw; height: 40vw;
+  background: var(--color-secondary);
+}
+
+/* Close button */
+.em-close {
+  position: absolute; top: var(--space-lg); left: var(--space-lg); z-index: 10;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(253, 253, 252, 0.8); backdrop-filter: blur(8px);
+  border: 1px solid var(--color-outline-variant);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--color-on-surface-variant); cursor: pointer;
+  transition: all 0.2s;
+}
+.em-close:hover { background: var(--color-surface-container-high); color: var(--color-on-surface); }
+.em-close:active { transform: scale(0.95); }
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.em-main {
+  position: relative; z-index: 1;
+  max-width: 640px; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  gap: var(--space-2xl);
+}
+
+/* Hero text */
+.em-hero-text { text-align: center; }
+.em-title {
+  font-size: clamp(36px, 8vw, 56px);
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.03em;
+  color: var(--color-on-surface);
   margin: 0;
-  color: #1e293b;
+}
+.em-subtitle {
+  font-size: var(--text-body-lg);
+  color: var(--color-on-surface-variant);
+  margin: var(--space-sm) 0 0;
 }
 
-.badge {
-  padding: 6px 16px;
-  background: rgba(102, 126, 234, 0.1);
-  color: #667eea;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
+/* ============================================================
+   SOS BUTTON — huge, pulsing red
+   ============================================================ */
+.em-sos-wrap {
+  position: relative; width: 240px; height: 240px;
+  display: flex; align-items: center; justify-content: center;
+}
+@media (min-width: 768px) { .em-sos-wrap { width: 280px; height: 280px; } }
+
+/* Ripple rings */
+.em-sos-ripple {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: var(--color-error);
+  opacity: 0.15;
+  animation: em-sos-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.em-sos-ripple--2 { animation-delay: 0.5s; }
+.em-sos-ripple--3 { animation-delay: 1s; }
+
+@keyframes em-sos-pulse {
+  0% { transform: scale(0.85); opacity: 0.25; }
+  100% { transform: scale(1.15); opacity: 0; }
 }
 
-.history-timeline {
-  position: relative;
-}
-
-.history-timeline::before {
-  content: '';
-  position: absolute;
-  left: 19px;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #e2e8f0;
-}
-
-.timeline-item {
-  position: relative;
-  display: flex;
-  gap: 20px;
-  padding: 20px 0;
-}
-
-.timeline-dot {
-  width: 40px;
-  height: 40px;
+/* SOS button core */
+.em-sos-btn {
+  position: relative; z-index: 1;
+  width: 180px; height: 180px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  z-index: 1;
+  border: 4px solid var(--color-surface-container-lowest);
+  background: var(--color-error);
+  color: var(--color-on-error);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  cursor: pointer; font-family: inherit;
+  box-shadow: 0 10px 40px rgba(186, 26, 26, 0.5);
+  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1), box-shadow 0.3s;
+}
+@media (min-width: 768px) { .em-sos-btn { width: 200px; height: 200px; } }
+
+.em-sos-btn:hover { transform: scale(1.05); box-shadow: 0 12px 50px rgba(186, 26, 26, 0.6); }
+.em-sos-btn:active { transform: scale(0.95); box-shadow: 0 4px 16px rgba(186, 26, 26, 0.5); }
+
+.em-sos-icon { transition: transform 0.3s; }
+.em-sos-btn:hover .em-sos-icon { transform: scale(1.1); }
+
+.em-sos-label {
+  font-size: clamp(24px, 5vw, 32px);
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.1em;
+}
+.em-sos-hint {
+  font-size: var(--text-label-sm); opacity: 0.85;
+  margin-top: 2px;
 }
 
-.timeline-dot.medical {
-  background: rgba(239, 68, 68, 0.1);
-  border: 3px solid #ef4444;
+/* ============================================================
+   CATEGORY PILLS
+   ============================================================ */
+.em-categories {
+  display: flex; gap: var(--space-lg);
 }
-
-.timeline-dot.fire {
-  background: rgba(245, 158, 11, 0.1);
-  border: 3px solid #f59e0b;
+.em-cat {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-sm);
+  background: none; border: none; cursor: pointer; font-family: inherit;
+  transition: transform 0.2s;
 }
+.em-cat:hover { transform: translateY(-3px); }
+.em-cat:active { transform: scale(0.95); }
 
-.timeline-dot.security {
-  background: rgba(59, 130, 246, 0.1);
-  border: 3px solid #3b82f6;
+.em-cat-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s;
 }
+.em-cat-icon--medical { background: var(--color-tertiary-fixed); color: var(--color-tertiary); }
+.em-cat-icon--fire { background: var(--color-error-container); color: var(--color-error); }
+.em-cat-icon--security { background: var(--color-secondary-fixed); color: var(--color-secondary); }
 
-.timeline-content {
-  flex: 1;
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+.em-cat-label { font-size: var(--text-label-md); font-weight: var(--weight-medium); color: var(--color-on-surface); }
+
+/* ============================================================
+   HISTORY (collapsed)
+   ============================================================ */
+.em-history { width: 100%; max-width: 480px; }
+.em-history-toggle {
+  display: flex; align-items: center; gap: var(--space-xs);
+  font-size: var(--text-label-sm); color: var(--color-on-surface-variant);
+  cursor: pointer; padding: var(--space-xs) 0; list-style: none;
 }
+.em-history-toggle::-webkit-details-marker { display: none; }
 
-.timeline-header {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+.em-history-list {
+  display: flex; flex-direction: column; gap: var(--space-xs);
+  margin-top: var(--space-sm);
+  max-height: 240px; overflow-y: auto;
 }
-
-.type-tag {
-  padding: 4px 12px;
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: 500;
+.em-history-item {
+  display: flex; align-items: center; gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-label-sm);
+  background: var(--color-surface-container-low);
+  border-radius: var(--radius-sm);
 }
-
-.type-tag.medical {
-  background: rgba(239, 68, 68, 0.1);
-  color: #dc2626;
+.em-history-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
 }
+.em-history-dot--medical { background: var(--color-error); }
+.em-history-dot--fire { background: var(--color-secondary); }
+.em-history-dot--security { background: var(--color-primary); }
+.em-history-type { flex: 1; font-weight: var(--weight-medium); }
+.em-history-status { font-size: 11px; }
+.em-history-status--pending { color: var(--color-secondary); }
+.em-history-status--responding { color: var(--color-primary); }
+.em-history-status--resolved { color: var(--color-tertiary); }
+.em-history-status--cancelled { color: var(--color-on-surface-variant); }
+.em-history-time { color: var(--color-on-surface-variant); font-size: 11px; }
 
-.type-tag.fire {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
+/* ============================================================
+   CONFIRM MODAL
+   ============================================================ */
+.em-overlay {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
 }
-
-.type-tag.security {
-  background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
-}
-
-.status-tag {
-  padding: 4px 12px;
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.status-tag.pending {
-  background: rgba(139, 92, 246, 0.1);
-  color: #7c3aed;
-}
-
-.status-tag.responding {
-  background: rgba(245, 158, 11, 0.1);
-  color: #d97706;
-}
-
-.status-tag.resolved {
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
-}
-
-.status-tag.cancelled {
-  background: rgba(148, 163, 184, 0.1);
-  color: #64748b;
-}
-
-.timeline-time {
-  font-size: 14px;
-  color: #64748b;
-  margin-bottom: 5px;
-}
-
-.timeline-detail {
-  font-size: 13px;
-  color: #94a3b8;
-}
-
-.timeline-action {
-  padding: 10px;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #64748b;
-  transition: all 0.3s;
-}
-
-.timeline-action:hover {
-  background: #fef2f2;
-  border-color: #ef4444;
-  color: #dc2626;
-}
-
-.timeline-action svg {
-  width: 18px;
-  height: 18px;
-}
-
-.empty-state {
+.em-modal {
+  background: var(--color-surface-container-lowest);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-2xl);
+  max-width: 400px; width: 90%;
   text-align: center;
-  padding: 60px 20px;
-  background: white;
-  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
 }
-
-.empty-state svg {
-  width: 64px;
-  height: 64px;
-  color: #cbd5e1;
-  margin-bottom: 16px;
+.em-modal-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto var(--space-md); color: #fff;
 }
+.em-modal-icon--medical { background: var(--color-error); }
+.em-modal-icon--fire { background: var(--color-secondary); }
+.em-modal-icon--security { background: var(--color-primary); }
+.em-modal h3 { font-size: var(--text-headline-md); margin: 0 0 var(--space-xs); color: var(--color-on-surface); }
+.em-modal p { font-size: var(--text-body-md); color: var(--color-on-surface-variant); margin: 0 0 var(--space-xxs); }
+.em-modal-hint { font-size: var(--text-label-sm) !important; margin-top: var(--space-xs); }
+.em-modal-actions { display: flex; gap: var(--space-sm); justify-content: center; margin-top: var(--space-xl); }
+.em-modal-enter-active { transition: opacity 0.25s ease-out; }
+.em-modal-leave-active { transition: opacity 0.15s ease-in; }
+.em-modal-enter-from, .em-modal-leave-to { opacity: 0; }
 
-.empty-state p {
-  margin: 0 0 8px 0;
-  color: #64748b;
+/* ============================================================
+   CALLING OVERLAY
+   ============================================================ */
+.em-calling {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
 }
+.em-calling-core { text-align: center; color: #fff; }
+.em-calling-rings {
+  position: relative; width: 160px; height: 160px;
+  margin: 0 auto var(--space-xl);
+}
+.em-calling-ring {
+  position: absolute; inset: 0; border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  animation: em-ring-pulse 1.5s infinite;
+}
+.em-calling-ring--2 { animation-delay: 0.5s; }
+.em-calling-ring--3 { animation-delay: 1s; }
+@keyframes em-ring-pulse {
+  0% { transform: scale(0.9); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.em-calling-icon {
+  position: absolute; inset: 50%; transform: translate(-50%, -50%);
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--color-error);
+  display: flex; align-items: center; justify-content: center;
+}
+.em-calling-core h3 { font-size: var(--text-headline-md); margin: 0 0 var(--space-xs); }
+.em-calling-core p { font-size: var(--text-body-md); opacity: 0.8; margin: 0 0 var(--space-md); }
+.em-calling-timer { font-size: 48px; font-family: var(--font-mono); font-weight: var(--weight-bold); margin-bottom: var(--space-xl); }
 
-.empty-state .hint {
-  font-size: 14px;
-  color: #94a3b8;
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .em-sos-ripple { animation: none; opacity: 0.08; }
+  .em-calling-ring { animation: none; opacity: 0.3; }
+  .em-page--pulse { background: var(--color-surface-container-lowest); }
+}
+@media (max-width: 480px) {
+  .em-sos-wrap { width: 200px; height: 200px; }
+  .em-sos-btn { width: 150px; height: 150px; }
+  .em-categories { gap: var(--space-md); }
+  .em-cat-icon { width: 56px; height: 56px; }
 }
 </style>

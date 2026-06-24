@@ -1,18 +1,11 @@
 <template>
-  <div id="app">
-    <router-view v-slot="{ Component }">
-      <transition name="page" mode="out-in">
-        <component :is="Component" />
-      </transition>
-    </router-view>
-  </div>
+  <router-view v-slot="{ Component, route }">
+    <transition name="page" mode="out-in">
+      <component :is="Component" :key="route.path" />
+    </transition>
+  </router-view>
 </template>
 
 <script setup>
+// 智伴智慧社区养老 — 温暖可信 · 亲和关怀 · 安全可靠
 </script>
-
-<style>
-#app {
-  min-height: 100vh;
-}
-</style>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>智伴 Smart Community - Services</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#ededf8",
+                        "success": "#006825",
+                        "surface-whisper": "#F0F2F6",
+                        "text-charcoal": "#191C1E",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#c5c6c9",
+                        "secondary-fixed": "#e1e2e5",
+                        "accent-hover": "#003FA4",
+                        "on-secondary-fixed-variant": "#44474a",
+                        "primary-container": "#0050cb",
+                        "surface-container-highest": "#e1e2ec",
+                        "on-primary-fixed": "#001849",
+                        "surface-variant": "#e1e2ec",
+                        "tertiary-fixed": "#ffdbd0",
+                        "outline-variant": "#c3c6d6",
+                        "border-zinc": "#C2C6D8",
+                        "critical": "#BA1A1A",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191b23",
+                        "surface-container-low": "#f3f3fd",
+                        "primary": "#003b9a",
+                        "tertiary-container": "#a23302",
+                        "on-tertiary-fixed": "#390c00",
+                        "on-primary-container": "#c1cfff",
+                        "on-tertiary-container": "#ffc3b0",
+                        "on-background": "#191b23",
+                        "tertiary": "#7b2400",
+                        "on-tertiary-fixed-variant": "#832700",
+                        "on-primary-fixed-variant": "#003fa4",
+                        "on-tertiary": "#ffffff",
+                        "accent-container": "#DAE1FF",
+                        "text-stone": "#727687",
+                        "critical-container": "#FFDAD6",
+                        "text-steel": "#424656",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "secondary-container": "#dee0e3",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "border-cloud": "#DEE0E4",
+                        "on-secondary-container": "#606365",
+                        "surface-dim": "#d9d9e4",
+                        "primary-fixed": "#dae1ff",
+                        "background": "#faf8ff",
+                        "surface-bright": "#faf8ff",
+                        "warning": "#A53B18",
+                        "surface": "#faf8ff",
+                        "surface-container-lowest": "#ffffff",
+                        "success-container": "#E6FFE1",
+                        "surface-tint": "#1155d0",
+                        "error-container": "#ffdad6",
+                        "warning-container": "#FFDBD0",
+                        "secondary": "#5c5f61",
+                        "on-secondary-fixed": "#191c1e",
+                        "on-surface-variant": "#434654",
+                        "surface-still": "#EAECF0",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f0fb",
+                        "inverse-surface": "#2e3038",
+                        "surface-pure": "#FDFDFC",
+                        "surface-container-high": "#e7e7f2",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#b3c5ff",
+                        "outline": "#737685"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "gutter": "16px",
+                        "max-width": "1280px",
+                        "margin-desktop": "32px",
+                        "margin-mobile": "16px",
+                        "padding-card": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Geist"],
+                        "display": ["Geist"],
+                        "body-md": ["Geist"],
+                        "mono-data": ["jetbrainsMono"],
+                        "headline-md": ["Geist"],
+                        "label-md": ["Geist"],
+                        "caption": ["Geist"],
+                        "body-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["clamp(24px, 3.5vw, 32px)", { "lineHeight": "1.3", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "display": ["clamp(28px, 5vw, 48px)", { "lineHeight": "1.2", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+                        "body-md": ["clamp(16px, 1.5vw, 18px)", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+                        "mono-data": ["14px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "400" }],
+                        "headline-md": ["clamp(20px, 2.5vw, 24px)", { "lineHeight": "1.4", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["clamp(14px, 1.2vw, 16px)", { "lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "caption": ["14px", { "lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "400" }],
+                        "body-lg": ["clamp(18px, 2vw, 20px)", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Geist', sans-serif; background-color: #faf8ff; }
+        .shadow-soft { box-shadow: 0 2px 12px rgba(0, 47, 112, 0.05), inset 0 0 0 1px rgba(0, 47, 112, 0.03); }
+        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0, 47, 112, 0.08), inset 0 0 0 1px rgba(0, 47, 112, 0.03); }
+        .tab-scrollbar::-webkit-scrollbar { display: none; }
+        .tab-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-on-surface antialiased flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface/80 backdrop-blur-md shadow-sm ring-1 ring-on-primary/5 docked full-width top-0 sticky z-50">
+<div class="h-[72px] flex justify-between items-center px-margin-desktop w-full max-w-max-width mx-auto">
+<div class="flex items-center gap-6">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">智伴 Smart Community</span>
+<nav class="hidden md:flex gap-6 ml-8">
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Dashboard</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Health</a>
+<a class="text-primary font-semibold border-b-2 border-primary pb-1 font-body-md text-body-md Active: translate-y-px transition-transform" href="#">Services</a>
+<a class="text-secondary hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Timeline</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button aria-label="Notifications" class="p-2 text-secondary hover:bg-surface-whisper dark:hover:bg-surface-variant transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button aria-label="Settings" class="p-2 text-secondary hover:bg-surface-whisper dark:hover:bg-surface-variant transition-all duration-300 rounded-full">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<img alt="Family member profile" class="w-10 h-10 rounded-full object-cover border border-border-cloud" data-alt="A smiling elderly person in a bright, modern indoor setting, representing a trusted family member profile picture. Soft, warm lighting emphasizes approachability and care within a light-mode UI context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3P_B9VQ17jM4BWbJyUnlr5E7AoztwIWGQMAVVRdE5Y34BZxMJWTTqNqlrsGTXpRjJoiUfqww_hTgIGKHUsSslqMFztmpKg4ISCJylZ0LpI2rYtH6c0obfu2dzzdxIZJuySje0TkGsFNSCwGfrZu3jb_PPMnvLdMbflGVRbRVQfkd1kCI8Ipmtbx95sGoLcoXiUIsg2IleTwNBQZYmOicFOyyL0fwjIVL-NHOthC5bVxFzdjFaWfSEgkvJVXFHrHMHwvFkwddtRv05"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col lg:flex-row gap-8">
+<!-- Canvas/Marketplace Section -->
+<div class="flex-1 flex flex-col gap-6">
+<!-- Header & Search -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="font-display text-display text-text-charcoal">社区服务与代办</h1>
+<p class="font-body-md text-body-md text-secondary mt-1">预约专业的居家看护、餐饮配送与健康服务</p>
+</div>
+<div class="relative w-full md:w-72">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-still border-none rounded-lg focus:ring-2 focus:ring-primary focus:bg-surface-pure transition-colors text-body-md" placeholder="搜索服务..." type="text"/>
+</div>
+</div>
+<!-- Category Tabs -->
+<div class="flex items-center gap-2 overflow-x-auto tab-scrollbar py-2 border-b border-border-cloud">
+<button class="whitespace-nowrap px-4 py-2 bg-primary-container text-on-primary-container rounded-full font-label-md text-label-md font-medium">全部</button>
+<button class="whitespace-nowrap px-4 py-2 text-secondary hover:bg-surface-whisper rounded-full font-label-md text-label-md transition-colors">助餐服务</button>
+<button class="whitespace-nowrap px-4 py-2 text-secondary hover:bg-surface-whisper rounded-full font-label-md text-label-md transition-colors">居家清洁</button>
+<button class="whitespace-nowrap px-4 py-2 text-secondary hover:bg-surface-whisper rounded-full font-label-md text-label-md transition-colors">陪诊陪护</button>
+<button class="whitespace-nowrap px-4 py-2 text-secondary hover:bg-surface-whisper rounded-full font-label-md text-label-md transition-colors">健康体检</button>
+</div>
+<!-- Service Grid (Bento style hint) -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-pure rounded-xl shadow-soft hover-lift overflow-hidden flex flex-col group border border-border-cloud relative">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+<div class="h-40 w-full relative">
+<img class="w-full h-full object-cover" data-alt="A high-quality, professional photograph of a nutritious, well-balanced meal for seniors, featuring steamed vegetables, lean protein, and soft grains in clean, modern ceramic bowls. Bright, natural lighting, warm clinical but appetizing aesthetic suitable for a healthcare app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAP5xWgF2nFOGr5CCCutKlKf91TLdIaSBCwOf-36HAhg0L5gcbWWgOBHXampQ2uh1-Ps6j8l96rSGwMO3sxjnZ9Ze9OrrtsBuoz2JxyuRWEhWnFqqHXt7viQalEaDdrXNqGNcTBJcYb0eIO44IBye9n-LIm2fFlMHsl2sgOOdOgaPMzb6nYp9nirGTHlXoSjlOs1Qr4xUv2HWCss6YeujQXc4ETJ_LXgidj0cRsCmXJPYLU-BY2Kw-TgsztK1IZJXwq15typ-QsRpYu"/>
+<div class="absolute top-2 right-2 bg-success-container text-success px-2 py-1 rounded font-label-md text-sm font-medium">热销</div>
+</div>
+<div class="p-padding-card flex flex-col flex-1">
+<h3 class="font-headline-md text-headline-md text-text-charcoal mb-2">营养午餐周订</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 mb-4 flex-1">根据长者体质定制低盐低脂餐单，每日新鲜制作，专人按时配送上门。</p>
+<div class="flex items-end justify-between mt-auto">
+<div>
+<span class="font-headline-md text-headline-md text-primary font-bold">¥120</span>
+<span class="text-secondary font-body-md text-sm">/周 (5餐)</span>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-accent-hover transition-colors Active: translate-y-px">立即预约</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-pure rounded-xl shadow-soft hover-lift overflow-hidden flex flex-col group border border-border-cloud relative">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+<div class="h-40 w-full relative">
+<img class="w-full h-full object-cover" data-alt="A professional cleaner in a neat, modern uniform dusting a sunlit, cozy living room. The room has comfortable armchairs and warm wood tones. The lighting is soft and reassuring, conveying trust and cleanliness in a residential elder care setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg8Odkn-oJNPUC44yET_tDo6A2XpqgFx8krgwqwnPQxdN_uDHGtkqOYh3cp6AzkDp0yCffDWjUnWi318CzeASnBKKiX8PdvH36Am83_DpJu7Hi_0psH1IVPgw5iQcXXsLFsOAk6VnqrATUK-68nKaE4R_iyQNrzR7feaePQyH8R4zyuaRU8PZTVe1BT40X4_xFLk5pL39bH2nrj_tRmrtv6ENGkkYiUm0YDLQtiyC3VyOxCNQqlpx1CcsgqQ1CFZNYNjtapykdI5P-"/>
+</div>
+<div class="p-padding-card flex flex-col flex-1">
+<h3 class="font-headline-md text-headline-md text-text-charcoal mb-2">深度居家保洁</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 mb-4 flex-1">包含全屋除尘、厨房油污清理及卫生间消毒，2小时专业服务，让居住环境更安心。</p>
+<div class="flex items-end justify-between mt-auto">
+<div>
+<span class="font-headline-md text-headline-md text-primary font-bold">¥80</span>
+<span class="text-secondary font-body-md text-sm">/次 (2小时)</span>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-accent-hover transition-colors Active: translate-y-px">立即预约</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-pure rounded-xl shadow-soft hover-lift overflow-hidden flex flex-col group border border-border-cloud relative">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+<div class="h-40 w-full relative">
+<img class="w-full h-full object-cover" data-alt="A compassionate nurse or care worker in professional attire gently guiding an elderly patient through a bright, modern hospital corridor. The environment feels safe, clean, and modern. High-key lighting emphasizes medical trust and reassuring companionship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiKeqamb-pge8d-7FUp5niqm5sCzCo7pMFVNlEgPmV0N110te4lUnBXkh5qN-wylYJQVL3V90X2RHdh3l0N5N6TxO0HxhwcehLFh25_-7zFiQPAQvQ5fvO8H2DUvCZUpP6TZxJiNb8nAJRhMPcoJQ5yCey2gGMpwLt6S3RGPKyW5vfHs02f3q-emAsfu48ZxhlE_3a6xChtb0BgM5xZ31WNZ7A2bLyXO_Nj2GYosc0kFd4mtr6Eo5nRoMfoyfEYnoa6INnHL9bZWgd"/>
+</div>
+<div class="p-padding-card flex flex-col flex-1">
+<h3 class="font-headline-md text-headline-md text-text-charcoal mb-2">专业陪诊服务</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 mb-4 flex-1">专人全程陪同就医，协助挂号、缴费、取药，并详细记录医嘱反馈给家属。</p>
+<div class="flex items-end justify-between mt-auto">
+<div>
+<span class="font-headline-md text-headline-md text-primary font-bold">¥150</span>
+<span class="text-secondary font-body-md text-sm">/半天</span>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-accent-hover transition-colors Active: translate-y-px">立即预约</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar / Active Orders -->
+<aside class="w-full lg:w-80 flex flex-col gap-6 shrink-0">
+<!-- Active Orders Card -->
+<div class="bg-surface-pure rounded-xl shadow-soft p-padding-card border border-border-cloud">
+<div class="flex items-center justify-between mb-4 border-b border-border-cloud pb-3">
+<h2 class="font-headline-md text-[18px] font-semibold text-text-charcoal flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">pending_actions</span>
+                        当前服务
+                    </h2>
+<span class="bg-surface-container-high text-secondary px-2 py-1 rounded text-xs font-medium">2 活跃</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Status Item 1 -->
+<div class="flex gap-3">
+<div class="mt-1 w-2 h-2 rounded-full bg-success flex-shrink-0 relative">
+<div class="absolute inset-0 bg-success rounded-full animate-ping opacity-75"></div>
+</div>
+<div>
+<p class="font-label-md text-label-md text-text-charcoal font-medium">午餐配送中</p>
+<p class="font-body-md text-sm text-secondary mt-1">预计 11:45 送达 · 配送员: 张师傅</p>
+</div>
+</div>
+<!-- Status Item 2 -->
+<div class="flex gap-3">
+<div class="mt-1 w-2 h-2 rounded-full bg-secondary-fixed-dim flex-shrink-0"></div>
+<div>
+<p class="font-label-md text-label-md text-text-charcoal font-medium">保洁服务已完成</p>
+<p class="font-body-md text-sm text-secondary mt-1">昨日 14:00 · 待评价</p>
+</div>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-border-cloud text-primary rounded-lg font-label-md text-label-md hover:bg-surface-whisper transition-colors">查看全部订单</button>
+</div>
+<!-- Help/Support Card -->
+<div class="bg-accent-container/30 rounded-xl p-padding-card border border-primary-fixed-dim/50">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</div>
+<div>
+<h3 class="font-headline-md text-[18px] font-semibold text-text-charcoal mb-1">需要特殊帮助？</h3>
+<p class="font-body-md text-sm text-secondary mb-4">如果您未找到合适的服务，或有紧急需求，请随时联系您的专属社区管家。</p>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-accent-hover transition-colors flex items-center gap-2 w-full justify-center Active: translate-y-px">
+<span class="material-symbols-outlined text-[18px]" data-icon="call">call</span>
+                            联系社区管家
+                        </button>
+</div>
+</div>
+</div>
+</aside>
+</main>
+</body></html>

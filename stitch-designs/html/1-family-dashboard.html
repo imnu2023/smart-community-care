@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>智伴 Smart Community - Family Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#ededf8",
+                    "success": "#006825",
+                    "surface-whisper": "#F0F2F6",
+                    "text-charcoal": "#191C1E",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#c5c6c9",
+                    "secondary-fixed": "#e1e2e5",
+                    "accent-hover": "#003FA4",
+                    "on-secondary-fixed-variant": "#44474a",
+                    "primary-container": "#0050cb",
+                    "surface-container-highest": "#e1e2ec",
+                    "on-primary-fixed": "#001849",
+                    "surface-variant": "#e1e2ec",
+                    "tertiary-fixed": "#ffdbd0",
+                    "outline-variant": "#c3c6d6",
+                    "border-zinc": "#C2C6D8",
+                    "critical": "#BA1A1A",
+                    "on-error": "#ffffff",
+                    "on-surface": "#191b23",
+                    "surface-container-low": "#f3f3fd",
+                    "primary": "#003b9a",
+                    "tertiary-container": "#a23302",
+                    "on-tertiary-fixed": "#390c00",
+                    "on-primary-container": "#c1cfff",
+                    "on-tertiary-container": "#ffc3b0",
+                    "on-background": "#191b23",
+                    "tertiary": "#7b2400",
+                    "on-tertiary-fixed-variant": "#832700",
+                    "on-primary-fixed-variant": "#003fa4",
+                    "on-tertiary": "#ffffff",
+                    "accent-container": "#DAE1FF",
+                    "text-stone": "#727687",
+                    "critical-container": "#FFDAD6",
+                    "text-steel": "#424656",
+                    "tertiary-fixed-dim": "#ffb59c",
+                    "secondary-container": "#dee0e3",
+                    "primary-fixed-dim": "#b3c5ff",
+                    "border-cloud": "#DEE0E4",
+                    "on-secondary-container": "#606365",
+                    "surface-dim": "#d9d9e4",
+                    "primary-fixed": "#dae1ff",
+                    "background": "#faf8ff",
+                    "surface-bright": "#faf8ff",
+                    "warning": "#A53B18",
+                    "surface": "#faf8ff",
+                    "surface-container-lowest": "#ffffff",
+                    "success-container": "#E6FFE1",
+                    "surface-tint": "#1155d0",
+                    "error-container": "#ffdad6",
+                    "warning-container": "#FFDBD0",
+                    "secondary": "#5c5f61",
+                    "on-secondary-fixed": "#191c1e",
+                    "on-surface-variant": "#434654",
+                    "surface-still": "#EAECF0",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f0f0fb",
+                    "inverse-surface": "#2e3038",
+                    "surface-pure": "#FDFDFC",
+                    "surface-container-high": "#e7e7f2",
+                    "error": "#ba1a1a",
+                    "inverse-primary": "#b3c5ff",
+                    "outline": "#737685"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "gutter": "16px",
+                    "max-width": "1280px",
+                    "margin-desktop": "32px",
+                    "margin-mobile": "16px",
+                    "padding-card": "24px"
+            },
+            "fontFamily": {
+                    "headline-lg": [
+                            "Geist"
+                    ],
+                    "display": [
+                            "Geist"
+                    ],
+                    "body-md": [
+                            "Geist"
+                    ],
+                    "mono-data": [
+                            "jetbrainsMono"
+                    ],
+                    "headline-md": [
+                            "Geist"
+                    ],
+                    "label-md": [
+                            "Geist"
+                    ],
+                    "caption": [
+                            "Geist"
+                    ],
+                    "body-lg": [
+                            "Geist"
+                    ]
+            },
+            "fontSize": {
+                    "headline-lg": [
+                            "clamp(24px, 3.5vw, 32px)",
+                            {
+                                    "lineHeight": "1.3",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display": [
+                            "clamp(28px, 5vw, 48px)",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.03em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "clamp(16px, 1.5vw, 18px)",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "mono-data": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "clamp(20px, 2.5vw, 24px)",
+                            {
+                                    "lineHeight": "1.4",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-md": [
+                            "clamp(14px, 1.2vw, 16px)",
+                            {
+                                    "lineHeight": "1.4",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "caption": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "clamp(18px, 2vw, 20px)",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #F5F6F9;
+        }
+        .card-shadow {
+            box-shadow: 0 0 0 1px rgba(0, 47, 112, 0.03), 0 2px 12px rgba(0, 59, 154, 0.05);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .card-shadow:hover {
+            box-shadow: 0 0 0 1px rgba(0, 47, 112, 0.04), 0 8px 24px rgba(0, 59, 154, 0.08);
+            transform: translateY(-2px);
+        }
+        .vital-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: transparent;
+            transition: background-color 0.3s ease;
+            border-top-left-radius: 0.75rem;
+            border-top-right-radius: 0.75rem;
+        }
+        .vital-card:hover::before {
+            background-color: var(--card-accent, #003b9a);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        @media (max-width: 768px) {
+            .bento-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="text-on-background font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-surface/80 backdrop-blur-md dark:bg-surface-container/80 docked full-width top-0 sticky z-50 shadow-sm ring-1 ring-on-primary/5 bg-surface/80 backdrop-blur-md shadow-sm">
+<div class="h-[72px] flex justify-between items-center px-margin-desktop w-full max-w-max-width mx-auto">
+<!-- Brand -->
+<div class="flex items-center gap-4">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">智伴 Smart Community</span>
+</div>
+<!-- Navigation Links (Web) -->
+<div class="hidden md:flex items-center gap-8 h-full">
+<a class="h-full flex items-center text-primary font-semibold border-b-2 border-primary pb-1 Active: translate-y-px transition-transform" href="#">
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="h-full flex items-center text-secondary hover:text-primary transition-colors duration-200 hover:bg-surface-whisper dark:hover:bg-surface-variant transition-all duration-300 px-2 rounded-md" href="#">
+<span class="font-label-md text-label-md">Health</span>
+</a>
+<a class="h-full flex items-center text-secondary hover:text-primary transition-colors duration-200 hover:bg-surface-whisper dark:hover:bg-surface-variant transition-all duration-300 px-2 rounded-md" href="#">
+<span class="font-label-md text-label-md">Services</span>
+</a>
+<a class="h-full flex items-center text-secondary hover:text-primary transition-colors duration-200 hover:bg-surface-whisper dark:hover:bg-surface-variant transition-all duration-300 px-2 rounded-md" href="#">
+<span class="font-label-md text-label-md">Timeline</span>
+</a>
+</div>
+<!-- Trailing Actions & Profile -->
+<div class="flex items-center gap-4">
+<button class="text-secondary hover:text-primary transition-colors duration-200 hover:bg-surface-whisper dark:hover:bg-surface-variant p-2 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+</button>
+<button class="text-secondary hover:text-primary transition-colors duration-200 hover:bg-surface-whisper dark:hover:bg-surface-variant p-2 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-surface-container ring-offset-2">
+<img alt="Family member profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a caring, middle-aged family member smiling warmly, lit softly in a modern, light-filled domestic setting. The image represents the user of a family elder-care dashboard, conveying trust and connection in a clean, modern clinical-adjacent aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQESYaQsMT5edWUbKRC9REPf6_Hdx7AfLXWmISQpDc3B-kLvQmLHklqvYBHJBeFepCy0braljBNuDZ1DFqYHlrEdsNMgM5jPg05GESiCrZsFM82CHYt3go05WsxZjSlFca4_osTy9WPPYHEsr52VyFqjRi_p40GilE5FkdgusHdIRgBX2hY-EbMH4kev_d-0_Cup4CHGabCwG35eKrqee6g2w0JEgaDrQVzxxiMx0ND2uL1L2SkgRzAaoYMrWQkaepRan5eIpRaSMW"/>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-1 w-full max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12 flex flex-col gap-8">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h1 class="font-display text-display text-text-charcoal mb-2">下午好，张女士</h1>
+<p class="font-body-lg text-body-lg text-secondary">这里是张大爷的今日情况概览。</p>
+</div>
+<!-- Quick Status Badge -->
+<div class="bg-success-container/50 border border-success/20 rounded-xl p-4 flex items-center gap-4 card-shadow">
+<div class="w-12 h-12 rounded-full bg-success/10 flex items-center justify-center text-success">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">home_health</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-secondary">目前状态</p>
+<p class="font-headline-md text-headline-md text-success font-semibold">在家，一切正常</p>
+</div>
+</div>
+</header>
+<!-- Bento Grid Layout -->
+<div class="bento-grid">
+<!-- Health Vitals Section (Spans 8 cols on desktop) -->
+<div class="col-span-12 md:col-span-8 flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-text-charcoal flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">monitor_heart</span>
+                        健康指标
+                    </h2>
+<button class="font-label-md text-label-md text-primary hover:text-accent-hover transition-colors flex items-center gap-1">
+                        查看完整报告 <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<!-- Heart Rate Card -->
+<div class="bg-surface-pure rounded-xl p-padding-card card-shadow relative overflow-hidden vital-card" style="--card-accent: #BA1A1A;">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-critical-container text-critical p-2 rounded-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">ecg</span>
+</div>
+<span class="bg-surface-whisper text-secondary font-label-md text-label-md px-2 py-1 rounded-md text-xs">刚刚更新</span>
+</div>
+<p class="font-label-md text-label-md text-secondary mb-1">心率</p>
+<div class="flex items-baseline gap-2">
+<span class="font-display text-display text-text-charcoal font-mono-data">72</span>
+<span class="font-body-md text-body-md text-secondary">bpm</span>
+</div>
+<p class="font-label-md text-label-md text-success mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span> 稳定
+                        </p>
+</div>
+<!-- Blood Pressure Card -->
+<div class="bg-surface-pure rounded-xl p-padding-card card-shadow relative overflow-hidden vital-card" style="--card-accent: #003b9a;">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-primary-container/20 text-primary p-2 rounded-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">blood_pressure</span>
+</div>
+<span class="bg-surface-whisper text-secondary font-label-md text-label-md px-2 py-1 rounded-md text-xs">1小时前</span>
+</div>
+<p class="font-label-md text-label-md text-secondary mb-1">血压</p>
+<div class="flex items-baseline gap-2">
+<span class="font-display text-display text-text-charcoal font-mono-data">125/82</span>
+</div>
+<p class="font-label-md text-label-md text-success mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span> 正常
+                        </p>
+</div>
+<!-- Steps Card -->
+<div class="bg-surface-pure rounded-xl p-padding-card card-shadow relative overflow-hidden vital-card" style="--card-accent: #006825;">
+<div class="flex justify-between items-start mb-4">
+<div class="bg-success-container text-success p-2 rounded-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">directions_walk</span>
+</div>
+<span class="bg-surface-whisper text-secondary font-label-md text-label-md px-2 py-1 rounded-md text-xs">今日累计</span>
+</div>
+<p class="font-label-md text-label-md text-secondary mb-1">步数</p>
+<div class="flex items-baseline gap-2">
+<span class="font-display text-display text-text-charcoal font-mono-data">4,520</span>
+<span class="font-body-md text-body-md text-secondary">步</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-surface-container h-2 rounded-full mt-3 overflow-hidden">
+<div class="bg-success h-full rounded-full" style="width: 75%;"></div>
+</div>
+<p class="font-label-md text-label-md text-secondary mt-2 text-sm">目标完成 75%</p>
+</div>
+</div>
+</div>
+<!-- Upcoming Services (Spans 4 cols on desktop) -->
+<div class="col-span-12 md:col-span-4 flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md text-text-charcoal flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary">calendar_clock</span>
+                        即将到来的服务
+                    </h2>
+</div>
+<div class="bg-surface-pure rounded-xl p-padding-card card-shadow h-full flex flex-col">
+<div class="flex-1 flex flex-col gap-4">
+<!-- Service Item 1 -->
+<div class="flex gap-4 items-start p-3 hover:bg-surface-whisper rounded-lg transition-colors">
+<div class="bg-tertiary-container/20 text-tertiary p-3 rounded-lg flex flex-col items-center justify-center w-14 h-14 shrink-0">
+<span class="font-label-md font-bold">12:00</span>
+</div>
+<div>
+<h3 class="font-headline-lg text-[18px] font-semibold text-text-charcoal">社区送餐服务</h3>
+<p class="font-body-md text-body-md text-secondary mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">restaurant</span> 营养午餐A套餐
+                                </p>
+</div>
+</div>
+<div class="h-px bg-border-cloud mx-4"></div>
+<!-- Service Item 2 -->
+<div class="flex gap-4 items-start p-3 hover:bg-surface-whisper rounded-lg transition-colors">
+<div class="bg-primary-container/20 text-primary p-3 rounded-lg flex flex-col items-center justify-center w-14 h-14 shrink-0">
+<span class="font-label-md font-bold">14:00</span>
+</div>
+<div>
+<h3 class="font-headline-lg text-[18px] font-semibold text-text-charcoal">医疗陪诊</h3>
+<p class="font-body-md text-body-md text-secondary mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">local_hospital</span> 市第一医院复查
+                                </p>
+</div>
+</div>
+</div>
+<button class="mt-4 w-full border border-border-zinc text-primary font-label-md text-label-md py-3 rounded-lg hover:bg-surface-whisper transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">add</span> 预约新服务
+                    </button>
+</div>
+</div>
+<!-- Timeline Summary (Spans 8 cols on desktop) -->
+<div class="col-span-12 md:col-span-8 flex flex-col gap-6 mt-4">
+<h2 class="font-headline-md text-headline-md text-text-charcoal flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">history</span>
+                    今日动态
+                </h2>
+<div class="bg-surface-pure rounded-xl p-padding-card card-shadow">
+<div class="relative pl-6 border-l-2 border-surface-container ml-3 flex flex-col gap-8">
+<!-- Timeline Item 1 -->
+<div class="relative">
+<div class="absolute -left-[35px] bg-primary text-on-primary w-6 h-6 rounded-full flex items-center justify-center border-4 border-surface-pure shadow-sm">
+<span class="material-symbols-outlined text-[14px]">brush</span>
+</div>
+<p class="font-label-md text-label-md text-secondary mb-1">10:00</p>
+<div class="bg-surface-whisper p-4 rounded-lg">
+<p class="font-body-md text-body-md text-text-charcoal">参加了社区书法班活动。</p>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative">
+<div class="absolute -left-[35px] bg-success text-on-primary w-6 h-6 rounded-full flex items-center justify-center border-4 border-surface-pure shadow-sm">
+<span class="material-symbols-outlined text-[14px]">breakfast_dining</span>
+</div>
+<p class="font-label-md text-label-md text-secondary mb-1">08:30</p>
+<div class="bg-surface-whisper p-4 rounded-lg">
+<p class="font-body-md text-body-md text-text-charcoal">完成早餐打卡，记录了用药情况（按时服用降压药）。</p>
+</div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative">
+<div class="absolute -left-[35px] bg-secondary-fixed-dim text-on-surface w-6 h-6 rounded-full flex items-center justify-center border-4 border-surface-pure shadow-sm">
+<span class="material-symbols-outlined text-[14px]">sensor_door</span>
+</div>
+<p class="font-label-md text-label-md text-secondary mb-1">07:15</p>
+<div class="bg-surface-whisper p-4 rounded-lg">
+<p class="font-body-md text-body-md text-text-charcoal">监测到长辈起床活动。</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quick Actions (Spans 4 cols on desktop) -->
+<div class="col-span-12 md:col-span-4 flex flex-col gap-6 mt-4">
+<h2 class="font-headline-md text-headline-md text-text-charcoal flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">bolt</span>
+                    快捷操作
+                </h2>
+<div class="flex flex-col gap-4">
+<button class="bg-critical text-on-error hover:bg-critical/90 font-label-md text-label-md py-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2 active:translate-y-px">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">phone_in_talk</span>
+                        一键呼叫长辈
+                    </button>
+<div class="grid grid-cols-2 gap-4">
+<button class="bg-surface-pure border border-border-zinc hover:bg-surface-whisper text-primary font-label-md text-label-md py-4 rounded-xl transition-colors flex flex-col items-center justify-center gap-2 card-shadow">
+<span class="material-symbols-outlined text-[28px]">add_circle</span>
+                            预约新服务
+                        </button>
+<button class="bg-surface-pure border border-border-zinc hover:bg-surface-whisper text-primary font-label-md text-label-md py-4 rounded-xl transition-colors flex flex-col items-center justify-center gap-2 card-shadow">
+<span class="material-symbols-outlined text-[28px]">summarize</span>
+                            完整健康报告
+                        </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

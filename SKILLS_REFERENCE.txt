@@ -1,0 +1,259 @@
+================================================================================
+  impeccable + taste-skill  完整指令参考手册
+  项目: 智伴智慧社区养老平台
+  更新: 2026-06-24
+================================================================================
+
+================================================================================
+  一、impeccable（20个指令）
+================================================================================
+
+【Build 构建】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/impeccable craft <feature>      先shape后build，端到端功能开发
+  例: /impeccable craft 紧急呼叫页面
+
+/impeccable shape <feature>      仅做UX/UI规划，不写代码
+  例: /impeccable shape 支付流程
+
+/impeccable init                 初始化项目上下文 PRODUCT.md + DESIGN.md
+  例: /impeccable init
+
+/impeccable document             从现有代码反向生成DESIGN.md
+  例: /impeccable document
+
+/impeccable extract <target>     提取可复用token和组件到设计系统
+  例: /impeccable extract button
+
+【Evaluate 评估】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/impeccable critique <target>    UX启发式评分审查
+  例: /impeccable critique dashboard
+
+/impeccable audit <target>       技术质量检查(a11y/性能/响应式)
+  例: /impeccable audit health
+
+【Refine 精炼】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/impeccable polish <target>      发货前最终质量打磨
+  例: /impeccable polish login
+
+/impeccable bolder <target>      放大安全/平淡的设计
+  例: /impeccable bolder sidebar
+
+/impeccable quieter <target>     收敛过激/花哨的设计
+  例: /impeccable quieter hero
+
+/impeccable distill <target>     剥离装饰，回归本质
+  例: /impeccable distill dashboard
+
+/impeccable harden <target>      生产加固: 错误/边界/国际化
+  例: /impeccable harden form
+
+/impeccable onboard <target>     首次体验/空状态/激活流程
+  例: /impeccable onboard profile
+
+【Enhance 增强】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/impeccable animate <target>     添加有目的的动效
+  例: /impeccable animate cards
+
+/impeccable colorize <target>    给单色UI加策略性色彩
+  例: /impeccable colorize orders
+
+/impeccable typeset <target>     改善字体层级和排版
+  例: /impeccable typeset article
+
+/impeccable layout <target>      修复间距/节奏/视觉层级
+  例: /impeccable layout services
+
+/impeccable delight <target>     添加个性和记忆点
+  例: /impeccable delight empty-state
+
+/impeccable overdrive <target>   突破常规极限
+  例: /impeccable overdrive hero
+
+【Fix 修复】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/impeccable clarify <target>     改善UX文案/标签/错误信息
+  例: /impeccable clarify error-msg
+
+/impeccable adapt <target>       适配不同设备和屏幕
+  例: /impeccable adapt mobile
+
+/impeccable optimize <target>    诊断并修复UI性能
+  例: /impeccable optimize images
+
+【Iterate 迭代】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/impeccable live                 浏览器内实时元素变体迭代 (需要dev server运行)
+
+【Management 管理】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/impeccable pin <cmd>            创建 /<cmd> 快捷方式
+  例: /impeccable pin polish
+
+/impeccable unpin <cmd>          移除快捷方式
+  例: /impeccable unpin polish
+
+/impeccable hooks <on|off|status>  管理设计检测器hook
+
+
+================================================================================
+  二、taste-skill（13个技能）
+================================================================================
+
+【设计生成】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/design-taste-frontend
+  反模板前端设计。三维拨盘(8/6/4)、Design Read推演、严格起飞前检查
+  适用: 落地页、作品集、营销站
+  不适用: 仪表盘、数据表、多步骤产品UI
+
+/design-taste-frontend-v1
+  原版v1 taste-skill，向后兼容
+  适用: 需要v1精确行为的项目
+
+/high-end-visual-design
+  高端机构级设计。双边框嵌套、磁吸按钮物理、流体动态岛导航
+  适用: 需要"贵感"的页面
+
+/minimalist-ui
+  极简编辑风。暖单色、排版对比、bento grid、无渐变无阴影
+  适用: 需要克制的界面
+
+/gpt-taste
+  GSAP动效+随机布局。Python随机化、AIDA结构、ScrollTrigger动画
+  适用: 需要电影级动效的营销页
+
+/industrial-brutalist-ui
+  粗野主义工业风。瑞士排版+军用终端美学、模拟退化效果
+  适用: 数据大盘、后台管理
+
+【项目改造】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/redesign-existing-projects
+  现有项目审美升级。扫描→诊断→修复，不动功能，兼容任意CSS栈
+  适用: 已有项目的全面体检和定向升级
+
+/brandkit
+  品牌视觉系统生成。Logo概念、标识系统、品牌规范板
+  适用: 需要完整品牌输出的项目
+
+【设计出图】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/imagegen-frontend-web
+  网页设计图生成。每section一张图，禁止压缩多段到一张
+  适用: 先出设计稿再编码
+
+/imagegen-frontend-mobile
+  App设计图生成。iOS/Android原生感
+  适用: 移动端设计参考
+
+/image-to-code
+  截图/设计图转代码。先生成设计图，再深层分析后实现
+  适用: 有参考图需要还原
+
+【工具】━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+/full-output-enforcement
+  强制完整输出。禁止 // ... 占位符，Token边界分片策略
+  适用: 长代码生成时防截断
+
+/stitch-design-taste
+  Google Stitch设计系统。生成Stitch兼容的DESIGN.md
+  适用: 使用Google Stitch的项目
+
+
+================================================================================
+  三、taste-skill 三维拨盘速查
+================================================================================
+
+参数              默认值    含义              低值                    高值
+────────────────────────────────────────────────────────────────────
+DESIGN_VARIANCE      8      布局实验性        1=完美对称             10=艺术混沌
+MOTION_INTENSITY     6      动画深度          1=完全静态             10=电影级物理
+VISUAL_DENSITY       4      信息密度          1=画廊级留白           10=驾驶舱密集
+
+【场景预设】
+──────────────────────────────────────────────────────────
+场景                  VARIANCE    MOTION    DENSITY
+──────────────────────────────────────────────────────────
+SaaS落地页               7           6          4
+创意机构站               9           8          3
+高端消费品               7           6          3
+设计作品集               8           7          3
+老人/无障碍产品          3           2          5
+政务/公共卫生            3           2          5
+重设计-保持             不变         +1        不变
+重设计-大改              +2          +2        不变
+──────────────────────────────────────────────────────────
+
+
+================================================================================
+  四、两个skill的协同策略
+================================================================================
+
+场景                          使用
+──────────────────────────────────────────────────────────────────────
+新页面从零设计                /design-taste-frontend + impeccable的DESIGN.md约束
+现有页面审美升级              /redesign-existing-projects 审计 -> impeccable逐项fix
+某个组件不够精致              impeccable /polish 或 /bolder
+整体太空洞                    impeccable /bolder 或 /delight
+整体太花哨                    impeccable /quieter 或 /distill
+需要高端机构感                /high-end-visual-design
+需要极简编辑风                /minimalist-ui
+排版层级混乱                  impeccable /typeset
+颜色单调/平淡                 impeccable /colorize
+间距不统一                    impeccable /layout
+动效缺失                      impeccable /animate
+错误/空状态缺失               impeccable /harden 或 /onboard
+移动端适配                    impeccable /adapt
+代码被截断                    /full-output-enforcement
+
+
+================================================================================
+  五、智伴项目专属设计约束（来自DESIGN.md）
+================================================================================
+
+品牌色: primary=#0050cb(蓝·仅主CTA) | secondary=#a53b18(暖棕·辅助)
+成功/健康: tertiary=#006825(绿) | 危险/紧急: error=#ba1a1a(红)
+页面基底: surface=#f7f9fc(暖灰) | 卡片: surface-container-lowest=#ffffff(白)
+主文字: on-surface=#191c1e(近黑) | 次级: on-surface-variant=#424656(中灰)
+最大字号: 48px/700 | 标题: 32-24px/600 | 正文: 18-20px/400 | 最小: 14px/600
+按钮圆角: 8px矩形 | 卡片圆角: 8-12px | Badge: 全圆角胶囊
+按钮最小高度: 48px | 输入框: 56px | 触控区域: >=48px
+阴影: 仅2层(soft-care + soft-care-hover), 轻柔灰影
+间距: 基础8px | 卡片内>=24px | 分区>=64px
+字体: Inter, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif
+
+Design Do's:
+  - Primary蓝色仅用于1-2个主CTA
+  - 正文>=16px(body-md 18px), 引导文案body-lg 20px
+  - 所有交互元素>=48px触控(按钮/列表>=48px, 输入框>=56px)
+  - 用表面色差而非重阴影建立深度
+  - 健康数据用tertiary绿色, 异常用error红色
+  - 卡片内>=24px padding
+  - 按钮8px圆角矩形, 非胶囊
+  - 单字体体系Inter全站
+  - 分区之间>=64px间距
+  - 移动端底部导航栏>=64px
+
+Design Don'ts:
+  - 不超过一种品牌强调色
+  - 不用14px以下字号
+  - 不用胶囊形按钮(pill仅用于Badge)
+  - 不用大面积纯白#ffffff作页面背景
+  - 不用重阴影(>0.12透明度)或彩色阴影
+  - 不用发光/光晕focus效果(用2px实线边框)
+  - 不在同一视口混合primary蓝和secondary暖棕按钮
+  - 不用全大写标签文字
+  - 卡片内不用小于20px内边距
+  - Hero区不超过一种字重(仅display-lg可用700)
+
+taste-skill冲突注意:
+  - taste-skill禁止emoji -> 智伴老人用户emoj更直观, 保留
+  - taste-skill禁止Inter -> 智伴DESIGN指定Inter, 保留
+  - taste-skill禁止pill按钮 -> 智伴已遵循此规则(8px矩形)
+  - taste-skill禁止三列均等卡片 -> 智伴已用bento grid替代
+  - taste-skill文案禁令 -> 可借鉴加入DESIGN.md donts

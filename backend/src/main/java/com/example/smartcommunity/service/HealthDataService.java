@@ -15,6 +15,9 @@ public interface HealthDataService {
     HealthData getLatestData(Long userId);
     
     String analyzeHealth(Long userId);
-    
+
     void generateHealthReport(Long userId);
+
+    /** Build a structured AI prompt from weekly health data for DeepSeek. */
+    String buildAiPrompt(List<HealthData> weeklyData);
 }
