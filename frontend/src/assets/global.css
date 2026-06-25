@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   智伴智慧社区养老 — 全局样式
+   遵循 DESIGN.md 设计系统 + product register 规范
+   ============================================================ */
+
+/* --- 基础层 --- */
+@layer base {
+  body {
+    background-color: theme('colors.surface');
+    color: theme('colors.on-surface');
+    font-family: Inter, -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 18px; /* body-md — 老年用户基准 */
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 标题默认行平衡 */
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+
+  /* 长文减少孤行 */
+  p, li {
+    text-wrap: pretty;
+  }
+
+  /* 焦点可见：2px 主色实线边框，不用 glow */
+  :focus-visible {
+    outline: 2px solid theme('colors.primary');
+    outline-offset: 2px;
+  }
+
+  /* 选择色 */
+  ::selection {
+    background-color: theme('colors.primary-container');
+    color: theme('colors.on-primary-container');
+  }
+}
+
+/* --- 工具层 --- */
+@layer utilities {
+  /* 触控目标最小 48px */
+  .touch-target {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  /* 过渡统一：150-250ms */
+  .transition-ui {
+    transition: all 200ms ease-out;
+  }
+
+  /* 骨架屏脉冲 */
+  .skeleton-pulse {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    background: linear-gradient(
+      90deg,
+      theme('colors.surface-container') 0%,
+      theme('colors.surface-container-high') 50%,
+      theme('colors.surface-container') 100%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* --- 动效偏好 --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
