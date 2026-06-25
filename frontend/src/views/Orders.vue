@@ -45,7 +45,7 @@
             </div>
           </div>
           <div class="od-card-details">
-            <div class="od-detail"><span><AppIcon name="clock" size="14" /></span> {{ order.serviceTime }}</div>
+            <div class="od-detail"><span><AppIcon name="clock" size="14" /></span> {{ formatServiceTime(order.serviceTime) }}</div>
             <div class="od-detail"><span><AppIcon name="map-pin" size="14" /></span> {{ order.address }}</div>
             <div class="od-detail"><span><AppIcon name="package" size="14" /></span> ¥{{ order.amount }}</div>
           </div>
@@ -73,7 +73,7 @@
           <div class="od-info-grid">
             <div class="od-info-item"><span class="od-info-lbl">订单编号</span><span>{{ selectedOrder.orderNo }}</span></div>
             <div class="od-info-item"><span class="od-info-lbl">服务项目</span><span>{{ getServiceName(selectedOrder.serviceId) }}</span></div>
-            <div class="od-info-item"><span class="od-info-lbl">服务时间</span><span>{{ selectedOrder.serviceTime }}</span></div>
+            <div class="od-info-item"><span class="od-info-lbl">服务时间</span><span>{{ formatServiceTime(selectedOrder.serviceTime) }}</span></div>
             <div class="od-info-item"><span class="od-info-lbl">服务地址</span><span>{{ selectedOrder.address }}</span></div>
             <div class="od-info-item"><span class="od-info-lbl">订单金额</span><span class="od-price">¥{{ selectedOrder.amount }}</span></div>
             <div class="od-info-item"><span class="od-info-lbl">支付状态</span><span :class="selectedOrder.paymentStatus === 'paid' ? 'od-status-completed' : 'od-status-pending'">{{ selectedOrder.paymentStatus === 'paid' ? '已支付' : '未支付' }}</span></div>
@@ -115,7 +115,7 @@
           <div class="od-wallet">钱包余额：<strong>¥{{ walletBalance }}</strong></div>
           <div class="sv-pay-row"><span>订单号</span><span>{{ orderToPay.orderNo }}</span></div>
           <div class="sv-pay-row"><span>服务项目</span><span>{{ getServiceName(orderToPay.serviceId) }}</span></div>
-          <div class="sv-pay-row"><span>服务时间</span><span>{{ orderToPay.serviceTime }}</span></div>
+          <div class="sv-pay-row"><span>服务时间</span><span>{{ formatServiceTime(orderToPay.serviceTime) }}</span></div>
           <div class="sv-pay-row sv-pay-row--total"><span>应付金额</span><span>¥{{ orderToPay.amount }}</span></div>
         </div>
         <div class="od-modal-footer"><button class="btn btn-secondary" @click="closePayModal">取消</button><button class="btn btn-primary" :disabled="paying || walletBalance < (orderToPay?.amount || 0)" @click="handlePay">{{ paying ? '支付中…' : walletBalance < (orderToPay?.amount || 0) ? '余额不足' : '确认支付' }}</button></div>
@@ -188,6 +188,14 @@ const statusBadge = (o) => {
 }
 const getTabLabel = (v) => (tabs.find(t => t.value === v) || {}).label || ''
 const formatDate = (d) => d ? new Date(d).toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
+const formatServiceTime = (t) => {
+  if (!t) return ''
+  try {
+    return new Date(t.replace('T', ' ') + (t.includes(':') && !t.includes(':', t.indexOf(':') + 1) ? ':00' : '')).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+  } catch (e) {
+    return t
+  }
+}
 
 const showOrderDetail = (o) => { selectedOrder.value = o; showDetailModal.value = true }
 const closeDetailModal = () => { showDetailModal.value = false; selectedOrder.value = null }

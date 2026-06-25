@@ -57,7 +57,7 @@
             </div>
           </div>
           <div class="fo-meta-row">
-            <span><AppIcon name="clock" size="13" />{{ order.serviceTime || '--' }}</span>
+            <span><AppIcon name="clock" size="13" />{{ formatServiceTime(order.serviceTime) }}</span>
             <span><AppIcon name="map-pin" size="13" />{{ order.address || '--' }}</span>
           </div>
         </div>
@@ -96,7 +96,7 @@
               <span class="fo-modal-amount">¥{{ payTarget.amount }}</span>
             </div>
             <dl class="fo-modal-dl">
-              <div><dt>时间</dt><dd>{{ payTarget.serviceTime }}</dd></div>
+              <div><dt>时间</dt><dd>{{ formatServiceTime(payTarget.serviceTime) }}</dd></div>
               <div><dt>地址</dt><dd>{{ payTarget.address }}</dd></div>
               <div><dt>余额</dt><dd :class="{ 'fo-text-warn': walletBalance < payTarget.amount }">¥{{ walletBalance.toFixed(2) }}</dd></div>
             </dl>
@@ -134,6 +134,14 @@ const getElderName = (id) => eldersMap.value[id]?.name || '老人'
 const getElderPhone = (id) => eldersMap.value[id]?.phone || ''
 const statusText = (o) => ({ pending: '待处理', confirmed: '处理中', completed: '已完成', cancelled: '已取消' }[o.status] || o.status)
 const badgeClass = (o) => ({ pending: 'fo-badge--pending', confirmed: 'fo-badge--info', completed: 'fo-badge--done', cancelled: 'fo-badge--neutral' }[o.status] || '')
+const formatServiceTime = (t) => {
+  if (!t) return '--'
+  try {
+    return new Date(t.replace('T', ' ') + (t.includes(':') && !t.includes(':', t.indexOf(':') + 1) ? ':00' : '')).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+  } catch (e) {
+    return t
+  }
+}
 
 const loadData = async () => {
   loading.value = true

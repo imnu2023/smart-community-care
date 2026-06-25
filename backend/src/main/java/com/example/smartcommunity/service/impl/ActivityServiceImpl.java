@@ -33,6 +33,9 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setCurrentParticipants(0);
         activity.setStatus("active");
         activity.setCreatedAt(LocalDateTime.now());
+        if (activity.getEndTime() == null && activity.getStartTime() != null) {
+            activity.setEndTime(activity.getStartTime().plusHours(2));
+        }
         activityMapper.insert(activity);
         return activity;
     }
@@ -59,7 +62,12 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public List<Activity> getUpcomingActivities() {
-        return activityMapper.findUpcoming(LocalDateTime.now());
+        return activityMapper.findUpcoming();
+    }
+
+    @Override
+    public List<Activity> getEndedActivities() {
+        return activityMapper.findEnded();
     }
 
     @Override

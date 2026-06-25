@@ -40,6 +40,12 @@ public class ActivityController {
         return ApiResponse.success(activities);
     }
 
+    @GetMapping("/ended")
+    public ApiResponse<List<Activity>> getEndedActivities() {
+        List<Activity> activities = activityService.getEndedActivities();
+        return ApiResponse.success(activities);
+    }
+
     @GetMapping("/type/{type}")
     public ApiResponse<List<Activity>> getActivitiesByType(@PathVariable String type) {
         List<Activity> activities = activityService.getActivitiesByType(type);

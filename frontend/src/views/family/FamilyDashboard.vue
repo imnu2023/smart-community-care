@@ -157,10 +157,6 @@
           快捷操作
         </h2>
         <div class="fd-actions">
-          <button class="fd-action-sos" @click="handleEmergencyCall">
-            <AppIcon name="phone" size="20" />
-            一键呼叫长辈
-          </button>
           <div class="fd-actions-grid">
             <router-link to="/family/services" class="fd-action-btn">
               <AppIcon name="star" size="24" />
@@ -218,7 +214,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { relationAPI, healthAPI, orderAPI, paymentAPI, emergencyAPI, walletAPI } from '../../api'
+import { relationAPI, healthAPI, orderAPI, paymentAPI, walletAPI } from '../../api'
 import AppIcon from '../../components/AppIcon.vue'
 
 const router = useRouter()
@@ -317,11 +313,6 @@ const loadElderData = async (elder) => {
       elder.pendingOrders = pending.length
       if (pending.length > 0) elder.latestOrder = pending[0]
     }
-    const eRes = await emergencyAPI.getByUser(elder.elderId)
-    if (eRes?.code === 200 && eRes.data) {
-      const recent = eRes.data.filter(c => (Date.now() - new Date(c.callTime)) < 7 * 86400000)
-      if (recent.length > 0) elder.recentEmergency = recent[0]
-    }
   } catch (e) { /* silent */ }
 }
 
@@ -343,9 +334,6 @@ const formatTimeShort = (t) => {
 const viewHealth = (e) => {
   if (!e.elderId) return
   localStorage.setItem('viewElderId', e.elderId); localStorage.setItem('viewElderName', e.elderName); router.push('/family/elder-health')
-}
-const handleEmergencyCall = () => {
-  ElMessage.info('紧急呼叫功能 — 请联系社区管理员或拨打120')
 }
 const closePayModal = () => { showPayModal.value = false; payTarget.value = null }
 const handlePay = async () => {
@@ -580,17 +568,6 @@ onMounted(() => { loadElders(); loadWallet() })
    QUICK ACTIONS
    ============================================================ */
 .fd-actions { display: flex; flex-direction: column; gap: var(--space-md); }
-.fd-action-sos {
-  display: flex; align-items: center; justify-content: center; gap: var(--space-sm);
-  padding: var(--space-md); border-radius: var(--radius-xl);
-  border: none; background: var(--color-error); color: var(--color-on-error);
-  font-size: var(--text-label-md); font-weight: var(--weight-semibold);
-  font-family: inherit; cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.32, 0.72, 0, 1);
-  box-shadow: 0 2px 16px rgba(186, 26, 26, 0.18);
-}
-.fd-action-sos:hover { background: #9a1515; transform: translateY(-1px); }
-.fd-action-sos:active { transform: translateY(1px); }
 
 .fd-actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); }
 .fd-action-btn {

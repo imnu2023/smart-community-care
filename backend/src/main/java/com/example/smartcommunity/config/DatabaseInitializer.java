@@ -70,6 +70,7 @@ public class DatabaseInitializer implements CommandLineRunner {
             fixEmergencyCallTable(connection);
             fixServiceOrderTable(connection);
             fixMessageTable(connection);
+            fixActivityTable(connection);
             fillDeviceControlTable(connection);
             fillWalletTable(connection);
             
@@ -142,6 +143,27 @@ public class DatabaseInitializer implements CommandLineRunner {
                 pstmt.executeUpdate();
             }
             System.out.println("Fixed service_order table");
+        }
+    }
+    
+    private void fixActivityTable(Connection connection) throws Exception {
+        String[][] updates = {
+            {"书法艺术交流", "2026-06-25 09:00:00", "2026-06-25 11:30:00"},
+            {"广场舞健身活动", "2026-06-25 07:00:00", "2026-06-25 09:00:00"},
+            {"智能手机使用培训", "2026-06-25 14:00:00", "2026-06-25 16:00:00"},
+            {"健康养生讲座", "2026-06-27 14:30:00", "2026-06-27 16:30:00"},
+            {"社区生日聚会", "2026-06-26 10:00:00", "2026-06-26 12:00:00"}
+        };
+        
+        try (PreparedStatement pstmt = connection.prepareStatement(
+            "UPDATE activity SET start_time = ?, end_time = ? WHERE title = ?")) {
+            for (String[] update : updates) {
+                pstmt.setString(1, update[1]);
+                pstmt.setString(2, update[2]);
+                pstmt.setString(3, update[0]);
+                pstmt.executeUpdate();
+            }
+            System.out.println("Fixed activity table");
         }
     }
     
@@ -345,8 +367,8 @@ public class DatabaseInitializer implements CommandLineRunner {
         };
         String[] types = {"culture", "sports", "study", "health", "social"};
         String[] locations = {"社区活动中心三楼", "社区广场", "社区活动中心二楼", "社区活动中心三楼大厅", "社区活动中心"};
-        String[] startTimes = {"2026-06-20 09:00:00", "2026-06-18 07:00:00", "2026-06-22 14:00:00", "2026-06-28 14:30:00", "2026-06-25 10:00:00"};
-        String[] endTimes = {"2026-06-20 11:30:00", "2026-06-18 09:00:00", "2026-06-22 16:00:00", "2026-06-28 16:30:00", "2026-06-25 12:00:00"};
+        String[] startTimes = {"2026-06-25 09:00:00", "2026-06-25 07:00:00", "2026-06-25 14:00:00", "2026-06-27 14:30:00", "2026-06-26 10:00:00"};
+        String[] endTimes = {"2026-06-25 11:30:00", "2026-06-25 09:00:00", "2026-06-25 16:00:00", "2026-06-27 16:30:00", "2026-06-26 12:00:00"};
         int[] maxParticipants = {20, 50, 30, 80, 40};
         int[] currentParticipants = {0, 0, 0, 0, 0};
         String[] organizers = {"书画社", "健身管理办公室", "社区志愿者", "社区服务中心", "社区管理办公室"};

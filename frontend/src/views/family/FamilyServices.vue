@@ -88,27 +88,29 @@
                 </div>
               </div>
 
-              <!-- Select elder -->
-              <div class="form-group">
-                <label class="form-label">为哪位家人预约</label>
-                <select v-model="selectedElderId" class="form-input">
-                  <option :value="null" disabled>请选择家人</option>
-                  <option v-for="e in elders" :key="e.elderId" :value="e.elderId">
-                    {{ e.elderName }}（{{ relationLabel(e.relationType) }}）
-                  </option>
-                </select>
-              </div>
+              <div class="fs-form-grid">
+                <!-- Select elder -->
+                <div class="form-group">
+                  <label class="form-label">为哪位家人预约</label>
+                  <select v-model="selectedElderId" class="form-input">
+                    <option :value="null" disabled>请选择家人</option>
+                    <option v-for="e in elders" :key="e.elderId" :value="e.elderId">
+                      {{ e.elderName }}（{{ relationLabel(e.relationType) }}）
+                    </option>
+                  </select>
+                </div>
 
-              <!-- Service time -->
-              <div class="form-group">
-                <label class="form-label">预约时间</label>
-                <input type="datetime-local" v-model="serviceTime" class="form-input" />
-              </div>
+                <!-- Service time -->
+                <div class="form-group">
+                  <label class="form-label">预约时间</label>
+                  <input type="datetime-local" v-model="serviceTime" class="form-input" />
+                </div>
 
-              <!-- Address -->
-              <div class="form-group">
-                <label class="form-label">服务地址</label>
-                <input type="text" v-model="address" class="form-input" placeholder="老人的居住地址" />
+                <!-- Address -->
+                <div class="form-group">
+                  <label class="form-label">服务地址</label>
+                  <input type="text" v-model="address" class="form-input" placeholder="老人的居住地址" />
+                </div>
               </div>
 
               <!-- Remark -->
@@ -305,11 +307,12 @@ onMounted(() => { loadServices(); loadElders() })
    MODAL
    ============================================================ */
 .fs-overlay { position: fixed; inset: 0; z-index: var(--z-modal); background: rgba(0,0,0,0.25); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; }
-.fs-modal-card { width: 90%; max-width: 480px; background: var(--color-surface-container-lowest); border-radius: var(--radius-2xl); box-shadow: 0 24px 64px rgba(0,47,112,0.12); overflow: hidden; }
-.fs-modal-head { display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg) var(--space-xl); border-bottom: 1px solid var(--color-outline-variant); }
-.fs-modal-head h3 { margin: 0; font-size: var(--text-headline-md); }
-.fs-modal-body { padding: var(--space-xl); display: flex; flex-direction: column; gap: var(--space-md); }
-.fs-modal-foot { display: flex; gap: var(--space-sm); justify-content: flex-end; padding: var(--space-lg) var(--space-xl); border-top: 1px solid var(--color-outline-variant); }
+.fs-modal-card { width: 90%; max-width: 560px; background: var(--color-surface-container-lowest); border-radius: var(--radius-2xl); box-shadow: 0 24px 64px rgba(0,47,112,0.12); overflow: hidden; }
+.fs-modal-head { display: flex; justify-content: space-between; align-items: center; padding: var(--space-md) var(--space-lg); border-bottom: 1px solid var(--color-outline-variant); }
+.fs-modal-head h3 { margin: 0; font-size: var(--text-headline-sm); }
+.fs-modal-body { padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-sm); }
+.fs-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+.fs-modal-foot { display: flex; gap: var(--space-sm); justify-content: flex-end; padding: var(--space-md) var(--space-lg); border-top: 1px solid var(--color-outline-variant); }
 .fs-modal-service { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md); background: var(--color-surface-container-low); border-radius: var(--radius-lg); }
 .fs-modal-service strong { display: block; font-size: var(--text-label-md); }
 .fs-modal-service p { margin: 2px 0 0; font-size: var(--text-label-sm); color: var(--color-on-surface-variant); }

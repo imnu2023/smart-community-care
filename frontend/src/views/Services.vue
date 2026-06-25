@@ -73,7 +73,7 @@
           <div class="sv-wallet-bar">钱包余额：<strong>¥{{ walletBalance.toFixed(2) }}</strong></div>
           <div class="sv-pay-row"><span>订单号</span><span>{{ pendingOrder?.orderNo }}</span></div>
           <div class="sv-pay-row"><span>服务项目</span><span>{{ pendingOrderServiceName }}</span></div>
-          <div class="sv-pay-row"><span>服务时间</span><span>{{ pendingOrder?.serviceTime }}</span></div>
+          <div class="sv-pay-row"><span>服务时间</span><span>{{ formatServiceTime(pendingOrder?.serviceTime) }}</span></div>
           <div class="sv-pay-row sv-pay-row--total"><span>应付金额</span><span>¥{{ pendingOrder?.amount }}</span></div>
         </div>
         <div class="sv-modal-footer">
@@ -123,6 +123,14 @@ const loadServices = async () => {
 const filteredServices = computed(() => selectedType.value ? serviceList.value.filter(s => s.serviceType === selectedType.value) : serviceList.value)
 const getServiceTypeName = (t) => ({ housekeeping: '家政服务', medical: '医疗护理', life: '生活服务', culture: '文化娱乐' }[t] || t)
 const getUnit = (t) => ({ housekeeping: '小时', medical: '次', life: '次', culture: '次' }[t] || '次')
+const formatServiceTime = (t) => {
+  if (!t) return ''
+  try {
+    return new Date(t.replace('T', ' ') + (t.includes(':') && !t.includes(':', t.indexOf(':') + 1) ? ':00' : '')).toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+  } catch (e) {
+    return t
+  }
+}
 
 const bookService = (s) => { selectedService.value = s; bookForm.serviceId = s.id; showBookModal.value = true }
 const submitBooking = async () => {

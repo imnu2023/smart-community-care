@@ -122,7 +122,7 @@
         <template v-if="pageLoading">
           <div class="dash-header skeleton" style="height:88px;border-radius:var(--radius-xl);margin-bottom:var(--space-xl)"></div>
           <div class="grid grid-4" style="margin-bottom:var(--space-xl)"><div v-for="i in 4" :key="i" class="skeleton" style="height:120px;border-radius:var(--radius-xl)"></div></div>
-          <div class="dash-bento-skel" style="margin-bottom:var(--space-xl)"><div v-for="i in 8" :key="i" class="skeleton" style="border-radius:var(--radius-xl)" :style="{ height: i<=3?'120px':'100px' }"></div></div>
+          <div class="dash-bento-skel" style="margin-bottom:var(--space-xl)"><div v-for="i in 8" :key="i" class="skeleton" style="height:140px;border-radius:var(--radius-xl)"></div></div>
         </template>
 
         <template v-else>
@@ -174,40 +174,45 @@
         <section class="dash-section">
           <h3 class="dash-section-title">快捷功能</h3>
           <div class="dash-bento">
-            <router-link to="/health" class="dash-bento-card dash-bento-card--lg dash-bento-card--health">
-              <span class="dash-bento-icon"><AppIcon name="heart" size="40" /></span>
+            <router-link to="/health" class="dash-bento-card">
+              <span class="dash-bento-icon"><AppIcon name="heart" size="36" /></span>
               <span class="dash-bento-title">健康监测</span>
               <span class="dash-bento-desc">查看实时健康数据与AI分析</span>
             </router-link>
-            <router-link to="/emergency" class="dash-bento-card dash-bento-card--lg dash-bento-card--emergency">
-              <span class="dash-bento-icon"><AppIcon name="bell" size="40" /></span>
+            <router-link to="/emergency" class="dash-bento-card">
+              <span class="dash-bento-icon"><AppIcon name="bell" size="36" /></span>
               <span class="dash-bento-title">紧急呼叫</span>
               <span class="dash-bento-desc">一键呼叫社区服务中心</span>
             </router-link>
-            <router-link to="/services" class="dash-bento-card dash-bento-card--lg dash-bento-card--services">
-              <span class="dash-bento-icon"><AppIcon name="tool" size="40" /></span>
+            <router-link to="/services" class="dash-bento-card">
+              <span class="dash-bento-icon"><AppIcon name="tool" size="36" /></span>
               <span class="dash-bento-title">社区服务</span>
               <span class="dash-bento-desc">预约家政、维修、陪诊服务</span>
             </router-link>
-            <router-link to="/health-input" class="dash-bento-card dash-bento-card--sm">
-              <span class="dash-bento-icon"><AppIcon name="clipboard" size="32" /></span>
+            <router-link to="/health-input" class="dash-bento-card">
+              <span class="dash-bento-icon"><AppIcon name="clipboard" size="36" /></span>
               <span class="dash-bento-title">数据录入</span>
+              <span class="dash-bento-desc">手动录入健康数据</span>
             </router-link>
-            <router-link to="/messages" class="dash-bento-card dash-bento-card--sm">
-              <span class="dash-bento-icon"><AppIcon name="message" size="32" /></span>
+            <router-link to="/messages" class="dash-bento-card">
+              <span class="dash-bento-icon"><AppIcon name="message" size="36" /></span>
               <span class="dash-bento-title">消息中心</span>
+              <span class="dash-bento-desc">查看通知与消息</span>
             </router-link>
-            <router-link to="/activities" class="dash-bento-card dash-bento-card--sm">
-              <span class="dash-bento-icon"><AppIcon name="calendar" size="32" /></span>
+            <router-link to="/activities" class="dash-bento-card">
+              <span class="dash-bento-icon"><AppIcon name="calendar" size="36" /></span>
               <span class="dash-bento-title">社区活动</span>
+              <span class="dash-bento-desc">参与社区文化活动</span>
             </router-link>
-            <router-link to="/devices" class="dash-bento-card dash-bento-card--sm">
-              <span class="dash-bento-icon"><AppIcon name="home" size="32" /></span>
+            <router-link to="/devices" class="dash-bento-card">
+              <span class="dash-bento-icon"><AppIcon name="home" size="36" /></span>
               <span class="dash-bento-title">智能家居</span>
+              <span class="dash-bento-desc">管理智能设备</span>
             </router-link>
-            <router-link to="/orders" class="dash-bento-card dash-bento-card--sm">
-              <span class="dash-bento-icon"><AppIcon name="package" size="32" /></span>
+            <router-link to="/orders" class="dash-bento-card">
+              <span class="dash-bento-icon"><AppIcon name="package" size="36" /></span>
               <span class="dash-bento-title">我的订单</span>
+              <span class="dash-bento-desc">查看服务订单</span>
             </router-link>
           </div>
         </section>
@@ -274,7 +279,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { healthAPI, userAPI } from '../api'
+import { healthAPI, userAPI, activityAPI } from '../api'
 import AppIcon from '../components/AppIcon.vue'
 
 const currentDate = computed(() => new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }))
@@ -369,20 +374,48 @@ const healthTips = computed(() => [
 ])
 
 const recentActivities = ref([])
-const buildActivities = () => {
-  const now = new Date()
-  const fmt = (offsetDays, hour, min) => {
-    const d = new Date(now); d.setDate(d.getDate() + offsetDays); d.setHours(hour, min, 0, 0)
-    return `${d.getMonth()+1}月${d.getDate()}日 ${String(hour).padStart(2,'0')}:${String(min).padStart(2,'0')}`
+const registeredIds = ref([])
+
+const loadRecentActivities = async () => {
+  try {
+    const res = await activityAPI.getAll()
+    if (res.code === 200) {
+      const activities = res.data || []
+      const userId = localStorage.getItem('userId')
+      if (userId) {
+        const regRes = await activityAPI.getByParticipant(userId)
+        if (regRes.code === 200) {
+          registeredIds.value = (regRes.data || []).map(a => a.id)
+        }
+      }
+      const now = new Date()
+      recentActivities.value = activities.map(a => {
+        const startTime = new Date(a.startTime.replace(/-/g, '/').replace(' ', 'T'))
+        const endTime = a.endTime ? new Date(a.endTime.replace(/-/g, '/').replace(' ', 'T')) : null
+        let status = '即将开始'
+        if (registeredIds.value.includes(a.id)) {
+          status = '已报名'
+        } else if (endTime && endTime < now) {
+          status = '已结束'
+        } else if (startTime <= now && (!endTime || endTime >= now)) {
+          status = '进行中'
+        }
+        return {
+          id: a.id,
+          title: a.title,
+          time: startTime.toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(/\//g, '月').replace(' ', '日 '),
+          type: a.type,
+          status: status
+        }
+      }).sort((a, b) => {
+        const statusOrder = { '进行中': 0, '已报名': 1, '即将开始': 2, '已结束': 3 }
+        return statusOrder[a.status] - statusOrder[b.status]
+      }).slice(0, 6)
+    }
+  } catch (e) {
+    console.error('Failed to load recent activities:', e)
   }
-  recentActivities.value = [
-    { id: 1, title: '太极拳晨练班', time: fmt(2, 7, 0), type: 'sports', status: '已报名' },
-    { id: 2, title: '智能手机使用培训', time: fmt(-1, 10, 0), type: 'study', status: '已报名' },
-    { id: 3, title: '社区生日聚会', time: fmt(-3, 14, 30), type: 'social', status: '进行中' },
-    { id: 4, title: '书法艺术交流', time: fmt(-5, 9, 0), type: 'culture', status: '已结束' }
-  ]
 }
-buildActivities()
 
 const getActivityIcon = (type) => ({ health: 'heart', study: 'book', social: 'people', culture: 'palette', sports: 'sport' }[type] || 'calendar')
 const getBadgeClass = (status) => ({ '已报名': 'badge-info', '进行中': 'badge-warning', '已结束': 'badge-neutral' }[status] || 'badge-neutral')
@@ -433,7 +466,7 @@ const loadUserProfile = async () => {
   } catch (e) { /* silent */ }
 }
 
-onMounted(async () => { await Promise.all([loadHealthStats(), loadUserProfile()]); pageLoading.value = false })
+onMounted(async () => { await Promise.all([loadHealthStats(), loadUserProfile(), loadRecentActivities()]); pageLoading.value = false })
 </script>
 
 <style scoped>
@@ -727,8 +760,9 @@ onMounted(async () => { await Promise.all([loadHealthStats(), loadUserProfile()]
 }
 
 /* --- Skeleton --- */
-.dash-bento-skel { display: grid; grid-template-columns: 2fr 2fr 2fr 1fr 1fr; gap: var(--space-md); }
-@media (max-width: 767px) { .dash-bento-skel { grid-template-columns: 1fr 1fr; } }
+.dash-bento-skel { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-md); }
+@media (max-width: 1023px) { .dash-bento-skel { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 767px) { .dash-bento-skel { grid-template-columns: repeat(2, 1fr); } }
 
 /* --- Greeting header: stronger presence --- */
 .dash-header {
@@ -813,7 +847,7 @@ onMounted(async () => { await Promise.all([loadHealthStats(), loadUserProfile()]
 /* --- Bento grid: asymmetric quick actions with spotlight hover --- */
 .dash-bento {
   display: grid;
-  grid-template-columns: 2fr 2fr 2fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-md);
 }
 .dash-bento-card {
@@ -825,6 +859,10 @@ onMounted(async () => { await Promise.all([loadHealthStats(), loadUserProfile()]
   color: inherit;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 140px;
   position: relative;
   overflow: hidden;
   transition: box-shadow 0.25s var(--ease-out),
@@ -848,8 +886,6 @@ onMounted(async () => { await Promise.all([loadHealthStats(), loadUserProfile()]
 }
 .dash-bento-card:hover::after { opacity: 1; }
 .dash-bento-card:active { transform: scale(0.98) translateY(0); }
-.dash-bento-card--lg { grid-row: span 2; justify-content: space-between; min-height: 160px; }
-.dash-bento-card--sm { justify-content: center; align-items: center; text-align: center; }
 .dash-bento-card--health { border-color: #fdd; }
 .dash-bento-card--health:hover { border-color: #f8cdd5; }
 .dash-bento-card--emergency { border-color: #fde8e8; }
@@ -914,9 +950,7 @@ onMounted(async () => { await Promise.all([loadHealthStats(), loadUserProfile()]
 @media (max-width: 1023px) {
   .sidebar { width: 220px; }
   .main-content { margin-left: 220px; }
-  .dash-bento { grid-template-columns: 1fr 1fr 1fr; }
-  .dash-bento-card--lg { grid-row: span 1; min-height: auto; }
-  .dash-bento-card--lg .dash-bento-desc { display: none; }
+  .dash-bento { grid-template-columns: repeat(3, 1fr); }
   .dash-vitals { grid-template-columns: repeat(2, 1fr); }
   .dash-report-prompt { flex-direction: column; align-items: flex-start; }
 }
@@ -927,9 +961,7 @@ onMounted(async () => { await Promise.all([loadHealthStats(), loadUserProfile()]
   .dash-header-spark { align-self: flex-end; }
   .dash-greeting-icon { width: 44px; height: 44px; }
   .dash-vitals { grid-template-columns: repeat(2, 1fr); }
-  .dash-bento { grid-template-columns: 1fr 1fr; }
-  .dash-bento-card--lg { grid-row: span 1; min-height: auto; }
-  .dash-bento-card--lg .dash-bento-desc { display: none; }
+  .dash-bento { grid-template-columns: repeat(2, 1fr); }
   .dash-two-col { grid-template-columns: 1fr; }
   .dash-report-card { padding: var(--space-md); }
 }

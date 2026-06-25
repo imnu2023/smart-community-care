@@ -11,6 +11,14 @@ instance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    
+    const userId = localStorage.getItem('userId')
+    if (userId && (!/^\d+$/.test(userId) || userId.includes(':') || userId.includes('/'))) {
+      localStorage.clear()
+      window.location.href = '/login'
+      return Promise.reject(new Error('Invalid user ID'))
+    }
+    
     return config
   },
   error => {
@@ -111,6 +119,7 @@ export const activityAPI = {
   getAll: () => instance.get('/activities'),
   getActive: () => instance.get('/activities/active'),
   getUpcoming: () => instance.get('/activities/upcoming'),
+  getEnded: () => instance.get('/activities/ended'),
   getByType: (type) => instance.get(`/activities/type/${type}`),
   getByParticipant: (userId) => instance.get(`/activities/participant/${Number(userId)}`),
   getById: (id) => instance.get(`/activities/${id}`),

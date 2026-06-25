@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
         order.setUserId(userId);
         order.setServiceId(serviceId);
         order.setStatus("pending");
-        order.setServiceTime(LocalDateTime.parse(serviceTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        order.setServiceTime(parseServiceTime(serviceTime));
         order.setAddress(address);
         order.setRemark(remark);
         order.setAmount(service.getPrice());
@@ -120,6 +121,43 @@ public class ServiceOrderServiceImpl implements ServiceOrderService {
                 serviceOrderMapper.updateById(order);
             }
         }
+    }
+
+    private LocalDateTime parseServiceTime(String serviceTime) {
+        if (serviceTime == null || serviceTime.isEmpty()) {
+            throw new BusinessException("服务时间不能为空");
+        }
+        
+        String normalizedTime = serviceTime.trim();
+        
+        normalizedTime = normalizedTime.replace('\\', '/');
+        normalizedTime = normalizedTime.replace('-', '/');
+        
+        if (normalizedTime.contains("T")) {
+            normalizedTime = normalizedTime.replace("T", " ");
+        }
+        
+        String[] parts = normalizedTime.split(" ");
+        if (parts.length >= 2) {
+            String datePart = parts[0];
+            String timePart = parts[1];
+            
+            String[] dateParts = datePart.split("/");
+            String[] timeParts = timePart.split(":");
+            
+            if (dateParts.length == 3 && timeParts.length >= 2) {
+                int year = Integer.parseInt(dateParts[0]);
+                int month = Integer.parseInt(dateParts[1]);
+                int day = Integer.parseInt(dateParts[2]);
+                int hour = Integer.parseInt(timeParts[0]);
+                int minute = Integer.parseInt(timeParts[1]);
+                int second = timeParts.length >= 3 ? Integer.parseInt(timeParts[2]) : 0;
+                
+                return LocalDateTime.of(year, month, day, hour, minute, second);
+            }
+        }
+        
+        throw new BusinessException("服务时间格式不正确，请使用 yyyy-MM-dd HH:mm:ss 格式");
     }
 
     private String statusLabel(String status) {

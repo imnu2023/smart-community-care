@@ -32,7 +32,10 @@
           </div>
           <div class="act-card-footer">
             <span><AppIcon name="people" :size="14" /> {{ activity.currentParticipants }}/{{ activity.maxParticipants }}</span>
-            <button class="btn" :class="isParticipating(activity.id) ? 'btn-secondary btn-sm' : 'btn-primary btn-sm'" @click.stop="registerActivity(activity)">
+            <template v-if="isActivityEnded(activity)">
+              <span class="act-ended-badge">已结束</span>
+            </template>
+            <button v-else class="btn" :class="isParticipating(activity.id) ? 'btn-secondary btn-sm' : 'btn-primary btn-sm'" @click.stop="registerActivity(activity)">
               {{ isParticipating(activity.id) ? '取消报名' : '立即报名' }}
             </button>
           </div>
@@ -45,12 +48,14 @@
       <div class="act-modal" @click.stop>
         <div class="act-modal-header"><h3>创建活动</h3><button class="btn btn-ghost btn-sm" @click="showCreateModal = false">✕</button></div>
         <form @submit.prevent="handleCreate" class="act-modal-body">
-          <div class="form-group"><label class="form-label">活动标题</label><input class="form-input" v-model="createForm.title" required /></div>
-          <div class="form-group"><label class="form-label">活动描述</label><textarea class="form-input" v-model="createForm.description" rows="3" style="resize:vertical"></textarea></div>
-          <div class="form-group"><label class="form-label">活动类型</label><select class="form-input" v-model="createForm.type"><option value="health">健康</option><option value="study">学习</option><option value="social">社交</option><option value="culture">文化</option><option value="sports">运动</option></select></div>
-          <div class="form-group"><label class="form-label">活动地点</label><input class="form-input" v-model="createForm.location" required /></div>
-          <div class="form-group"><label class="form-label">开始时间</label><input class="form-input" type="datetime-local" v-model="createForm.startTime" required /></div>
-          <div class="form-group"><label class="form-label">最大人数</label><input class="form-input" type="number" v-model="createForm.maxParticipants" min="1" required /></div>
+          <div class="act-form-grid">
+            <div class="form-group"><label class="form-label">活动标题</label><input class="form-input" v-model="createForm.title" required /></div>
+            <div class="form-group"><label class="form-label">活动类型</label><select class="form-input" v-model="createForm.type"><option value="health">健康</option><option value="study">学习</option><option value="social">社交</option><option value="culture">文化</option><option value="sports">运动</option></select></div>
+            <div class="form-group"><label class="form-label">活动地点</label><input class="form-input" v-model="createForm.location" required /></div>
+            <div class="form-group"><label class="form-label">最大人数</label><input class="form-input" type="number" v-model="createForm.maxParticipants" min="1" required /></div>
+            <div class="form-group"><label class="form-label">开始时间</label><input class="form-input" type="datetime-local" v-model="createForm.startTime" required /></div>
+          </div>
+          <div class="form-group"><label class="form-label">活动描述</label><textarea class="form-input" v-model="createForm.description" rows="2" style="resize:vertical"></textarea></div>
           <div class="act-modal-footer"><button type="button" class="btn btn-secondary" @click="showCreateModal = false">取消</button><button type="submit" class="btn btn-primary">创建</button></div>
         </form>
       </div>
@@ -59,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { activityAPI } from '../api'
 import { ElMessage } from 'element-plus'
@@ -68,7 +73,7 @@ import AppIcon from '../components/AppIcon.vue'
 const router = useRouter()
 const goBack = () => router.push('/dashboard')
 
-const tabs = [{ label: '全部', value: 'all', icon: 'clipboard' },{ label: '进行中', value: 'active', icon: 'pulse' },{ label: '即将开始', value: 'upcoming', icon: 'calendar' }]
+const tabs = [{ label: '全部', value: 'all', icon: 'clipboard' },{ label: '进行中', value: 'active', icon: 'pulse' },{ label: '即将开始', value: 'upcoming', icon: 'calendar' },{ label: '已结束', value: 'ended', icon: 'history' }]
 const activities = ref([])
 const activeTab = ref('all')
 const showCreateModal = ref(false)
@@ -80,6 +85,7 @@ const loadActivities = async () => {
     let res
     if (activeTab.value === 'active') res = await activityAPI.getActive()
     else if (activeTab.value === 'upcoming') res = await activityAPI.getUpcoming()
+    else if (activeTab.value === 'ended') res = await activityAPI.getEnded()
     else res = await activityAPI.getAll()
     if (res.code === 200) activities.value = res.data || []
   } catch (e) {}
@@ -109,11 +115,26 @@ const handleCreate = async () => {
 }
 
 const showActivityDetail = (a) => { /* navigate or open detail */ }
+const isActivityEnded = (activity) => {
+  if (!activity.endTime) return false
+  const dt = activity.endTime.replace(/-/g, '/').replace(' ', 'T')
+  return new Date(dt) < new Date()
+}
 
 const getActivityIcon = (t) => ({ health: 'M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0', study: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20', social: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2', culture: 'M12 2L2 7l10 5 10-5-10-5z', sports: 'M12 12c2-2 6-2 8 0' }[t] || 'M12 2L2 7l10 5 10-5-10-5z')
 const getActivityTypeName = (t) => ({ health: '健康', study: '学习', social: '社交', culture: '文化', sports: '运动' }[t] || t)
 const getActivityTypeBadge = (t) => ({ health: 'badge-success', study: 'badge-info', social: 'badge-warning', culture: 'badge-neutral', sports: 'badge-info' }[t] || 'badge-neutral')
-const formatDateTime = (s) => s ? new Date(s).toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
+const formatDateTime = (s) => {
+  if (!s) return ''
+  const dt = s.replace(/-/g, '/').replace(' ', 'T')
+  const date = new Date(dt)
+  if (isNaN(date.getTime())) return s
+  return date.toLocaleString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+watch(activeTab, () => {
+  loadActivities()
+})
 
 onMounted(() => { loadActivities(); loadRegistrations() })
 </script>
@@ -139,13 +160,15 @@ onMounted(() => { loadActivities(); loadRegistrations() })
 .act-desc { font-size: var(--text-body-md); color: var(--color-on-surface-variant); margin: 0 0 var(--space-sm); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .act-meta { display: flex; gap: var(--space-md); font-size: var(--text-label-sm); color: var(--color-on-surface-variant); margin-bottom: var(--space-sm); }
 .act-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: var(--space-sm); border-top: 1px solid var(--color-outline-variant); font-size: var(--text-label-md); }
+.act-ended-badge { color: var(--color-on-surface-variant); background: var(--color-surface-container); padding: var(--space-xs) var(--space-sm); border-radius: var(--radius-md); font-size: var(--text-label-sm); }
 
 .act-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: var(--z-modal); border: none; width: 100%; height: 100%; }
-.act-modal { background: var(--color-surface-container-lowest); border-radius: var(--radius-2xl); width: 90%; max-width: 480px; box-shadow: var(--shadow-soft-hover); }
-.act-modal-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg) var(--space-xl); border-bottom: 1px solid var(--color-outline-variant); }
-.act-modal-header h3 { margin: 0; font-size: var(--text-headline-md); }
-.act-modal-body { padding: var(--space-xl); }
-.act-modal-footer { display: flex; gap: var(--space-sm); justify-content: flex-end; padding-top: var(--space-lg); border-top: 1px solid var(--color-outline-variant); margin-top: var(--space-md); }
+.act-modal { background: var(--color-surface-container-lowest); border-radius: var(--radius-2xl); width: 90%; max-width: 560px; box-shadow: var(--shadow-soft-hover); }
+.act-modal-header { display: flex; justify-content: space-between; align-items: center; padding: var(--space-md) var(--space-lg); border-bottom: 1px solid var(--color-outline-variant); }
+.act-modal-header h3 { margin: 0; font-size: var(--text-headline-sm); }
+.act-modal-body { padding: var(--space-lg); }
+.act-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
+.act-modal-footer { display: flex; gap: var(--space-sm); justify-content: flex-end; padding-top: var(--space-md); border-top: 1px solid var(--color-outline-variant); margin-top: var(--space-sm); }
 
 @media (max-width: 767px) {
   .act-page { padding: var(--space-md); }

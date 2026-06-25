@@ -19,6 +19,8 @@ public interface ActivityService {
 
     List<Activity> getUpcomingActivities();
 
+    List<Activity> getEndedActivities();
+
     List<Activity> getActivitiesByParticipant(Long userId);
 
     Activity updateActivity(Long id, Activity activity);
